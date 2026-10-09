@@ -1,0 +1,7 @@
+{
+  "name": "Fresh_of_Verdant",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
