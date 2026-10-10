@@ -25,7 +25,7 @@ export class ProductsPage {
 
   get filtered(): Product[] {
     const q = this.search.trim().toLowerCase();
-    return this.productService.products.filter(
+    return this.productService.products().filter(
       (p) => (!this.selectedCategory || p.category === this.selectedCategory) && (!q || p.name.toLowerCase().includes(q))
     );
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { catchError, finalize, map, of } from 'rxjs';
@@ -14,19 +14,19 @@ export interface ProductCategory {
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  products: Product[] = [];
-  categories: string[] = [];
-  categoryItems: ProductCategory[] = [];
-  loading = false;
-  error: string | null = null;
+  readonly products = signal<Product[]>([]);
+  readonly categories = signal<string[]>([]);
+  readonly categoryItems = signal<ProductCategory[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
   constructor(private modalCtrl: ModalController, private api: ApiService) {
     this.load();
   }
 
   load() {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     this.api.products().pipe(
       map((rows) => {
@@ -51,19 +51,19 @@ export class ProductService {
         };
       }),
       catchError((error: unknown) => {
-        this.products = [];
-        this.categories = [];
-        this.categoryItems = [];
-        this.error = this.getLoadError(error);
+        this.products.set([]);
+        this.categories.set([]);
+        this.categoryItems.set([]);
+        this.error.set(this.getLoadError(error));
         return of({ products: [] as Product[], categoryItems: [] as ProductCategory[] });
       }),
       finalize(() => {
-        this.loading = false;
+        this.loading.set(false);
       }),
     ).subscribe(({ products, categoryItems }) => {
-      this.products = products;
-      this.categoryItems = categoryItems;
-      this.categories = categoryItems.map((category) => category.name).filter((category) => category !== 'Other');
+      this.products.set(products);
+      this.categoryItems.set(categoryItems);
+      this.categories.set(categoryItems.map((category) => category.name).filter((category) => category !== 'Other'));
     });
   }
 
@@ -95,12 +95,12 @@ export class ProductService {
       protein: 0,
       carbs: 0,
       vitaminC: 0,
-      image: row.image_url ?? undefined,
+      image: this.api.productImageUrl(row.image_url),
     };
   }
 
   get featured(): Product[] {
-    return this.products.slice(0, 4);
+    return this.products().slice(0, 4);
   }
 
   async openDetail(product: Product) {

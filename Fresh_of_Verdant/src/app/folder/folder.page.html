@@ -12,16 +12,16 @@
         <h1>Shop by category</h1>
         <p>Category data comes from the product API.</p>
       </div>
-      @if (!products.loading && !products.error) {
-        <span class="count">{{ products.categoryItems.length }} categories</span>
+      @if (!products.loading() && !products.error()) {
+        <span class="count">{{ products.categoryItems().length }} categories</span>
       }
     </section>
 
-    @if (products.loading) {
+    @if (products.loading()) {
       <p class="api-state" role="status">Loading categories from the API...</p>
-    } @else if (products.error) {
+    } @else if (products.error()) {
       <div class="api-state" role="alert">
-        {{ products.error }}
+        {{ products.error() }}
         <button (click)="products.load()">Try again</button>
       </div>
     } @else if (filteredCategories.length === 0) {

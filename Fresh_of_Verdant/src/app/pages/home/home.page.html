@@ -14,7 +14,7 @@
   <div class="stats">
     <div class="stat">
       <span class="stat-icon green"><ion-icon name="cube-outline"></ion-icon></span>
-      <div><b>{{ products.products.length }}</b><small>Total Products</small></div>
+      <div><b>{{ products.products().length }}</b><small>Total Products</small></div>
     </div>
     <div class="stat">
       <span class="stat-icon red"><ion-icon name="sparkles-outline"></ion-icon></span>
@@ -27,17 +27,23 @@
     <a routerLink="/products">View all</a>
   </div>
 
-  @if (products.loading) {
+  @if (products.loading()) {
     <p class="api-state" role="status">Loading fresh picks...</p>
-  } @else if (products.error) {
-    <div class="api-state" role="alert">{{ products.error }} <button (click)="products.load()">Try again</button></div>
+  } @else if (products.error()) {
+    <div class="api-state" role="alert">{{ products.error() }} <button (click)="products.load()">Try again</button></div>
   } @else if (products.featured.length === 0) {
     <p class="api-state">No products are available yet.</p>
   } @else {
     <div class="grid">
     @for (p of products.featured; track p.id) {
       <div class="card" (click)="open(p)">
-        <div class="img-ph thumb"><img [src]="p.image" [alt]="p.name"></div>
+        <div class="img-ph thumb">
+          @if (p.image) {
+            <img [src]="p.image" [alt]="p.name" (error)="p.image = undefined">
+          } @else {
+            <ion-icon name="image-outline" [attr.aria-label]="p.name + ' image unavailable'"></ion-icon>
+          }
+        </div>
         <strong>{{ p.name }}</strong>
         <div class="foot">
           <span class="price">₱{{ p.price }} / {{ p.unit }}</span>

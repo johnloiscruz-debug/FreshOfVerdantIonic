@@ -55,6 +55,7 @@ export class CartService {
       price: Number(row.price ?? 0),
       unit: row.unit ?? '',
       qty: Number(row.quantity),
+      image: this.api.productImageUrl(row.image_url),
     };
   }
 

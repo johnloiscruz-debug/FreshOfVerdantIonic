@@ -1,4 +1,4 @@
-<app-green-header [subtitle]="productService.loading ? 'Loading products...' : productService.products.length + ' items in today\'s harvest'" title="Browse produce"></app-green-header>
+<app-green-header [subtitle]="productService.loading() ? 'Loading products...' : productService.products().length + ' items in today\'s harvest'" title="Browse produce"></app-green-header>
 
 <ion-content>
   <div class="search">
@@ -8,7 +8,7 @@
   </div>
 
   <div class="chips">
-    @for (cat of productService.categories; track cat) {
+    @for (cat of productService.categories(); track cat) {
       <button class="chip" [class.active]="selectedCategory === cat" (click)="pickCategory(cat)">{{ cat }}</button>
     }
   </div>
@@ -21,17 +21,23 @@
 
   <div class="section-head"><h3>Today's harvest</h3><small>{{ filtered.length }} products</small></div>
 
-  @if (productService.loading) {
+  @if (productService.loading()) {
     <p class="api-state" role="status">Loading products...</p>
-  } @else if (productService.error) {
-    <div class="api-state" role="alert">{{ productService.error }} <button (click)="productService.load()">Try again</button></div>
+  } @else if (productService.error()) {
+    <div class="api-state" role="alert">{{ productService.error() }} <button (click)="productService.load()">Try again</button></div>
   } @else if (filtered.length === 0) {
     <p class="api-state">{{ search || selectedCategory ? 'No products match your search.' : 'No products are available yet.' }}</p>
   } @else {
     <div class="grid">
       @for (p of filtered; track p.id) {
         <div class="card" (click)="open(p)">
-          <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
+          <div class="img-ph thumb">
+            @if (p.image) {
+              <img [src]="p.image" [alt]="p.name" (error)="p.image = undefined">
+            } @else {
+              <ion-icon name="image-outline" [attr.aria-label]="p.name + ' image unavailable'"></ion-icon>
+            }
+          </div>
           <span class="tag">{{ p.category }}</span>
           <strong>{{ p.name }}</strong>
           <div class="foot">

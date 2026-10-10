@@ -1,7 +1,10 @@
 <ion-content>
-  <!-- Image placeholder: replace the icon with <img [src]="..."> later -->
   <div class="hero img-ph">
-    <img [src]="product.image" [alt]="product.name">
+    @if (product.image) {
+      <img [src]="product.image" [alt]="product.name" (error)="product.image = undefined">
+    } @else {
+      <ion-icon name="image-outline" [attr.aria-label]="product.name + ' image unavailable'"></ion-icon>
+    }
     <button class="round left" (click)="close()"><ion-icon name="close"></ion-icon></button>
     <button class="round right" (click)="liked = !liked">
       <ion-icon [name]="liked ? 'heart' : 'heart-outline'" [class.liked]="liked"></ion-icon>

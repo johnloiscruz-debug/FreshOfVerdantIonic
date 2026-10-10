@@ -23,7 +23,7 @@ export class FolderPage {
 
   get filteredCategories() {
     const query = this.search.trim().toLowerCase();
-    return this.products.categoryItems.filter((category) =>
+    return this.products.categoryItems().filter((category) =>
       !query || category.name.toLowerCase().includes(query) || category.description.toLowerCase().includes(query),
     );
   }

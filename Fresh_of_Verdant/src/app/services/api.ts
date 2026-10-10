@@ -45,6 +45,18 @@ export class ApiService {
     return this.http.get<ApiProduct[]>(`${this.baseUrl}/fetchProducts`);
   }
 
+  productImageUrl(imageUrl: string | null): string | undefined {
+    if (!imageUrl) {
+      return undefined;
+    }
+
+    if (/^(?:https?:)?\/\//i.test(imageUrl) || /^data:image\//i.test(imageUrl)) {
+      return imageUrl;
+    }
+
+    return new URL(imageUrl, new URL(this.baseUrl).origin).toString();
+  }
+
   login(email: string, password: string) {
     return this.http.post<{ role: string }>(`${this.baseUrl}/login`, { email, password }, { withCredentials: true });
   }
