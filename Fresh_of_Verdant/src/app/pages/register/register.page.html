@@ -1,0 +1,54 @@
+<ion-content [fullscreen]="true">
+  <div class="page">
+    <div class="auth-top">
+      <span class="logo-box"><ion-icon name="nutrition-outline"></ion-icon></span>
+      <div class="titles">
+        <h1>Create Your Account</h1>
+        <p>Your freshest shopping list starts here.</p>
+      </div>
+    </div>
+
+    <div class="auth-sheet">
+      <label class="field-label">Full Name</label>
+      <div class="field">
+        <ion-icon name="person-outline"></ion-icon>
+        <input type="text" placeholder="Your full name" [(ngModel)]="form.fullName" />
+      </div>
+
+      <label class="field-label">Email Address</label>
+      <div class="field">
+        <ion-icon name="mail-outline"></ion-icon>
+        <input type="email" placeholder="you@example.com" [(ngModel)]="form.email" />
+      </div>
+
+      <label class="field-label">Contact / Phone Number</label>
+      <div class="field">
+        <ion-icon name="call-outline"></ion-icon>
+        <input type="tel" placeholder="(555) 000-0000" [(ngModel)]="form.phone" />
+      </div>
+
+      <label class="field-label">Password</label>
+      <div class="field">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <input [type]="showPassword ? 'text' : 'password'" placeholder="Create a password" [(ngModel)]="form.password" />
+        <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" (click)="showPassword = !showPassword"></ion-icon>
+      </div>
+
+      <label class="field-label">Confirm Password</label>
+      <div class="field">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <input [type]="showConfirm ? 'text' : 'password'" placeholder="Repeat your password" [(ngModel)]="form.confirmPassword" />
+        <ion-icon [name]="showConfirm ? 'eye-off-outline' : 'eye-outline'" (click)="showConfirm = !showConfirm"></ion-icon>
+      </div>
+
+      <div class="terms">
+        <ion-checkbox labelPlacement="end" [(ngModel)]="agree">I agree to the Terms &amp; Conditions</ion-checkbox>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+
+      <button class="fv-btn" (click)="register()">Register <ion-icon name="arrow-forward"></ion-icon></button>
+
+      <p class="login-link">Already have an account? <a routerLink="/login">Log In</a></p>
+    </div>
+  </div>
+</ion-content>

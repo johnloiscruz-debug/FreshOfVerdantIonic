@@ -1,0 +1,138 @@
+ion-content {
+    --background: #f1f4f2;
+}
+
+h3.bar {
+    margin: 16px 16px 4px;
+    padding-left: 8px;
+    border-left: 4px solid var(--fv-green);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.lead {
+    margin: 0 16px 10px;
+    font-size: 12px;
+    color: var(--fv-muted);
+}
+
+.market {
+    position: relative;
+    margin: 0 16px 12px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+    .photo {
+        height: 120px;
+        border-radius: 0;
+        font-size: 36px;
+    }
+
+    .open {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        padding: 3px 10px;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--fv-green-dark);
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .m-text {
+        padding: 10px 14px;
+
+        strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        small {
+            font-size: 11px;
+            color: var(--fv-muted);
+        }
+    }
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 16px 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+    small {
+        display: block;
+        font-size: 8px;
+        letter-spacing: .4px;
+        color: var(--fv-muted);
+        font-weight: 600;
+    }
+
+    b {
+        font-size: 12px;
+    }
+}
+
+.ico {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--fv-green-soft);
+    color: var(--fv-green-dark);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.form {
+    margin: 0 16px 24px;
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+    .lbl {
+        display: block;
+        margin: 8px 0 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .field {
+        height: 46px;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid #222;
+        border-radius: 14px;
+        outline: 0;
+        resize: none;
+        font-size: 14px;
+    }
+
+    .fv-btn {
+        margin-top: 16px;
+    }
+}
+
+.note {
+    margin: 10px 0 0;
+    font-size: 10px;
+    color: var(--fv-muted);
+
+    ion-icon {
+        vertical-align: -2px;
+        color: var(--fv-green-dark);
+    }
+}

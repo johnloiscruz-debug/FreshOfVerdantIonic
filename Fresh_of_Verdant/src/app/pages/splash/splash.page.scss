@@ -1,0 +1,62 @@
+ion-content.splash { --background: var(--fv-green); }
+
+.wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 32px 56px;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+
+  // soft circle in the corner like the Figma
+  &::before {
+    content: '';
+    position: absolute;
+    left: -90px;
+    bottom: 40px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.center { margin: auto 0; }
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--fv-green);
+  font-size: 34px;
+}
+.brand { font-size: 18px; font-weight: 600; line-height: 1.05; strong { display: block; font-size: 28px; font-weight: 800; } }
+
+h1 { margin: 0 0 8px; font-size: 20px; font-weight: 500; }
+p { margin: 0; font-size: 12px; opacity: 0.85; }
+
+.loading {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  ion-spinner { width: 40px; height: 40px; color: #fff; }
+}

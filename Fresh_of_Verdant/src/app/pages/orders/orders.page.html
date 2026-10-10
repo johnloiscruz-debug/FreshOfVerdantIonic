@@ -1,0 +1,34 @@
+<app-page-header title="My Orders" rightIcon="search-outline"></app-page-header>
+
+<ion-content>
+  <div class="tabs">
+    <button [class.on]="tab === 'active'" (click)="tab = 'active'">Active Orders</button>
+    <button [class.on]="tab === 'past'" (click)="tab = 'past'">Past Purchases</button>
+  </div>
+
+  @for (o of shown; track o.id) {
+    <div class="order">
+      <div class="top">
+        <div><strong>#{{ o.id }}</strong><small>{{ o.date }}</small></div>
+        <span class="status" [class.transit]="o.status === 'In Transit'">
+          <i></i> {{ o.status }}
+        </span>
+      </div>
+
+      <div class="mid">
+        <div class="thumbs">
+          @for (t of thumbs; track t) { <span class="img-ph"><ion-icon name="image-outline"></ion-icon></span> }
+        </div>
+        <span class="count">{{ o.items }}</span>
+        <div class="total"><small>TOTAL</small><b>₱{{ o.total }}</b></div>
+      </div>
+
+      <div class="btns">
+        <button class="fv-btn" routerLink="/order-tracker">Track Order</button>
+        <button class="outline" (click)="reorder(o.id)">Reorder</button>
+      </div>
+    </div>
+  } @empty {
+    <p class="empty">No orders here yet.</p>
+  }
+</ion-content>

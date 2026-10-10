@@ -1,0 +1,15 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="hero">
+    <div class="row">
+      <ion-menu-button class="menu-btn"></ion-menu-button>
+      <div class="texts">
+        <small>{{ eyebrow }}</small>
+        <h1>{{ title }}</h1>
+        @if (subtitle) { <p>{{ subtitle }}</p> }
+      </div>
+      @if (rightIcon) {
+        <span class="icon-box"><ion-icon [name]="rightIcon"></ion-icon></span>
+      }
+    </div>
+  </ion-toolbar>
+</ion-header>

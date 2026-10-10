@@ -1,0 +1,19 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="fv-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button class="menu-btn"></ion-menu-button>
+    </ion-buttons>
+
+    <div class="titles">
+      <small>{{ subtitle }}</small>
+      <strong>{{ title }}</strong>
+    </div>
+
+    <a slot="end" class="cart-btn" routerLink="/cart">
+      <ion-icon name="cart-outline"></ion-icon>
+      @if (cart.count() > 0) {
+        <span class="badge">{{ cart.count() }}</span>
+      }
+    </a>
+  </ion-toolbar>
+</ion-header>
