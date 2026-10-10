@@ -5,14 +5,20 @@
   </div>
 
   <div class="sub">
-    <span>{{ cart.count() }} farm-fresh picks</span>
+    <span>
+      @if (cart.user) { {{ cart.user.fullName }}'s cart } @else { Your saved cart }
+      · {{ cart.count() }} farm-fresh picks
+    </span>
     <span class="delivery"><ion-icon name="car-outline"></ion-icon> Next-day delivery</span>
   </div>
+  @if (cart.user) {
+    <p class="account">{{ cart.user.email }}</p>
+  }
 
   @if (cart.loading) {
     <p class="api-state" role="status">Loading your cart...</p>
   } @else if (cart.error) {
-    <div class="api-state" role="alert">{{ cart.error }} @if (cart.error.startsWith('Cannot reach') || cart.error.startsWith('Could not')) { <button (click)="cart.load()">Try again</button> }</div>
+    <div class="api-state" role="alert">{{ cart.error }} @if (cart.error.startsWith('Sign in')) { <a routerLink="/login">Sign in</a> } @else { <button (click)="cart.load()">Refresh cart</button> }</div>
   } @else if (cart.items().length === 0) {
     <p class="api-state">Your saved cart is empty. <a routerLink="/products">Browse products</a></p>
   } @else {
@@ -24,13 +30,13 @@
           <strong>{{ item.name }}</strong>
           <small>₱{{ item.price }} / {{ item.unit }}</small>
           <div class="stepper">
-            <button (click)="cart.change(item.id, -1)"><ion-icon name="remove"></ion-icon></button>
+            <button [disabled]="cart.saving" (click)="cart.change(item.id, -1)"><ion-icon name="remove"></ion-icon></button>
             <span>{{ item.qty }}</span>
-            <button class="plus" (click)="cart.change(item.id, 1)"><ion-icon name="add"></ion-icon></button>
+            <button class="plus" [disabled]="cart.saving" (click)="cart.change(item.id, 1)"><ion-icon name="add"></ion-icon></button>
           </div>
         </div>
         <div class="right">
-          <button class="trash" (click)="cart.remove(item.id)"><ion-icon name="trash-outline"></ion-icon></button>
+          <button class="trash" [disabled]="cart.saving" (click)="cart.remove(item.id)"><ion-icon name="trash-outline"></ion-icon></button>
           <b>₱{{ item.price * item.qty }}</b>
         </div>
       </div>

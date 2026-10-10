@@ -13,13 +13,13 @@
       <label class="field-label">Email Address</label>
       <div class="field">
         <ion-icon name="mail-outline"></ion-icon>
-        <input type="text" placeholder="you@example.com" [(ngModel)]="email" />
+        <input type="email" autocomplete="email" placeholder="you@example.com" [(ngModel)]="email" />
       </div>
 
       <label class="field-label">Password</label>
       <div class="field">
         <ion-icon name="lock-closed-outline"></ion-icon>
-        <input [type]="showPassword ? 'text' : 'password'" placeholder="Enter your password" [(ngModel)]="password" />
+        <input [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="Enter your password" [(ngModel)]="password" />
         <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" (click)="showPassword = !showPassword"></ion-icon>
       </div>
 
@@ -38,6 +38,5 @@
     </div>
   </div>
 </ion-content>
-
 
 

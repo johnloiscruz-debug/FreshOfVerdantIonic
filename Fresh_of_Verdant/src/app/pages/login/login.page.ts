@@ -27,6 +27,10 @@ export class LoginPage {
 
   signIn() {
     this.error = '';
+    if (!this.email.trim() || !this.password) {
+      this.error = 'Enter your email address and password.';
+      return;
+    }
     this.loading = true;
     this.api.login(this.email, this.password).subscribe({
       next: () => this.router.navigateByUrl('/home', { replaceUrl: true }),

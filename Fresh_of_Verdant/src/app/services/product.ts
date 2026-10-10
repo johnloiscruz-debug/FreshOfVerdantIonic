@@ -47,6 +47,7 @@ export class ProductService {
       protein: 0,
       carbs: 0,
       vitaminC: 0,
+      image: row.image_url ?? undefined,
     };
   }
 

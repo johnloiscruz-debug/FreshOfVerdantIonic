@@ -30,6 +30,11 @@ export interface ApiCartItem {
   image_url: string | null;
 }
 
+export interface ApiCart {
+  user: { fullName: string; email: string } | null;
+  items: ApiCartItem[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
@@ -48,7 +53,27 @@ export class ApiService {
     return this.http.post<{ login: string }>(`${this.baseUrl}/register`, details, { withCredentials: true });
   }
 
-  cart(): Observable<ApiCartItem[]> {
-    return this.http.get<ApiCartItem[]>(`${this.baseUrl}/cart`, { withCredentials: true });
+  cart(): Observable<ApiCart> {
+    return this.http.get<ApiCart>(`${this.baseUrl}/cart`, { withCredentials: true });
+  }
+
+  addCartItem(productId: number, quantity: number): Observable<ApiCartItem> {
+    return this.http.post<ApiCartItem>(
+      `${this.baseUrl}/cart`,
+      { product_id: productId, quantity },
+      { withCredentials: true },
+    );
+  }
+
+  setCartItemQuantity(productId: number, quantity: number): Observable<ApiCartItem> {
+    return this.http.put<ApiCartItem>(
+      `${this.baseUrl}/cart/${productId}`,
+      { quantity },
+      { withCredentials: true },
+    );
+  }
+
+  removeCartItem(productId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/cart/${productId}`, { withCredentials: true });
   }
 }
