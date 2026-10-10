@@ -1,0 +1,19 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="ph">
+    <div class="row">
+      <ion-back-button class="back" [defaultHref]="backHref" text="" icon="arrow-back"></ion-back-button>
+
+      <div class="texts" [class.left]="align === 'left'">
+        @if (subtitle) { <small>{{ subtitle }}</small> }
+        <h1>{{ title }}</h1>
+      </div>
+
+      <div class="right">
+        @if (rightIcon) {
+          <button class="circle" (click)="rightClick.emit()"><ion-icon [name]="rightIcon"></ion-icon></button>
+        }
+        @if (rightLabel) { <span>{{ rightLabel }}</span> }
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>

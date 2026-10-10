@@ -1,0 +1,87 @@
+<app-page-header subtitle="DELIVERY DETAILS" title="Checkout Address" align="left" rightIcon="lock-closed-outline" rightLabel="2 of 3"></app-page-header>
+
+<ion-content>
+  <!-- Recipient -->
+  <section class="card">
+    <h3>Delivery Recipient</h3>
+    <p class="hint">Who should receive this farmbox?</p>
+    <div class="two">
+      <label class="fld">
+        <ion-icon name="person-outline"></ion-icon>
+        <span><small>FULL NAME</small><input [(ngModel)]="recipient.name" /></span>
+      </label>
+      <label class="fld">
+        <ion-icon name="call-outline"></ion-icon>
+        <span><small>PHONE NUMBER</small><input type="tel" [(ngModel)]="recipient.phone" /></span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Address -->
+  <section class="card">
+    <h3>Shipping Address</h3>
+    <p class="hint">We deliver right to your doorstep.</p>
+    <label class="fld full">
+      <ion-icon name="location-outline"></ion-icon>
+      <span><small>STREET</small><input [(ngModel)]="address.street" /></span>
+    </label>
+    <div class="two">
+      <label class="fld sel">
+        <span><small>BARANGAY</small>
+          <select [(ngModel)]="address.barangay">
+            @for (b of barangays; track b) { <option [value]="b">{{ b }}</option> }
+          </select></span>
+        <ion-icon name="chevron-down"></ion-icon>
+      </label>
+      <label class="fld sel">
+        <span><small>CITY</small>
+          <select [(ngModel)]="address.city">
+            @for (c of cities; track c) { <option [value]="c">{{ c }}</option> }
+          </select></span>
+        <ion-icon name="chevron-down"></ion-icon>
+      </label>
+    </div>
+    <label class="fld half">
+      <span><small>ZIP CODE</small><input [(ngModel)]="address.zip" /></span>
+    </label>
+  </section>
+
+  <!-- Schedule -->
+  <h3 class="outside">Delivery Schedule</h3>
+  <p class="hint outside">Choose what works best for your day.</p>
+  <div class="two pad">
+    @for (s of schedules; track s.id) {
+      <button class="sched" [class.on]="schedule === s.id" (click)="schedule = s.id">
+        <div><strong>{{ s.title }}</strong><b>₱{{ s.fee }}</b></div>
+        <small>{{ s.time }}</small>
+      </button>
+    }
+  </div>
+
+  <!-- Payment -->
+  <h3 class="outside">Payment Method</h3>
+  <div class="pay">
+    @for (p of payments; track p.id) {
+      <button class="pay-row" [class.on]="payment === p.id" (click)="payment = p.id">
+        <span class="ico"><ion-icon [name]="p.icon"></ion-icon></span>
+        <span class="t"><strong>{{ p.title }}</strong><small>{{ p.desc }}</small></span>
+        <span class="radio" [class.on]="payment === p.id"></span>
+      </button>
+    }
+  </div>
+
+  <!-- Notes -->
+  <h3 class="outside">Order Notes</h3>
+  <p class="hint outside">Optional delivery instructions</p>
+  <label class="notes">
+    <ion-icon name="chatbox-ellipses-outline"></ion-icon>
+    <textarea rows="3" [(ngModel)]="notes" placeholder="Please call when you arrive. Leave the box with the guard if unavailable."></textarea>
+  </label>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="foot">
+    <button class="fv-btn" (click)="placeOrder()">Place Order · ₱{{ total }} <ion-icon name="checkmark"></ion-icon></button>
+    <small><ion-icon name="shield-checkmark-outline"></ion-icon> Your information is encrypted and securely handled.</small>
+  </div>
+</ion-footer>

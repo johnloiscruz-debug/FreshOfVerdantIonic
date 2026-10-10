@@ -1,0 +1,147 @@
+ion-content {
+    --background: #f1f4f2;
+}
+
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 4px 16px 14px;
+    padding: 4px;
+    border-radius: 14px;
+    background: #e6ebe7;
+
+    button {
+        height: 40px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+
+        &.on {
+            background: #fff;
+            color: var(--fv-green-dark);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+        }
+    }
+}
+
+.order {
+    margin: 0 16px 14px;
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    strong {
+        display: block;
+        font-size: 16px;
+    }
+
+    small {
+        font-size: 11px;
+        color: var(--fv-muted);
+    }
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: #eee;
+    color: #555;
+    font-size: 11px;
+    font-weight: 600;
+
+    i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #888;
+    }
+
+    &.transit {
+        background: var(--fv-green-soft);
+        color: var(--fv-green-dark);
+
+        i {
+            background: var(--fv-green);
+        }
+    }
+}
+
+.mid {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+}
+
+.thumbs {
+    display: flex;
+    gap: 4px;
+
+    .img-ph {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+}
+
+.count {
+    flex: 1;
+    font-size: 12px;
+    color: #444;
+}
+
+.total {
+    text-align: right;
+
+    small {
+        display: block;
+        font-size: 9px;
+        color: var(--fv-muted);
+    }
+
+    b {
+        font-size: 20px;
+    }
+}
+
+.btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .fv-btn {
+        height: 44px;
+        font-size: 14px;
+        box-shadow: none;
+    }
+
+    .outline {
+        height: 44px;
+        border: 1.5px solid var(--fv-green);
+        border-radius: 14px;
+        background: #fff;
+        color: var(--fv-green-dark);
+        font-size: 14px;
+        font-weight: 700;
+    }
+}
+
+.empty {
+    text-align: center;
+    color: var(--fv-muted);
+    margin-top: 40px;
+}

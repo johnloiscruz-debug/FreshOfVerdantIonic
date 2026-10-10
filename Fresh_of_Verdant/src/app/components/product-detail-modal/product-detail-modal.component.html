@@ -1,0 +1,48 @@
+<ion-content>
+  <!-- Image placeholder: replace the icon with <img [src]="..."> later -->
+  <div class="hero img-ph">
+    <ion-icon name="image-outline"></ion-icon>
+    <button class="round left" (click)="close()"><ion-icon name="close"></ion-icon></button>
+    <button class="round right" (click)="liked = !liked">
+      <ion-icon [name]="liked ? 'heart' : 'heart-outline'" [class.liked]="liked"></ion-icon>
+    </button>
+    <span class="harvest"><ion-icon name="leaf-outline"></ion-icon> HARVESTED TODAY</span>
+  </div>
+
+  <div class="body">
+    <div class="row">
+      <span class="chip">{{ product.category.toUpperCase() }}</span>
+      <span class="rating"><ion-icon name="star"></ion-icon> {{ product.rating }}</span>
+    </div>
+
+    <h1>{{ product.name }}</h1>
+    <p class="price"><strong>₱{{ product.price }}</strong> per {{ product.unit === 'kg' ? 'kilogram' : product.unit }}</p>
+    <p class="desc">{{ product.description }}</p>
+
+    <div class="nutrition">
+      <div class="nutrition-head"><strong>Nutritional facts</strong><small>per 100g</small></div>
+      <div class="nutrition-grid">
+        <div><b>{{ product.calories }}</b><span>Calories</span></div>
+        <div><b>{{ product.protein }}g</b><span>Protein</span></div>
+        <div><b>{{ product.carbs }}g</b><span>Carbs</span></div>
+        <div><b>{{ product.vitaminC }}mg</b><span>Vitamin C</span></div>
+      </div>
+    </div>
+
+    <div class="qty-row">
+      <div>
+        <strong>Quantity</strong>
+        <small>In stock · sold by {{ product.unit }}</small>
+      </div>
+      <div class="stepper">
+        <button (click)="change(-1)"><ion-icon name="remove-outline"></ion-icon></button>
+        <span>{{ qty }}</span>
+        <button class="plus" (click)="change(1)"><ion-icon name="add-outline"></ion-icon></button>
+      </div>
+    </div>
+
+    <button class="fv-btn" (click)="addToCart()">
+      <ion-icon name="cart-outline"></ion-icon> Add to Cart · ₱{{ total }}
+    </button>
+  </div>
+</ion-content>

@@ -1,0 +1,41 @@
+<ion-content>
+  <div class="head">
+    <a class="logo-box" routerLink="/home"><ion-icon name="nutrition-outline"></ion-icon></a>
+    <div class="titles"><small>FARMBOX MARKET</small><h1>My Cart</h1></div>
+  </div>
+
+  <div class="sub">
+    <span>{{ cart.count() }} farm-fresh picks</span>
+    <span class="delivery"><ion-icon name="car-outline"></ion-icon> Next-day delivery</span>
+  </div>
+
+  <div class="list">
+    @for (item of cart.items(); track item.id) {
+      <div class="item">
+        <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
+        <div class="info">
+          <strong>{{ item.name }}</strong>
+          <small>₱{{ item.price }} / {{ item.unit }}</small>
+          <div class="stepper">
+            <button (click)="cart.change(item.id, -1)"><ion-icon name="remove"></ion-icon></button>
+            <span>{{ item.qty }}</span>
+            <button class="plus" (click)="cart.change(item.id, 1)"><ion-icon name="add"></ion-icon></button>
+          </div>
+        </div>
+        <div class="right">
+          <button class="trash" (click)="cart.remove(item.id)"><ion-icon name="trash-outline"></ion-icon></button>
+          <b>₱{{ item.price * item.qty }}</b>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="summary">
+    <div class="summary-head"><strong>Order summary</strong><span class="save">You save ₱{{ cart.savings }}</span></div>
+    <div class="line"><span>Subtotal</span><span>₱{{ cart.subtotal() }}</span></div>
+    <div class="line"><span>Delivery Fee</span><span>₱{{ cart.deliveryFee }}</span></div>
+    <div class="line"><span>Tax</span><span>₱{{ cart.tax() }}</span></div>
+    <div class="line total"><span>Final Total</span><b>₱{{ cart.total() }}</b></div>
+    <button class="fv-btn" routerLink="/checkout">Checkout</button>
+  </div>
+</ion-content>

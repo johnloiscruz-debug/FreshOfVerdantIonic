@@ -1,0 +1,53 @@
+<app-page-header subtitle="FARMBOX MARKET" title="Order Tracker" align="left" rightIcon="ellipsis-horizontal" rightLabel="3 of 3"></app-page-header>
+
+<ion-content>
+  <div class="confirmed">
+    <span class="big-check"><ion-icon name="checkmark"></ion-icon></span>
+    <h2>Order confirmed!</h2>
+    <b>Order ID #{{ orderId }}</b>
+    <p>Your harvest is reserved and headed to the farm hub.</p>
+  </div>
+
+  <!-- Receipt -->
+  <section class="card">
+    <div class="card-head"><strong>Receipt breakdown</strong><span class="pill">CONFIRMED</span></div>
+    @for (i of cart.items(); track i.id) {
+      <div class="line"><span>{{ i.qty > 1 ? i.qty + '× ' : '' }}{{ i.name }}</span><span>₱{{ i.price * i.qty }}</span></div>
+    }
+    <div class="line top"><span>Shipping address</span><span class="r">28 Sampaguita St.,<br />San Roque, Marikina</span></div>
+    <div class="line"><span>Payment method</span><span>Cash on Delivery</span></div>
+    <div class="line total"><span>Total paid</span><b>₱{{ cart.total() }}</b></div>
+  </section>
+
+  <!-- Journey -->
+  <section class="card">
+    <div class="card-head">
+      <div><strong>Farm-to-door journey</strong><small>Arriving tomorrow, 8 AM–12 PM</small></div>
+      <ion-icon name="swap-vertical-outline"></ion-icon>
+    </div>
+
+    <div class="steps">
+      @for (s of steps; track s.title) {
+        <div class="step" [class]="s.state">
+          <span class="dot">@if (s.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
+          <div class="t"><strong>{{ s.title }}</strong><small>{{ s.desc }}</small></div>
+          <em>{{ s.meta }}</em>
+        </div>
+      }
+    </div>
+  </section>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="partner">
+    <div class="avatar img-ph"><ion-icon name="person-outline"></ion-icon></div>
+    <div class="who">
+      <small>YOUR DELIVERY PARTNER</small>
+      <strong>Carlo Reyes · ★ 4.9</strong>
+      <small>Honda Click · NCF 2714</small>
+    </div>
+    <button><ion-icon name="call-outline"></ion-icon></button>
+    <button><ion-icon name="chatbubble-outline"></ion-icon></button>
+  </div>
+  <p class="help"><ion-icon name="call-outline"></ion-icon> Need help? Call (02) 8800-FARM</p>
+</ion-footer>

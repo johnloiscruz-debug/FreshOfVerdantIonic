@@ -1,0 +1,43 @@
+<app-page-header title="Profile & Settings" rightIcon="ellipsis-horizontal"></app-page-header>
+
+<ion-content>
+  <div class="who">
+    <!-- Photo placeholder: replace with <img> later -->
+    <div class="photo img-ph"><ion-icon name="person-outline"></ion-icon><i class="check"><ion-icon name="checkmark"></ion-icon></i></div>
+    <div>
+      <h2>John Doe</h2>
+      <p>johndoe@email.com</p>
+      <span class="member">VERDANT MEMBER</span>
+    </div>
+  </div>
+
+  <h3>Personal Details</h3>
+  <div class="card">
+    @for (f of fields; track f.label) {
+      <div class="row">
+        <span class="ico"><ion-icon [name]="f.icon"></ion-icon></span>
+        <div class="val">
+          <small>{{ f.label }}</small>
+          @if (f.editing) {
+            <input [type]="f.type" [(ngModel)]="f.value" />
+          } @else {
+            <strong>{{ f.value }}</strong>
+          }
+        </div>
+        <button class="edit" (click)="f.editing = !f.editing">
+          <ion-icon [name]="f.editing ? 'checkmark' : 'pencil-outline'"></ion-icon>
+        </button>
+      </div>
+    }
+  </div>
+
+  <a class="card link" routerLink="/orders">
+    <span class="ico"><ion-icon name="card-outline"></ion-icon></span>
+    <div class="val"><strong>Saved Payment Methods</strong><small class="plain">Visa •••• 4242 · 2 methods</small></div>
+    <ion-icon name="chevron-forward"></ion-icon>
+  </a>
+
+  <a class="security"><ion-icon name="shield-checkmark-outline"></ion-icon> Security & Change Password <ion-icon name="chevron-forward" class="end"></ion-icon></a>
+
+  <button class="fv-btn save" (click)="save()"><ion-icon name="checkmark"></ion-icon> Save Changes</button>
+</ion-content>

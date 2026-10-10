@@ -1,0 +1,29 @@
+<app-hero-header eyebrow="Fresh of Verdant" title="Developers" rightIcon="code-slash-outline"></app-hero-header>
+
+<ion-content>
+  <div class="intro">
+    <span class="ico"><ion-icon name="people-outline"></ion-icon></span>
+    <div><strong>{{ team.length }} people, one harvest</strong><small>Designing, building, testing, and shipping v1.0.0 together.</small></div>
+  </div>
+
+  <h3 class="bar">Meet the team</h3>
+  <p class="lead">Each role keeps the market dependable from tap to table.</p>
+
+  @for (m of team; track m.name) {
+    <div class="member">
+      <!-- Photo placeholder: replace with <img> later -->
+      <div class="photo img-ph"><ion-icon name="person-outline"></ion-icon></div>
+      <div class="t">
+        <strong>{{ m.name }}</strong>
+        <b>{{ m.role }}</b>
+        <small>{{ m.focus }}</small>
+      </div>
+      <span class="go"><ion-icon name="chevron-forward"></ion-icon></span>
+    </div>
+  }
+
+  <div class="care">
+    <strong><ion-icon name="sparkles-outline"></ion-icon> Built with care, not clutter</strong>
+    <p>We value clear information, inclusive access, and technology that strengthens the bond between grower, store, and home.</p>
+  </div>
+</ion-content>

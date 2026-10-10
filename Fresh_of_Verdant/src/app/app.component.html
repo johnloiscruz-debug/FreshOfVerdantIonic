@@ -1,33 +1,37 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Inbox</ion-list-header>
-          <ion-note>hi&#64;ionicframework.com</ion-note>
+  <ion-menu contentId="main-content" [disabled]="!showMenu">
+    <ion-content>
+      <div class="menu-head" routerLink="/profile">
+        <!-- Avatar placeholder: replace with <img> later -->
+        <div class="avatar img-ph"><ion-icon name="person-outline"></ion-icon></div>
+        <h2>John Doe</h2>
+        <p><ion-icon name="call-outline"></ion-icon> +63 912 345 6789</p>
+      </div>
 
-          @for (p of appPages; track p; let i = $index) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          }
-        </ion-list>
+      <nav class="menu-list">
+        @for (item of menuItems; track item.url) {
+          <ion-menu-toggle [autoHide]="false">
+            <a class="menu-item" [routerLink]="item.url" routerLinkActive="active">
+              <ion-icon [name]="item.icon"></ion-icon>
+              <span>{{ item.title }}</span>
+              @if (item.badge && cart.count() > 0) {
+                <em class="count">{{ cart.count() }}</em>
+              }
+            </a>
+          </ion-menu-toggle>
+        }
+      </nav>
 
-        <ion-list id="labels-list">
-          <ion-list-header>Labels</ion-list-header>
+      <div class="menu-foot">
+        <ion-menu-toggle [autoHide]="false">
+          <button class="logout" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon> Logout
+          </button>
+        </ion-menu-toggle>
+        <small>FRESH MARKET • VERSION 2.4.0</small>
+      </div>
+    </ion-content>
+  </ion-menu>
 
-          @for (label of labels; track label) {
-            <ion-item lines="none">
-              <ion-icon aria-hidden="true" slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
-            </ion-item>
-          }
-        </ion-list>
-      </ion-content>
-    </ion-menu>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
-  </ion-split-pane>
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

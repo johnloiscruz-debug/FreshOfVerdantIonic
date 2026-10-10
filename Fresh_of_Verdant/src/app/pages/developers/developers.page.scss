@@ -1,0 +1,125 @@
+ion-content {
+    --background: #f1f4f2;
+}
+
+.intro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 16px;
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+    strong {
+        display: block;
+        font-size: 15px;
+    }
+
+    small {
+        font-size: 11px;
+        color: var(--fv-muted);
+    }
+}
+
+.ico {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--fv-green-soft);
+    color: var(--fv-green-dark);
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+h3.bar {
+    margin: 8px 16px 4px;
+    padding-left: 8px;
+    border-left: 4px solid var(--fv-green);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.lead {
+    margin: 0 16px 10px;
+    font-size: 12px;
+    color: var(--fv-muted);
+}
+
+.member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 16px 10px;
+    padding: 10px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+    .photo {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        font-size: 26px;
+        flex-shrink: 0;
+    }
+
+    .t {
+        flex: 1;
+
+        strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        b {
+            display: block;
+            font-size: 13px;
+            color: var(--fv-green-dark);
+        }
+
+        small {
+            font-size: 11px;
+            color: var(--fv-muted);
+        }
+    }
+
+    .go {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--fv-green-soft);
+        color: var(--fv-green-dark);
+    }
+}
+
+.care {
+    margin: 6px 16px 24px;
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+    strong {
+        font-size: 14px;
+
+        ion-icon {
+            vertical-align: -2px;
+            color: var(--fv-green-dark);
+        }
+    }
+
+    p {
+        margin: 6px 0 0;
+        font-size: 12px;
+        color: #444;
+        line-height: 1.45;
+    }
+}

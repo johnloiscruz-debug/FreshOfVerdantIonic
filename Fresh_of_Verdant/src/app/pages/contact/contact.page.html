@@ -1,0 +1,38 @@
+<app-hero-header title="Contact Us" subtitle="Questions, feedback, or a little help — we're here." rightIcon="chatbubble-ellipses-outline"></app-hero-header>
+
+<ion-content>
+  <h3 class="bar">Find the market</h3>
+  <p class="lead">Fresh picks, friendly faces, and same-day support.</p>
+
+  <div class="market">
+    <!-- Photo placeholder: replace with <img> later -->
+    <div class="photo img-ph"><ion-icon name="image-outline"></ion-icon></div>
+    <span class="open">OPEN DAILY · 7AM-8PM</span>
+    <div class="m-text"><strong>Verdant Market Hall</strong><small>18 Orchard Lane, Brgy. San Roque, Antipolo City 1870</small></div>
+  </div>
+
+  <div class="info"><span class="ico"><ion-icon name="call-outline"></ion-icon></span>
+    <div><small>SUPPORT HOTLINE</small><b>+63 (2) 8555 0147 · Mon-Sat, 8AM-6PM</b></div></div>
+  <div class="info"><span class="ico"><ion-icon name="mail-outline"></ion-icon></span>
+    <div><small>SUPPORT EMAIL</small><b>hello@freshofverdant.ph</b></div></div>
+
+  <h3 class="bar">Send an inquiry</h3>
+  <p class="lead">Tell us what you need. Our support team usually replies within one business day.</p>
+
+  <div class="form">
+    <label class="lbl">Name</label>
+    <div class="field"><ion-icon name="person-outline"></ion-icon><input placeholder="Your full name" [(ngModel)]="form.name" /></div>
+
+    <label class="lbl">Email</label>
+    <div class="field"><ion-icon name="mail-outline"></ion-icon><input type="email" placeholder="you@example.com" [(ngModel)]="form.email" /></div>
+
+    <label class="lbl">Subject</label>
+    <div class="field"><ion-icon name="pricetag-outline"></ion-icon><input placeholder="How can we help?" [(ngModel)]="form.subject" /></div>
+
+    <label class="lbl">Message</label>
+    <textarea rows="4" placeholder="Share any details that will help us understand your inquiry..." [(ngModel)]="form.message"></textarea>
+
+    <button class="fv-btn" (click)="submit()">Submit Message <ion-icon name="send-outline"></ion-icon></button>
+    <p class="note"><ion-icon name="shield-checkmark-outline"></ion-icon> Your information is used only to respond to this inquiry.</p>
+  </div>
+</ion-content>

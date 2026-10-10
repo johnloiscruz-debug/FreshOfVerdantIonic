@@ -1,0 +1,51 @@
+<app-page-header title="Reviews & Feedback" rightIcon="options-outline"></app-page-header>
+
+<ion-content>
+  <div class="summary">
+    <div class="big">
+      <b>{{ average }}</b>
+      <small>{{ average }} out of 5</small>
+      <div class="stars">
+        @for (s of stars; track s) { <ion-icon name="star"></ion-icon> }
+      </div>
+      <small>Based on {{ total }} reviews</small>
+    </div>
+
+    <div class="bars">
+      @for (b of bars; track b.star) {
+        <div class="bar-row">
+          <span>{{ b.star }}</span>
+          <div class="track"><div class="fill" [style.width.%]="pct(b.count)"></div></div>
+          <em>{{ b.count }}</em>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="head"><h3>Customer Reviews</h3><a>Most recent</a></div>
+
+  @for (r of reviews; track r.name) {
+    <div class="review">
+      <div class="who">
+        <span class="avatar">{{ r.initials }}</span>
+        <div>
+          <strong>{{ r.name }}</strong>
+          <div class="meta">
+            <span class="stars sm">
+              @for (s of stars; track s) { <ion-icon [name]="s <= r.rating ? 'star' : 'star-outline'"></ion-icon> }
+            </span>
+            <span class="verified"><ion-icon name="checkmark-circle"></ion-icon> VERIFIED PURCHASE</span>
+          </div>
+        </div>
+        <small>{{ r.date }}</small>
+      </div>
+      <p>{{ r.text }}</p>
+    </div>
+  }
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="foot">
+    <button class="fv-btn" (click)="writeReview()"><ion-icon name="create-outline"></ion-icon> Write a Review</button>
+  </div>
+</ion-footer>

@@ -1,0 +1,37 @@
+<app-green-header [subtitle]="productService.products.length + ' items in today\'s harvest'" title="Browse produce"></app-green-header>
+
+<ion-content>
+  <div class="search">
+    <ion-icon name="search-outline"></ion-icon>
+    <input type="text" placeholder="Search fresh produce" [(ngModel)]="search" />
+    <span class="live"><i></i> LIVE</span>
+  </div>
+
+  <div class="chips">
+    @for (cat of productService.categories; track cat) {
+      <button class="chip" [class.active]="selectedCategory === cat" (click)="pickCategory(cat)">{{ cat }}</button>
+    }
+  </div>
+
+  <div class="organic">
+    <span class="leaf"><ion-icon name="leaf-outline"></ion-icon></span>
+    <div><strong>100% Organic, Locally Harvested</strong><small>From trusted farms within 80 km</small></div>
+    <ion-icon name="checkmark-circle-outline" class="check"></ion-icon>
+  </div>
+
+  <div class="section-head"><h3>Today's harvest</h3><small>{{ filtered.length }} products</small></div>
+
+  <div class="grid">
+    @for (p of filtered; track p.id) {
+      <div class="card" (click)="open(p)">
+        <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
+        <span class="tag">{{ p.category }}</span>
+        <strong>{{ p.name }}</strong>
+        <div class="foot">
+          <span class="price">₱{{ p.price }}/{{ p.unit }}</span>
+          <button class="add" (click)="quickAdd(p, $event)"><ion-icon name="add"></ion-icon> Add</button>
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>

@@ -35,3 +35,8 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+@import './theme/fresh-of-verdant.scss';
+
+ion-router-outlet ion-content {
+  --padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+}
