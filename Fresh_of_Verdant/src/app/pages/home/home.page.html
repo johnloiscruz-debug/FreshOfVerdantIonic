@@ -30,7 +30,7 @@
   <div class="grid">
     @for (p of products.featured; track p.id) {
       <div class="card" (click)="open(p)">
-        <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
+        <div class="img-ph thumb"><img [src]="p.image" [alt]="p.name"></div>
         <strong>{{ p.name }}</strong>
         <div class="foot">
           <span class="price">₱{{ p.price }} / {{ p.unit }}</span>

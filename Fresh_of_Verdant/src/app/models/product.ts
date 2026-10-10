@@ -11,6 +11,7 @@ export interface Product {
   carbs: number;
   vitaminC: number;
   featured?: boolean; // shows in "Fresh picks" on the home page
+  image?: string;
 }
 
 export interface CartItem {
