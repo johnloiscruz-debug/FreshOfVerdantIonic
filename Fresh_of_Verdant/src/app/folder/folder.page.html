@@ -1,21 +1,45 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>{{ folder() }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-green-header subtitle="LIVE API CATEGORIES" title="Categories &amp; Produce"></app-green-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ folder() }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <main class="categories-page">
+    <label class="search">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="search" placeholder="Search categories" [(ngModel)]="search" aria-label="Search categories" />
+    </label>
 
-  <div id="container">
-    <strong class="capitalize">{{ folder() }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+    <section class="intro">
+      <div>
+        <h1>Shop by category</h1>
+        <p>Category data comes from the product API.</p>
+      </div>
+      @if (!products.loading && !products.error) {
+        <span class="count">{{ products.categoryItems.length }} categories</span>
+      }
+    </section>
+
+    @if (products.loading) {
+      <p class="api-state" role="status">Loading categories from the API...</p>
+    } @else if (products.error) {
+      <div class="api-state" role="alert">
+        {{ products.error }}
+        <button (click)="products.load()">Try again</button>
+      </div>
+    } @else if (filteredCategories.length === 0) {
+      <p class="api-state">
+        {{ search ? 'No API categories match your search.' : 'The API returned no categories. Check that products have categories assigned.' }}
+      </p>
+    } @else {
+      <div class="category-grid">
+        @for (category of filteredCategories; track category.id) {
+          <article class="category-card">
+            <span class="category-icon"><ion-icon name="grid-outline"></ion-icon></span>
+            <div>
+              <h2>{{ category.name }}</h2>
+              <p>{{ category.description || 'No description provided by the API.' }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </main>
 </ion-content>

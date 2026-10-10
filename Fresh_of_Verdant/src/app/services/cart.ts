@@ -1,7 +1,8 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, finalize, map, of } from 'rxjs';
 import { CartItem, Product } from '../models/product';
-import { ApiService } from './api';
+import { ApiCartItem, ApiService } from './api';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
@@ -22,26 +23,50 @@ export class CartService {
   load() {
     this.loading = true;
     this.error = null;
-    this.api.cart().subscribe({
-      next: (rows) => {
-        this.items.set(rows.map((row) => ({
-          id: Number(row.product_id),
-          name: row.product_name ?? 'Unavailable product',
-          price: Number(row.price ?? 0),
-          unit: row.unit ?? '',
-          qty: Number(row.quantity),
-        })));
+
+    this.api.cart().pipe(
+      map((rows) => {
+        if (!Array.isArray(rows)) {
+          throw new Error('The cart endpoint returned an unexpected response. Expected a JSON array.');
+        }
+        return rows.map((row) => this.toCartItem(row));
+      }),
+      catchError((error: unknown) => {
+        this.error = this.getLoadError(error);
+        return of([] as CartItem[]);
+      }),
+      finalize(() => {
         this.loading = false;
-      },
-      error: (error: HttpErrorResponse) => {
-        this.error = error.status === 401 || error.status === 403
-          ? 'Sign in to view your saved cart.'
-          : error.status === 0
-            ? 'Cannot reach the backend. Check that it is running on port 3000.'
-            : error.error?.error ?? 'Could not load your saved cart.';
-        this.loading = false;
-      },
-    });
+      }),
+    ).subscribe((items) => this.items.set(items));
+  }
+
+  private toCartItem(row: ApiCartItem): CartItem {
+    return {
+      id: Number(row.product_id),
+      name: row.product_name ?? 'Unavailable product',
+      price: Number(row.price ?? 0),
+      unit: row.unit ?? '',
+      qty: Number(row.quantity),
+    };
+  }
+
+  private getLoadError(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 401 || error.status === 403) {
+        return 'Sign in to view your saved cart.';
+      }
+      if (error.status === 0) {
+        return 'Cannot reach the backend. Check that it is running on port 3000.';
+      }
+      if (error.status >= 500) {
+        return 'Could not load your saved cart. Check the backend log and database connection.';
+      }
+      const detail = error.error?.error;
+      return typeof detail === 'string' ? detail : `Could not load your saved cart (HTTP ${error.status}).`;
+    }
+
+    return error instanceof Error ? error.message : 'Could not load your saved cart.';
   }
 
   add(product: Product, qty = 1) {
