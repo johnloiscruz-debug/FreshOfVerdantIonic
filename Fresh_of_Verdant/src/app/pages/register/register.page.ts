@@ -31,6 +31,10 @@ export class RegisterPage {
       this.error = 'Please complete your name, email, and password.';
       return;
     }
+    if (this.form.password.length < 8) {
+      this.error = 'Your password must be at least 8 characters.';
+      return;
+    }
     if (this.form.password !== this.form.confirmPassword) {
       this.error = 'Passwords do not match.';
       return;

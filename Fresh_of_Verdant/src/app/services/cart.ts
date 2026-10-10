@@ -2,12 +2,14 @@ import { Injectable, computed, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, finalize, map, of } from 'rxjs';
 import { CartItem, Product } from '../models/product';
-import { ApiCartItem, ApiService } from './api';
+import { ApiCart, ApiCartItem, ApiService } from './api';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
   items = signal<CartItem[]>([]);
+  user: { fullName: string; email: string } | null = null;
   loading = false;
+  saving = false;
   error: string | null = null;
 
   deliveryFee = 49;
@@ -23,15 +25,20 @@ export class CartService {
   load() {
     this.loading = true;
     this.error = null;
+    this.user = null;
+    this.items.set([]);
 
     this.api.cart().pipe(
-      map((rows) => {
-        if (!Array.isArray(rows)) {
-          throw new Error('The cart endpoint returned an unexpected response. Expected a JSON array.');
+      map((response: ApiCart) => {
+        if (!response || !Array.isArray(response.items)) {
+          throw new Error('The cart endpoint returned an unexpected response. Expected a cart with an items array.');
         }
-        return rows.map((row) => this.toCartItem(row));
+        this.user = response.user ?? null;
+        return response.items.map((row) => this.toCartItem(row));
       }),
       catchError((error: unknown) => {
+        this.user = null;
+        this.items.set([]);
         this.error = this.getLoadError(error);
         return of([] as CartItem[]);
       }),
@@ -70,19 +77,64 @@ export class CartService {
   }
 
   add(product: Product, qty = 1) {
-    const existing = this.items().find((item) => item.id === product.id);
-    if (existing) {
-      this.change(existing.id, qty);
-    } else {
-      this.items.update((list) => [...list, { id: product.id, name: product.name, price: product.price, unit: product.unit, qty }]);
-    }
+    this.saving = true;
+    this.error = null;
+    this.api.addCartItem(product.id, qty).subscribe({
+      next: (row) => {
+        this.upsert(row);
+        this.saving = false;
+      },
+      error: (error: HttpErrorResponse) => this.handleError(error, 'Could not add this product to your cart.'),
+    });
   }
 
   change(id: number, delta: number) {
-    this.items.update((list) => list.map((item) => item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item));
+    const item = this.items().find((entry) => entry.id === id);
+    if (!item) return;
+    const quantity = Math.max(1, item.qty + delta);
+    if (quantity === item.qty) return;
+
+    this.saving = true;
+    this.error = null;
+    this.api.setCartItemQuantity(id, quantity).subscribe({
+      next: (row) => {
+        this.upsert(row);
+        this.saving = false;
+      },
+      error: (error: HttpErrorResponse) => this.handleError(error, 'Could not update this cart item.'),
+    });
   }
 
   remove(id: number) {
-    this.items.update((list) => list.filter((item) => item.id !== id));
+    this.saving = true;
+    this.error = null;
+    this.api.removeCartItem(id).subscribe({
+      next: () => {
+        this.items.update((list) => list.filter((item) => item.id !== id));
+        this.saving = false;
+      },
+      error: (error: HttpErrorResponse) => this.handleError(error, 'Could not remove this cart item.'),
+    });
+  }
+
+  private upsert(row: ApiCartItem) {
+    const item = this.toCartItem(row);
+    this.items.update((list) => list.some((entry) => entry.id === item.id)
+      ? list.map((entry) => entry.id === item.id ? item : entry)
+      : [...list, item]);
+  }
+
+  private handleError(error: HttpErrorResponse, fallback: string) {
+    if (error.status === 401 || error.status === 403) {
+      this.user = null;
+      this.items.set([]);
+    }
+    this.error = error.status === 401 || error.status === 403
+      ? 'Sign in to view and update your saved cart.'
+      : error.status === 0
+        ? 'Cannot reach the backend. Check that it is running on port 3000.'
+        : error.error?.error ?? fallback;
+    this.loading = false;
+    this.saving = false;
   }
 }
