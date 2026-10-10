@@ -112,6 +112,7 @@ ion-content {
     justify-content: space-between;
     align-items: flex-end;
     padding: 18px 16px 10px;
+    color: #4A5568;
 
     h3 {
         margin: 0;
@@ -145,10 +146,20 @@ ion-content {
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
 
-    .thumb {
-        height: 100px;
+        .thumb {
+        height: 140px;
         margin-bottom: 10px;
+        border-radius: 12px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
     }
+
 
     strong {
         display: block;
