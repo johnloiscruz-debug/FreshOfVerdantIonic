@@ -1,7 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
-import { catchError, finalize, map, of } from 'rxjs';
+import { catchError, finalize, map, of, TimeoutError, timeout } from 'rxjs';
 import { Product } from '../models/product';
 import { ProductDetailModal } from '../components/product-detail-modal/product-detail-modal.component';
 import { ApiProduct, ApiService } from './api';
@@ -29,6 +29,7 @@ export class ProductService {
     this.error.set(null);
 
     this.api.products().pipe(
+      timeout({ first: 10000 }),
       map((rows) => {
         if (!Array.isArray(rows)) {
           throw new Error('The products endpoint returned an unexpected response. Expected a JSON array.');
@@ -68,6 +69,9 @@ export class ProductService {
   }
 
   private getLoadError(error: unknown): string {
+    if (error instanceof TimeoutError) {
+      return 'The products API did not respond within 10 seconds. Check the backend connection and try again.';
+    }
     if (error instanceof HttpErrorResponse) {
       if (error.status === 0) {
         return 'Cannot reach the backend at localhost:3000. Check that the server is running.';
@@ -95,13 +99,11 @@ export class ProductService {
       protein: 0,
       carbs: 0,
       vitaminC: 0,
-      image: this.api.productImageUrl(row.image_url),
+      image: this.api.assetUrl(row.image_url),
     };
   }
 
-  get featured(): Product[] {
-    return this.products().slice(0, 4);
-  }
+  readonly featured = computed(() => this.products().slice(0, 4));
 
   async openDetail(product: Product) {
     const modal = await this.modalCtrl.create({

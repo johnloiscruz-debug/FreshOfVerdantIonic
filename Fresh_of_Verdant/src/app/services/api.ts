@@ -13,7 +13,7 @@ export interface ApiProduct {
   image_url: string | null;
   is_active: boolean;
   category: { category_id: number; category_name: string; description: string | null } | null;
-  created_at: string;
+  created_at?: string;
 }
 
 export interface ApiCartItem {
@@ -40,6 +40,14 @@ export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
+
+  assetUrl(path: string | null): string | undefined {
+    if (!path) return undefined;
+    if (/^(?:https?:)?\/\//i.test(path)) return path;
+
+    const backendUrl = this.baseUrl.replace(/\/api\/?$/, '');
+    return new URL(path, `${backendUrl}/`).toString();
+  }
 
   products(): Observable<ApiProduct[]> {
     return this.http.get<ApiProduct[]>(`${this.baseUrl}/fetchProducts`);
