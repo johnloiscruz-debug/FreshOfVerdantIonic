@@ -9,6 +9,13 @@
     <span class="delivery"><ion-icon name="car-outline"></ion-icon> Next-day delivery</span>
   </div>
 
+  @if (cart.loading) {
+    <p class="api-state" role="status">Loading your cart...</p>
+  } @else if (cart.error) {
+    <div class="api-state" role="alert">{{ cart.error }} @if (cart.error.startsWith('Cannot reach') || cart.error.startsWith('Could not')) { <button (click)="cart.load()">Try again</button> }</div>
+  } @else if (cart.items().length === 0) {
+    <p class="api-state">Your saved cart is empty. <a routerLink="/products">Browse products</a></p>
+  } @else {
   <div class="list">
     @for (item of cart.items(); track item.id) {
       <div class="item">
@@ -38,4 +45,5 @@
     <div class="line total"><span>Final Total</span><b>₱{{ cart.total() }}</b></div>
     <button class="fv-btn" routerLink="/checkout">Checkout</button>
   </div>
+  }
 </ion-content>

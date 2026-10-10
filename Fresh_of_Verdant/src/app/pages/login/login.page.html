@@ -10,7 +10,7 @@
     </div>
 
     <div class="auth-sheet">
-      <label class="field-label">Email / Username</label>
+      <label class="field-label">Email Address</label>
       <div class="field">
         <ion-icon name="mail-outline"></ion-icon>
         <input type="text" placeholder="you@example.com" [(ngModel)]="email" />
@@ -28,7 +28,8 @@
         <a routerLink="/forgot-password" class="forgot">Forgot Password?</a>
       </div>
 
-      <button class="fv-btn" (click)="signIn()">Sign In <ion-icon name="arrow-forward"></ion-icon></button>
+      @if (error) { <p class="error">{{ error }}</p> }
+      <button class="fv-btn" (click)="signIn()" [disabled]="loading">{{ loading ? 'Signing in...' : 'Sign In' }} <ion-icon name="arrow-forward"></ion-icon></button>
 
       <div class="bottom">
         <p class="secure"><i></i> Secure checkout-ready access</p>
@@ -37,3 +38,6 @@
     </div>
   </div>
 </ion-content>
+
+
+

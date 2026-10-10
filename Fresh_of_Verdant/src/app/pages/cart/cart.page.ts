@@ -16,4 +16,8 @@ export class CartPage {
   constructor(public cart: CartService) {
     addIcons({ add, carOutline, imageOutline, nutritionOutline, remove, trashOutline });
   }
+
+  ionViewWillEnter() {
+    this.cart.load();
+  }
 }

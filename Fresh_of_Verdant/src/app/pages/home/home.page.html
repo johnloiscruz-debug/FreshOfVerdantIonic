@@ -27,7 +27,14 @@
     <a routerLink="/products">View all</a>
   </div>
 
-  <div class="grid">
+  @if (products.loading) {
+    <p class="api-state" role="status">Loading fresh picks...</p>
+  } @else if (products.error) {
+    <div class="api-state" role="alert">{{ products.error }} <button (click)="products.load()">Try again</button></div>
+  } @else if (products.featured.length === 0) {
+    <p class="api-state">No products are available yet.</p>
+  } @else {
+    <div class="grid">
     @for (p of products.featured; track p.id) {
       <div class="card" (click)="open(p)">
         <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
@@ -38,5 +45,6 @@
         </div>
       </div>
     }
-  </div>
+    </div>
+  }
 </ion-content>

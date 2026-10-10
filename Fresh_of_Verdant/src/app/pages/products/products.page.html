@@ -1,4 +1,4 @@
-<app-green-header [subtitle]="productService.products.length + ' items in today\'s harvest'" title="Browse produce"></app-green-header>
+<app-green-header [subtitle]="productService.loading ? 'Loading products...' : productService.products.length + ' items in today\'s harvest'" title="Browse produce"></app-green-header>
 
 <ion-content>
   <div class="search">
@@ -21,17 +21,25 @@
 
   <div class="section-head"><h3>Today's harvest</h3><small>{{ filtered.length }} products</small></div>
 
-  <div class="grid">
-    @for (p of filtered; track p.id) {
-      <div class="card" (click)="open(p)">
-        <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
-        <span class="tag">{{ p.category }}</span>
-        <strong>{{ p.name }}</strong>
-        <div class="foot">
-          <span class="price">₱{{ p.price }}/{{ p.unit }}</span>
-          <button class="add" (click)="quickAdd(p, $event)"><ion-icon name="add"></ion-icon> Add</button>
+  @if (productService.loading) {
+    <p class="api-state" role="status">Loading products...</p>
+  } @else if (productService.error) {
+    <div class="api-state" role="alert">{{ productService.error }} <button (click)="productService.load()">Try again</button></div>
+  } @else if (filtered.length === 0) {
+    <p class="api-state">{{ search || selectedCategory ? 'No products match your search.' : 'No products are available yet.' }}</p>
+  } @else {
+    <div class="grid">
+      @for (p of filtered; track p.id) {
+        <div class="card" (click)="open(p)">
+          <div class="img-ph thumb"><ion-icon name="image-outline"></ion-icon></div>
+          <span class="tag">{{ p.category }}</span>
+          <strong>{{ p.name }}</strong>
+          <div class="foot">
+            <span class="price">₱{{ p.price }}/{{ p.unit }}</span>
+            <button class="add" (click)="quickAdd(p, $event)"><ion-icon name="add"></ion-icon> Add</button>
+          </div>
         </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 </ion-content>

@@ -17,7 +17,7 @@ import { Product } from '../../models/product';
 })
 export class ProductsPage {
   search = '';
-  selectedCategory: string | null = null; // null = show everything
+  selectedCategory: string | null = null;
 
   constructor(public productService: ProductService, private cart: CartService) {
     addIcons({ add, checkmarkCircleOutline, imageOutline, leafOutline, searchOutline });
@@ -26,14 +26,11 @@ export class ProductsPage {
   get filtered(): Product[] {
     const q = this.search.trim().toLowerCase();
     return this.productService.products.filter(
-      (p) =>
-        (!this.selectedCategory || p.category === this.selectedCategory) &&
-        (!q || p.name.toLowerCase().includes(q))
+      (p) => (!this.selectedCategory || p.category === this.selectedCategory) && (!q || p.name.toLowerCase().includes(q))
     );
   }
 
   pickCategory(cat: string) {
-    // tap again to clear the filter
     this.selectedCategory = this.selectedCategory === cat ? null : cat;
   }
 

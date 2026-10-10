@@ -46,9 +46,12 @@
         <ion-icon name="chevron-forward"></ion-icon>
       </div>
 
-      <button class="fv-btn" (click)="register()">Register <ion-icon name="arrow-forward"></ion-icon></button>
+      @if (error) { <p class="error">{{ error }}</p> }
+      <button class="fv-btn" (click)="register()" [disabled]="loading">{{ loading ? 'Creating account...' : 'Register' }} <ion-icon name="arrow-forward"></ion-icon></button>
 
       <p class="login-link">Already have an account? <a routerLink="/login">Log In</a></p>
     </div>
   </div>
 </ion-content>
+
+

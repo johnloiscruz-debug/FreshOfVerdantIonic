@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, IonCheckbox } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowForward, eyeOffOutline, eyeOutline, lockClosedOutline, mailOutline, nutritionOutline } from 'ionicons/icons';
+import { ApiService } from '../../services/api';
 
 @Component({
   selector: 'app-login',
@@ -17,13 +18,22 @@ export class LoginPage {
   password = '';
   remember = false;
   showPassword = false;
+  error = '';
+  loading = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private api: ApiService) {
     addIcons({ arrowForward, eyeOffOutline, eyeOutline, lockClosedOutline, mailOutline, nutritionOutline });
   }
 
   signIn() {
-    // TODO: call your login API here
-    this.router.navigateByUrl('/home', { replaceUrl: true });
+    this.error = '';
+    this.loading = true;
+    this.api.login(this.email, this.password).subscribe({
+      next: () => this.router.navigateByUrl('/home', { replaceUrl: true }),
+      error: (err) => {
+        this.error = err.error?.error ?? 'Unable to sign in. Check your connection and details.';
+        this.loading = false;
+      },
+    });
   }
 }

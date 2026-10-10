@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, IonCheckbox } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowForward, callOutline, chevronForward, eyeOffOutline, eyeOutline, lockClosedOutline, mailOutline, nutritionOutline, personOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { ApiService } from '../../services/api';
 
 @Component({
   selector: 'app-register',
@@ -17,13 +18,35 @@ export class RegisterPage {
   agree = false;
   showPassword = false;
   showConfirm = false;
+  error = '';
+  loading = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private api: ApiService) {
     addIcons({ arrowForward, callOutline, chevronForward, eyeOffOutline, eyeOutline, lockClosedOutline, mailOutline, nutritionOutline, personOutline, shieldCheckmarkOutline });
   }
 
   register() {
-    // TODO: validate + call your register API here
-    this.router.navigateByUrl('/login');
+    this.error = '';
+    if (!this.form.fullName.trim() || !this.form.email.trim() || !this.form.password) {
+      this.error = 'Please complete your name, email, and password.';
+      return;
+    }
+    if (this.form.password !== this.form.confirmPassword) {
+      this.error = 'Passwords do not match.';
+      return;
+    }
+    if (!this.agree) {
+      this.error = 'Please agree to the Terms & Conditions.';
+      return;
+    }
+
+    this.loading = true;
+    this.api.register({ fullName: this.form.fullName, email: this.form.email, password: this.form.password, phoneNumber: this.form.phone }).subscribe({
+      next: () => this.router.navigateByUrl('/home', { replaceUrl: true }),
+      error: (err) => {
+        this.error = err.error?.error ?? 'Unable to register. Check your connection and details.';
+        this.loading = false;
+      },
+    });
   }
 }
