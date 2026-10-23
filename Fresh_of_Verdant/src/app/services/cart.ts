@@ -161,6 +161,12 @@ export class CartService {
     }));
   }
 
+  clearLocalAfterCheckout() {
+    this.items.set([]);
+    this.saveItems([]);
+    this.error = null;
+  }
+
   change(id: number, delta: number) {
     const item = this.items().find((entry) => entry.id === id);
     if (!item) return;

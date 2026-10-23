@@ -1,5 +1,8 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { CartItem } from '../models/product';
+import { ApiService } from './api';
+import { AuthService } from './auth';
+import { catchError, of, tap } from 'rxjs';
 
 export interface TrackedOrder {
   id: string;
@@ -25,9 +28,10 @@ const ORDER_STAGE_DESCRIPTIONS: Array<{ status: OrderStatus; desc: string }> = [
 
 @Injectable({ providedIn: 'root' })
 export class OrderHistoryService {
-  private readonly storageKey = 'fv-order-history';
-  private readonly savedOrders = signal<TrackedOrder[]>(this.restore());
+  private readonly savedOrders = signal<TrackedOrder[]>([]);
   private readonly clock = signal(Date.now());
+  readonly loading = signal(false);
+  readonly loadError = signal<string | null>(null);
   readonly orders = computed(() => {
     const now = this.clock();
     return this.savedOrders().map((order) => ({ ...order, status: this.statusAt(order, now) }));
@@ -35,13 +39,43 @@ export class OrderHistoryService {
   readonly count = computed(() => this.orders().length);
   readonly deliveredCount = computed(() => this.orders().filter((order) => order.status === 'Delivered').length);
 
-  constructor() {
+  constructor(private api: ApiService, private auth: AuthService) {
     setInterval(() => this.clock.set(Date.now()), 5000);
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) this.clock.set(Date.now());
       });
     }
+  }
+
+  loadFromServer() {
+    if (!this.auth.isAuthenticated) {
+      this.savedOrders.set([]);
+      return;
+    }
+    this.savedOrders.set([]);
+    this.loading.set(true);
+    this.loadError.set(null);
+    this.api.orders().pipe(
+      tap((orders) => this.savedOrders.set(Array.isArray(orders) ? orders.map((order) => this.normalizeImages(order)) : [])),
+      catchError(() => {
+        this.loadError.set('Could not load your purchases. Please try again.');
+        return of(null);
+      }),
+    ).subscribe(() => this.loading.set(false));
+  }
+
+  addSavedOrder(order: TrackedOrder) {
+    const savedOrder = this.normalizeImages(order);
+    this.savedOrders.update((orders) => [savedOrder, ...orders.filter((saved) => saved.id !== savedOrder.id)]);
+    this.clock.set(Date.now());
+  }
+
+  private normalizeImages(order: TrackedOrder): TrackedOrder {
+    return {
+      ...order,
+      items: order.items.map((item) => ({ ...item, image: this.api.productImageUrl(item.image ?? null) })),
+    };
   }
 
   all(): TrackedOrder[] {
@@ -56,32 +90,16 @@ export class OrderHistoryService {
     return this.all().find((order) => order.id === id);
   }
 
-  requestRefund(id: string): boolean {
-    const orders = this.savedOrders();
-    if (!orders.some((order) => order.id === id)) return false;
-    const updated = orders.map((order) => order.id === id ? { ...order, refundRequested: true } : order);
-    this.savedOrders.set(updated);
-    localStorage.setItem(this.storageKey, JSON.stringify(updated));
-    return true;
-  }
-
-  create(order: Omit<TrackedOrder, 'id' | 'createdAt' | 'status'>): TrackedOrder {
-    const createdAt = new Date().toISOString();
-    const tracked: TrackedOrder = {
-      ...order,
-      id: `FOV-${Date.now().toString().slice(-6)}`,
-      createdAt,
-      status: 'Packed at Farm Hub',
-    };
-    const orders = [tracked, ...this.savedOrders()];
-    this.savedOrders.set(orders);
-    localStorage.setItem(this.storageKey, JSON.stringify(orders));
-    return tracked;
+  requestRefund(id: string) {
+    return this.api.requestOrderRefund(id).pipe(tap(() => {
+      this.savedOrders.update((orders) => orders.map((order) => order.id === id ? { ...order, refundRequested: true } : order));
+    }));
   }
 
   clearForSignOut() {
     this.savedOrders.set([]);
-    localStorage.removeItem(this.storageKey);
+    this.loadError.set(null);
+    this.loading.set(false);
   }
 
   timeline(order: TrackedOrder) {
@@ -105,7 +123,7 @@ export class OrderHistoryService {
   }
 
   timelineTimes(order: TrackedOrder): string[] {
-    const offsets = order.deliverySchedule === 'same-day' ? [1, 2, 4, 5] : [2, 4, 6, 8];
+    const offsets = order.deliverySchedule === 'same-day' ? [0, 2, 4, 6] : [0, 2, 6, 8];
     const createdAt = new Date(order.createdAt).getTime();
     return offsets.map((minutes) => this.formatTime(new Date(createdAt + minutes * 60_000)));
   }
@@ -123,11 +141,11 @@ export class OrderHistoryService {
 
   private stagesFor(order: TrackedOrder) {
     const sameDay = order.deliverySchedule === 'same-day';
-    const milestoneMinutes = sameDay ? [1, 2, 4, 5] : [2, 4, 6, 8];
-    const progressionMinutes = sameDay ? [0, 0, 4, 5] : [0, 0, 6, 8];
+    const milestoneMinutes = sameDay ? [0, 2, 4, 6] : [0, 2, 6, 8];
+    const progressionMinutes = sameDay ? [0, 2, 4, 6] : [0, 2, 6, 8];
     return ORDER_STAGE_DESCRIPTIONS.map((stage, index) => ({
       ...stage,
-      // Checkout starts the simulation at Packed; the later milestones follow the selected schedule.
+      // The timeline advances through each dot on a compressed delivery simulation.
       afterMs: progressionMinutes[index] * 60_000,
       timelineAfterMs: milestoneMinutes[index] * 60_000,
     }));
@@ -137,14 +155,4 @@ export class OrderHistoryService {
     return value.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
 
-  private restore(): TrackedOrder[] {
-    try {
-      const value: unknown = typeof localStorage === 'undefined'
-        ? []
-        : JSON.parse(localStorage.getItem(this.storageKey) ?? '[]');
-      return Array.isArray(value) ? value as TrackedOrder[] : [];
-    } catch {
-      return [];
-    }
-  }
 }

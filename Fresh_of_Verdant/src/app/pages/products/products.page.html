@@ -15,7 +15,7 @@
 
   <div class="chips">
     @for (cat of productService.categories(); track cat) {
-      <button class="chip" [class.active]="selectedCategory === cat" (click)="pickCategory(cat)">{{ cat }}</button>
+      <button class="chip" [class.active]="selectedCategory === cat" [class.fruits]="cat.toLowerCase().startsWith('fruit')" [class.vegetables]="cat.toLowerCase().startsWith('vegetable') || cat.toLowerCase().startsWith('vegtable')" [class.grains]="cat.toLowerCase().startsWith('grain')" [class.others]="cat.toLowerCase().startsWith('other')" (click)="pickCategory(cat)">{{ cat }}</button>
     }
   </div>
 

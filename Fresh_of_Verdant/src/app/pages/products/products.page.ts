@@ -36,12 +36,13 @@ export class ProductsPage {
   }
 
   get filtered(): Product[] {
-    const q = this.search.trim().toLowerCase();
+    const queryWords = this.normalizeSearchText(this.search).split(' ').filter(Boolean);
     const rows = this.productService.products().filter((p) => {
       const category = p.category.toLowerCase();
       const normalized = category === 'vegetable' || category === 'vegetables' || category === 'vegtable' || category === 'veg tables' ? 'vegetables' : category === 'other' ? 'others' : category === 'fruit' ? 'fruits' : category === 'grain' ? 'grains' : category;
-      const searchable = `${p.name} ${p.category}`.toLowerCase();
-      return (!this.selectedCategory || normalized === this.selectedCategory.toLowerCase()) && (!q || searchable.includes(q)) && (!this.featuredOnly || this.productService.isFeatured(p)) && (!this.popularOnly || this.productService.isPopular(p));
+      const searchable = this.normalizeSearchText(`${p.name} ${p.category} ${p.description}`);
+      const matchesSearch = queryWords.every((word) => searchable.includes(word));
+      return (!this.selectedCategory || normalized === this.selectedCategory.toLowerCase()) && matchesSearch && (!this.featuredOnly || this.productService.isFeatured(p)) && (!this.popularOnly || this.productService.isPopular(p));
     });
     return [...rows].sort((a, b) => this.sortBy === 'price-asc' ? a.price - b.price : this.sortBy === 'price-desc' ? b.price - a.price : this.sortBy === 'az' ? a.name.localeCompare(b.name) : this.sortBy === 'oldest' ? a.id - b.id : this.sortBy === 'latest' ? b.id - a.id : this.ratingFor(b.id) - this.ratingFor(a.id));
   }
@@ -59,11 +60,24 @@ export class ProductsPage {
 
   onSearchChange(value: string) {
     this.search = value;
+    if (value.trim()) {
+      this.selectedCategory = null;
+      this.featuredOnly = false;
+      this.popularOnly = false;
+    }
     this.page = 1;
+  }
+
+  private normalizeSearchText(value: string) {
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   }
 
   pickCategory(cat: string) {
     this.selectedCategory = this.selectedCategory === cat ? null : cat;
+    // Category selection should show that category's catalogue instead of
+    // accidentally intersecting it with a previous home-page facet.
+    this.featuredOnly = false;
+    this.popularOnly = false;
     this.page = 1;
   }
 

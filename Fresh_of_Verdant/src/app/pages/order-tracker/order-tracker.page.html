@@ -52,7 +52,7 @@
             @if (pending.items.length > 2) { <span>+{{ pending.items.length - 2 }} more</span> }
             <b>₱{{ pending.total }}</b>
           </div>
-          <div class="pending-meta"><span>{{ pending.deliverySchedule === 'same-day' ? 'Same-Day' : 'Standard' }} · {{ pending.deliveryWindow }}</span><span>{{ pending.payment }}</span></div>
+          <div class="pending-meta"><span>{{ pending.deliveryWindow }}</span><span>{{ pending.payment }}</span></div>
           <div class="steps" aria-label="Delivery timeline with estimated times">
             @for (step of trackingSteps(pending); track step.title) {
               <div class="step" [class.done]="step.state === 'done'" [class.active]="step.state === 'active'" [class.pending]="step.state === 'pending'">

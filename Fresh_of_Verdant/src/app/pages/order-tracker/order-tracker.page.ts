@@ -132,10 +132,14 @@ export class OrderTrackerPage {
       buttons: [
         { text: 'Keep order', role: 'cancel' },
         { text: 'Submit request', handler: () => {
-          if (this.order && this.history.requestRefund(this.order.id)) {
-            this.order = this.history.find(this.order.id);
-            void this.showToast('Refund request saved');
-          }
+          if (!this.order) return;
+          this.history.requestRefund(this.order.id).subscribe({
+            next: () => {
+              if (this.order) this.order = this.history.find(this.order.id);
+              void this.showToast('Refund request saved');
+            },
+            error: () => void this.showToast('Could not save the refund request'),
+          });
         } },
       ],
     });

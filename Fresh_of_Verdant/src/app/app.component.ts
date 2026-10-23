@@ -70,6 +70,7 @@ export class AppComponent {
       this.api.account().subscribe({
         next: ({ user }) => {
           this.auth.signIn(user.email, user.fullName);
+          this.orderHistory.loadFromServer();
           this.products.connectWishlistToAccount();
           localStorage.setItem('fv-profile-details', JSON.stringify({
             'Full Name': user.fullName,

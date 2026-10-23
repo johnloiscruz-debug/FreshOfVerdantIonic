@@ -18,8 +18,9 @@ import { CartItem } from '../../models/product';
 export class OrdersPage {
   tab: 'active' | 'past' = 'active';
 
-  constructor(private history: OrderHistoryService, public productService: ProductService) {
+  constructor(public history: OrderHistoryService, public productService: ProductService) {
     addIcons({ imageOutline });
+    this.history.loadFromServer();
   }
 
   get orders(): Array<{ id: string; date: string; status: string; delivered: boolean; refundRequested: boolean; items: string; total: number; previews?: CartItem[] }> {

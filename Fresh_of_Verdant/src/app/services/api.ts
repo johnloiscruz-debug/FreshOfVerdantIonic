@@ -2,6 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import type { TrackedOrder } from './order-history';
+
+export interface CreateOrderRequest {
+  items: Array<{ id: number; qty: number }>;
+  address: string;
+  payment: string;
+  deliveryWindow: string;
+  deliverySchedule: 'standard' | 'same-day';
+  deliveryFee: number;
+}
 
 export interface ApiProduct {
   product_id: number;
@@ -127,6 +137,18 @@ export class ApiService {
 
   clearCart(): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/cart`, { withCredentials: true });
+  }
+
+  orders(): Observable<TrackedOrder[]> {
+    return this.http.get<TrackedOrder[]>(`${this.baseUrl}/orders`, { withCredentials: true });
+  }
+
+  createOrder(order: CreateOrderRequest): Observable<TrackedOrder> {
+    return this.http.post<TrackedOrder>(`${this.baseUrl}/orders`, order, { withCredentials: true });
+  }
+
+  requestOrderRefund(orderId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/orders/${encodeURIComponent(orderId)}/refund`, {}, { withCredentials: true });
   }
 
   wishlist(): Observable<{ product_id: number }[]> {

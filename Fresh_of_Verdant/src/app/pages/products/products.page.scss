@@ -55,11 +55,15 @@ ion-content {
     font-weight: 600;
     color: #222;
 
-    &.active {
-        background: var(--fv-green-dark);
-        border-color: var(--fv-green-dark);
-        color: #fff;
-    }
+    &.active { color: #fff; }
+    &.fruits { border-color:#f1c2c2; background:#fff1f1; color:#c62828; }
+    &.fruits.active { border-color:#e53935; background:#e53935; color:#fff; }
+    &.vegetables { border-color:#b9e3c8; background:#edf9f1; color:#087b3c; }
+    &.vegetables.active { border-color:#00a846; background:#00a846; color:#fff; }
+    &.grains { border-color:#f2d0aa; background:#fff6eb; color:#b85e00; }
+    &.grains.active { border-color:#ef8b19; background:#ef8b19; color:#fff; }
+    &.others { border-color:#d3d6d8; background:#f1f2f3; color:#59616a; }
+    &.others.active { border-color:#707981; background:#707981; color:#fff; }
 }
 
 .organic {

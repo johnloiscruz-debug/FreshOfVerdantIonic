@@ -6,6 +6,15 @@
     <button [class.on]="tab === 'past'" (click)="tab = 'past'">Past Purchases</button>
   </div>
 
+  @if (history.loading()) {
+    <p class="empty">Loading your purchases…</p>
+  } @else if (history.loadError()) {
+    <div class="empty">
+      <p>{{ history.loadError() }}</p>
+      <button class="outline" type="button" (click)="history.loadFromServer()">Try again</button>
+    </div>
+  } @else {
+
   @for (o of shown; track o.id) {
     <div class="order">
       <div class="top">
@@ -37,6 +46,7 @@
       </div>
     </div>
   } @empty {
-    <p class="empty">No orders here yet.</p>
+    <p class="empty">{{ tab === 'past' ? 'No past purchases yet.' : 'No active orders right now.' }}</p>
+  }
   }
 </ion-content>

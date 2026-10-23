@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AlertController, IonContent, IonFooter, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, locationOutline, mailOutline, personOutline, phonePortraitOutline, callOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, locationOutline, personOutline, phonePortraitOutline, callOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { CartService } from '../../services/cart';
+import { ApiService } from '../../services/api';
 import { OrderHistoryService } from '../../services/order-history';
 import { CashlessWalletService } from '../../services/cashless-wallet';
 
@@ -29,7 +31,7 @@ interface SavedAddress {
   imports: [IonContent, IonFooter, IonIcon, FormsModule, PageHeaderComponent],
 })
 export class CheckoutPage {
-  recipient = { name: '', phone: '', email: '' };
+  recipient = { name: '', phone: '' };
   savedAddresses: SavedAddress[] = this.loadSavedAddresses();
   selectedAddressId: number | null = this.savedAddresses.find((entry) => entry.isDefault)?.id ?? this.savedAddresses[0]?.id ?? null;
   address = { street: '', barangay: '', city: 'Marikina City', zip: '' };
@@ -124,11 +126,9 @@ export class CheckoutPage {
     };
   }
 
-  schedules = [
-    { id: 'standard', title: 'Standard', fee: 49, time: 'Tomorrow, 8 AM-12 PM' },
-    { id: 'same-day', title: 'Same-Day', fee: 89, time: 'Today, 4-7 PM' },
-  ];
-  schedule = 'standard';
+  readonly deliveryFee = 89;
+  scheduleDate = '';
+  scheduleTime = '';
 
   payments = [
     { id: 'cod', title: 'Pay on Cash', desc: 'Pay your driver upon arrival', icon: 'cash-outline' },
@@ -140,13 +140,56 @@ export class CheckoutPage {
   notes = '';
   placingOrder = false;
 
-  constructor(public cart: CartService, private router: Router, private orderHistory: OrderHistoryService, private alerts: AlertController, public wallet: CashlessWalletService) {
-    addIcons({ callOutline, cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, locationOutline, mailOutline, personOutline, phonePortraitOutline, shieldCheckmarkOutline });
+  constructor(public cart: CartService, private router: Router, private orderHistory: OrderHistoryService, private alerts: AlertController, public wallet: CashlessWalletService, private api: ApiService) {
+    addIcons({ callOutline, cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, locationOutline, personOutline, phonePortraitOutline, shieldCheckmarkOutline });
     this.selectSavedAddress(this.selectedAddressId);
+    const initialSchedule = new Date();
+    initialSchedule.setMinutes(Math.ceil((initialSchedule.getMinutes() + 30) / 5) * 5, 0, 0);
+    this.scheduleDate = this.toDateInputValue(initialSchedule);
+    this.scheduleTime = `${String(initialSchedule.getHours()).padStart(2, '0')}:${String(initialSchedule.getMinutes()).padStart(2, '0')}`;
   }
 
   get fee() {
-    return this.schedules.find((s) => s.id === this.schedule)!.fee;
+    return this.deliveryFee;
+  }
+
+  get minScheduleDate() {
+    return this.toDateInputValue(new Date());
+  }
+
+  get scheduleError(): string | null {
+    if (!this.scheduleDate || !this.scheduleTime) return 'Choose a delivery date and time.';
+    const scheduled = new Date(`${this.scheduleDate}T${this.scheduleTime}`);
+    if (!Number.isFinite(scheduled.getTime())) return 'Choose a valid delivery date and time.';
+    if (scheduled.getTime() <= Date.now()) return 'Choose a future delivery time.';
+    return null;
+  }
+
+  get deliveryWindow() {
+    if (!this.scheduleDate || !this.scheduleTime) return 'Choose a date and time';
+    const scheduled = new Date(`${this.scheduleDate}T${this.scheduleTime}`);
+    return Number.isFinite(scheduled.getTime())
+      ? scheduled.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+      : 'Choose a date and time';
+  }
+
+  private toDateInputValue(date: Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  openSchedulePicker(input: HTMLInputElement, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const picker = input as HTMLInputElement & { showPicker?: () => void };
+    try {
+      if (picker.showPicker) picker.showPicker();
+      else input.focus();
+    } catch {
+      input.focus();
+    }
   }
 
   get total() {
@@ -186,36 +229,42 @@ export class CheckoutPage {
   placeOrder() {
     if (this.placingOrder || this.cart.items().length === 0) return;
 
+    if (this.scheduleError) {
+      void this.showScheduleError();
+      return;
+    }
+
     if (!this.paymentValid) {
       if (this.payment === 'cashless') void this.showWalletInsufficient();
       return;
     }
 
-    const schedule = this.schedules.find((entry) => entry.id === this.schedule)!;
     const orderDetails = {
-      items: this.cart.items().map((item) => ({ ...item })),
-      total: this.total,
+      items: this.cart.items().map((item) => ({ id: item.id, qty: item.qty })),
       address: `${this.address.street}, ${this.address.barangay}, ${this.address.city} ${this.address.zip}`,
       payment: this.payment === 'cod' ? 'Cash on Delivery' : 'Cashless Wallet',
-      deliveryWindow: schedule.time,
-      deliverySchedule: this.schedule as 'standard' | 'same-day',
+      deliveryWindow: this.deliveryWindow,
+      deliverySchedule: 'same-day' as const,
+      deliveryFee: this.fee,
     };
 
     this.placingOrder = true;
-    this.cart.clearAfterCheckout().subscribe({
-      next: () => {
-        if (this.payment === 'cashless' && !this.wallet.charge(this.total, 'Order payment')) {
-          this.placingOrder = false;
-          void this.showWalletInsufficient();
-          return;
-        }
-        const order = this.orderHistory.create(orderDetails);
+    const charged = this.payment === 'cashless' && this.wallet.charge(this.total, 'Order payment');
+    if (this.payment === 'cashless' && !charged) {
+      this.placingOrder = false;
+      void this.showWalletInsufficient();
+      return;
+    }
+    this.api.createOrder(orderDetails).subscribe({
+      next: (order) => {
+        this.cart.clearLocalAfterCheckout();
+        this.orderHistory.addSavedOrder(order);
         void this.router.navigate(['/order-tracker'], { queryParams: { order: order.id } });
       },
-      error: () => {
+      error: (error: unknown) => {
         this.placingOrder = false;
-        if (this.payment === 'cashless') this.wallet.restoreCharge(this.total);
-        void this.showCheckoutError();
+        if (charged) this.wallet.restoreCharge(this.total);
+        void this.showCheckoutError(error);
       },
     });
   }
@@ -236,10 +285,29 @@ export class CheckoutPage {
     void this.router.navigate(['/cashless-wallet'], { queryParams: { returnTo: '/checkout', amount: this.total } });
   }
 
-  private async showCheckoutError() {
+  private async showScheduleError() {
+    const alert = await this.alerts.create({
+      header: 'Choose a delivery time',
+      message: this.scheduleError ?? 'Choose a future delivery date and time.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  private async showCheckoutError(error: unknown) {
+    let message = 'Your order could not be saved. Please try again.';
+    if (error instanceof HttpErrorResponse) {
+      const serverMessage = typeof error.error?.error === 'string' ? error.error.error : '';
+      const serverDetails = typeof error.error?.details === 'string' ? error.error.details : '';
+      if (error.status === 0) message = 'The backend at http://localhost:3000 is not reachable. Start IPTBACKEND and try again.';
+      else if (error.status === 401 || error.status === 403) message = 'Your sign-in session has expired. Sign in again before placing your order.';
+      else if (error.status === 404) message = 'The order service is unavailable. Restart IPTBACKEND and try again.';
+      else if (error.status >= 500) message = serverDetails ? `${serverMessage || 'The backend could not save your order.'}: ${serverDetails}` : serverMessage || 'The backend could not save your order. Check the IPTBACKEND log for the database error.';
+      else message = serverMessage || `The order could not be saved (HTTP ${error.status}).`;
+    }
     const alert = await this.alerts.create({
       header: 'Unable to complete checkout',
-      message: 'Your cart could not be cleared from your account. Please check your connection and try again.',
+      message,
       buttons: ['OK'],
     });
     await alert.present();
