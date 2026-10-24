@@ -4,7 +4,7 @@
   @if (order) {
   <div class="confirmed">
     <span class="big-check"><ion-icon name="checkmark"></ion-icon></span>
-    <h2>{{ currentStatus === 'Delivered' ? 'Delivery Track Complete' : 'Delivery tracking' }}</h2>
+    <h2>{{ currentStatus === 'Delivered' ? 'Delivery Track Complete' : currentStatus === 'Cancelled' ? 'Order Cancelled' : 'Delivery tracking' }}</h2>
     <b>Order ID #{{ orderId }}</b>
     <p>Follow your order through each delivery step.</p>
     <button class="fv-btn menu-back" type="button" (click)="goToMainMenu()">Main menu</button>

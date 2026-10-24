@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { AlertController, IonApp, IonRouterOutlet, IonMenu, IonContent, IonIcon, IonMenuToggle } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline } from 'ionicons/icons';
+import { briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, peopleOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline } from 'ionicons/icons';
 import { filter } from 'rxjs';
 import { CartService } from './services/cart';
 import { AuthService } from './services/auth';
@@ -10,6 +10,9 @@ import { ProductService } from './services/product';
 import { ReviewService } from './services/reviews';
 import { ApiService } from './services/api';
 import { OrderHistoryService } from './services/order-history';
+
+interface MenuItem { title: string; url: string; icon: string; badge?: boolean; queryParams?: Record<string, string>; }
+interface MenuGroup { title: string; items: MenuItem[]; }
 
 @Component({
   selector: 'app-root',
@@ -19,12 +22,27 @@ import { OrderHistoryService } from './services/order-history';
 })
 export class AppComponent {
   // Menu items: change the title / url / icon here
-  menuGroups = [
+  menuGroups: MenuGroup[] = [
     { title: 'Home', items: [{ title: 'Home / Dashboard', url: '/home', icon: 'home-outline' }, { title: 'Product List', url: '/products', icon: 'cube-outline' }] },
     { title: 'Market', items: [{ title: 'My Cart', url: '/cart', icon: 'cart-outline', badge: true }, { title: 'Wishlist', url: '/wishlist', icon: 'heart-outline' }, { title: 'My Orders', url: '/orders', icon: 'receipt-outline' }, { title: 'Delivery Track', url: '/order-tracker', icon: 'navigate-outline' }, { title: 'Help & Support', url: '/help-support', icon: 'headset-outline' }] },
     { title: 'Discover our App', items: [{ title: 'About the App', url: '/about', icon: 'information-circle-outline' }, { title: 'History of our App', url: '/app-history', icon: 'time-outline' }, { title: 'About Services', url: '/about-services', icon: 'briefcase-outline' }] },
     { title: 'Others', items: [{ title: 'Settings', url: '/settings', icon: 'settings-outline' }, { title: 'Location', url: '/location', icon: 'location-outline' }, { title: 'FAQs', url: '/faqs', icon: 'help-circle-outline' }, { title: 'Policies', url: '/policies', icon: 'shield-checkmark-outline' }, { title: 'Terms & Conditions', url: '/terms', icon: 'document-text-outline' }, { title: 'Contact us', url: '/contact', icon: 'mail-outline' }, { title: 'Developers', url: '/developers', icon: 'code-slash-outline' }] },
   ];
+
+  adminMenuGroups: MenuGroup[] = [
+    { title: 'Admin', items: [{ title: 'Admin Dashboard', url: '/admin', icon: 'grid-outline' }] },
+    { title: 'Store Management', items: [{ title: 'Products & Inventory', url: '/admin', queryParams: { section: 'products' }, icon: 'cube-outline' }, { title: 'Orders', url: '/admin', queryParams: { section: 'orders' }, icon: 'cart-outline' }, { title: 'Customers', url: '/admin', queryParams: { section: 'customers' }, icon: 'people-outline' }] },
+    { title: 'Business', items: [{ title: 'Reviews', url: '/admin', queryParams: { section: 'reviews' }, icon: 'star-outline' }, { title: 'Complaints', url: '/admin', queryParams: { section: 'complaints' }, icon: 'mail-outline' }, { title: 'Categories', url: '/admin', queryParams: { section: 'categories' }, icon: 'pricetag-outline' }] },
+  ];
+
+  get activeMenuGroups(): MenuGroup[] {
+    if (this.auth.isAdmin) return [...this.adminMenuGroups, ...this.menuGroups];
+    if (!this.auth.isAuthenticated) {
+      const guestOnlyItems = new Set(['/cart', '/wishlist', '/orders', '/order-tracker']);
+      return this.menuGroups.map((group) => ({ ...group, items: group.items.filter((item) => !guestOnlyItems.has(item.url)) }));
+    }
+    return this.menuGroups;
+  }
 
   showMenu = false;
 
@@ -57,25 +75,29 @@ export class AppComponent {
   }
 
   constructor(private router: Router, public cart: CartService, private alerts: AlertController, public auth: AuthService, private products: ProductService, private reviews: ReviewService, private api: ApiService, private orderHistory: OrderHistoryService) {
-    addIcons({ briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline });
+    addIcons({ briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, peopleOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline });
 
     // Hide the side menu on splash / login / register / reset password
     const noMenu = ['/splash', '/login', '/register', '/forgot-password'];
     this.showMenu = !noMenu.some((p) => this.router.url.startsWith(p));
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e: any) => {
       this.showMenu = !noMenu.some((p) => e.urlAfterRedirects.startsWith(p));
+      if (e.urlAfterRedirects.startsWith('/admin')) this.auth.setAdminCustomerMode(false);
     });
 
     if (this.auth.isAuthenticated) {
       this.api.account().subscribe({
         next: ({ user }) => {
-          this.auth.signIn(user.email, user.fullName);
+          this.auth.signIn(user.email, user.fullName, user.role);
           this.orderHistory.loadFromServer();
           this.products.connectWishlistToAccount();
           localStorage.setItem('fv-profile-details', JSON.stringify({
             'Full Name': user.fullName,
             'Email Address': user.email,
           }));
+          if (user.role.toLowerCase() === 'admin' && !this.router.url.startsWith('/admin')) {
+            void this.router.navigateByUrl('/admin', { replaceUrl: true });
+          }
         },
         error: (error) => {
           if (error.status === 401 || error.status === 403) {
@@ -116,5 +138,15 @@ export class AppComponent {
     void this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
-  isMenuItemActive(url: string) { return this.router.url === url; }
+  isMenuItemActive(item: MenuItem) {
+    const [path, search = ''] = this.router.url.split('?');
+    if (path !== item.url) return false;
+    const currentParams = new URLSearchParams(search);
+    const expectedParams = Object.entries(item.queryParams ?? {});
+    if (expectedParams.length) return expectedParams.every(([key, value]) => currentParams.get(key) === value);
+    const section = currentParams.get('section');
+    return !section || section === 'dashboard';
+  }
+
+  prepareMenuNavigation(_url: string) {}
 }

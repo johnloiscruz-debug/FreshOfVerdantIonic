@@ -49,6 +49,14 @@ ion-menu ion-content {
   padding-top: 40px;
 }
 
+.menu-head.admin-menu-head {
+  padding-top: 32px;
+  background: var(--fv-green-dark);
+  .guest-brand { align-items: center; }
+  .guest-brand strong { display:block; font-size:17px; }
+  .guest-brand p { margin:5px 0 0; font-size:13px; }
+}
+
 .guest-brand {
   display: flex;
   align-items: center;

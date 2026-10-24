@@ -31,6 +31,23 @@
       </div>
       @if (fieldErrors['phone']) { <p class="field-error">{{ fieldErrors['phone'] }}</p> }
 
+      <label class="field-label" for="account-role">Account Role</label>
+      <div class="field role-field">
+        <ion-icon name="person-outline"></ion-icon>
+        <select id="account-role" name="role" [(ngModel)]="form.role" (ngModelChange)="form.adminCode = ''; clearFieldError('adminCode')">
+          <option value="Customer">Customer</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      @if (form.role === 'Admin') {
+        <label class="field-label">Admin Access Code</label>
+        <div class="field">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <input type="password" name="adminCode" autocomplete="off" placeholder="Enter admin access code" required [(ngModel)]="form.adminCode" (ngModelChange)="clearFieldError('adminCode')" [class.invalid]="fieldErrors['adminCode']" />
+        </div>
+        @if (fieldErrors['adminCode']) { <p class="field-error">{{ fieldErrors['adminCode'] }}</p> }
+      }
+
       <label class="field-label">Password</label>
       <div class="field">
         <ion-icon name="lock-closed-outline"></ion-icon>

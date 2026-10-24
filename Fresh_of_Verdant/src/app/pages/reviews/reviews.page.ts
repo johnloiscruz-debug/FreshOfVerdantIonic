@@ -24,6 +24,7 @@ export class ReviewsPage {
   productId: number | null = null;
   formError = '';
   submitted = false;
+  submitting = false;
 
   constructor(public reviewService: ReviewService, public productService: ProductService, private auth: AuthService) {
     addIcons({ checkmarkCircle, createOutline, star, starOutline });
@@ -67,6 +68,10 @@ export class ReviewsPage {
 
   submitReview() {
     this.formError = '';
+    if (!this.auth.isAuthenticated) {
+      this.formError = 'Sign in to submit a review.';
+      return;
+    }
     const name = this.author.trim();
     const reviewText = this.text.trim();
     if (!name || !reviewText || !this.rating) {
@@ -75,18 +80,29 @@ export class ReviewsPage {
     }
 
     const product = this.productService.products().find((item) => item.id === this.productId) ?? null;
+    this.submitting = true;
     this.reviewService.add({
       author: name,
       rating: this.rating,
       text: reviewText,
       productId: product?.id ?? null,
       productName: product?.name ?? null,
+    }).subscribe({
+      next: () => {
+        this.author = '';
+        this.rating = 0;
+        this.text = '';
+        this.productId = null;
+        this.showForm = false;
+        this.submitted = true;
+        this.submitting = false;
+      },
+      error: (error: { status?: number }) => {
+        this.formError = error.status === 401
+          ? 'Sign in to submit a review.'
+          : 'Could not submit your review. Please try again.';
+        this.submitting = false;
+      },
     });
-    this.author = '';
-    this.rating = 0;
-    this.text = '';
-    this.productId = null;
-    this.showForm = false;
-    this.submitted = true;
   }
 }

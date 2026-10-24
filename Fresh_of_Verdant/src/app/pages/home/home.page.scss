@@ -255,10 +255,11 @@ ion-content {
     font-size: 20px;
 }
 
-.stat, .section-head, .feedback { color: #000; }
-.feedback { margin: 0 16px 16px; padding:16px; border-radius:16px; background:#fff; box-shadow:0 2px 8px #0000000d; }
+.stat, .section-head { color: #000; }
+.feedback { margin: 0 16px 16px; padding:16px; border-radius:16px; background:var(--fv-green-dark); color:#fff; box-shadow:0 2px 8px #0000000d; }
 .feedback h3 { margin:0 0 8px; }
-.feedback strong { color:var(--fv-green-dark); font-size:20px; }
-.feedback p { margin:8px 0 0; color:#000; font-size:13px; }
+.feedback strong { color:#fff; font-size:20px; }
+.feedback p { margin:8px 0 0; color:rgba(255,255,255,.9); font-size:13px; }
 .home-footer { display:grid; gap:4px; padding:16px; background:var(--fv-green-dark); color:#fff; font-size:12px; line-height:1.5; }
 .home-footer strong { font-weight:800; }
+

@@ -10,6 +10,7 @@ import { ProductService } from '../../services/product';
 import { ReviewService } from '../../services/reviews';
 import { OrderHistoryService } from '../../services/order-history';
 import { AuthService } from '../../services/auth';
+import { ApiService } from '../../services/api';
 
 @Component({
   selector: 'app-profile',
@@ -24,9 +25,30 @@ export class ProfilePage {
   isDraggingMapPin = false;
   isLocating = false;
   profilePhoto: string | null = null;
-  constructor(public products: ProductService, public reviewService: ReviewService, public orderHistory: OrderHistoryService, private alerts: AlertController, private router: Router, private auth: AuthService) {
+  constructor(public products: ProductService, public reviewService: ReviewService, public orderHistory: OrderHistoryService, private alerts: AlertController, private router: Router, private auth: AuthService, private api: ApiService) {
     addIcons({ callOutline, cardOutline, checkmark, chevronForward, heartOutline, locateOutline, locationOutline, mailOutline, notificationsOutline, pencilOutline, personOutline, settingsOutline, shieldCheckmarkOutline, starOutline });
     this.loadSavedProfile();
+    if (this.auth.isAuthenticated) {
+      this.api.profileAvatar().subscribe({
+        next: ({ avatarUrl }) => {
+          if (avatarUrl) {
+            this.profilePhoto = avatarUrl;
+            localStorage.setItem(this.profilePhotoKey, avatarUrl);
+          } else {
+            const savedPhoto = localStorage.getItem(this.profilePhotoKey);
+            if (savedPhoto?.startsWith('data:image/')) {
+              this.api.saveProfileAvatar(savedPhoto).subscribe({
+                next: ({ avatarUrl: savedAvatar }) => {
+                  this.profilePhoto = savedAvatar;
+                  localStorage.setItem(this.profilePhotoKey, savedAvatar);
+                  this.reviewService.refresh();
+                },
+              });
+            }
+          }
+        },
+      });
+    }
   }
 
   fields = [
@@ -59,8 +81,19 @@ export class ProfilePage {
 
     try {
       const dataUrl = await this.prepareProfilePhoto(file);
-      localStorage.setItem(this.profilePhotoKey, dataUrl);
-      this.profilePhoto = dataUrl;
+      if (this.auth.isAuthenticated) {
+        this.api.saveProfileAvatar(dataUrl).subscribe({
+          next: ({ avatarUrl }) => {
+            localStorage.setItem(this.profilePhotoKey, avatarUrl);
+            this.profilePhoto = avatarUrl;
+            this.reviewService.refresh();
+          },
+          error: () => void this.showLocationMessage('Could not save your profile photo to your account. Please try again.'),
+        });
+      } else {
+        localStorage.setItem(this.profilePhotoKey, dataUrl);
+        this.profilePhoto = dataUrl;
+      }
     } catch {
       await this.showLocationMessage('This photo could not be saved. Please choose another PNG or JPEG image.');
     }

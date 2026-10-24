@@ -31,7 +31,6 @@ interface SavedAddress {
   imports: [IonContent, IonFooter, IonIcon, FormsModule, PageHeaderComponent],
 })
 export class CheckoutPage {
-  recipient = { name: '', phone: '' };
   savedAddresses: SavedAddress[] = this.loadSavedAddresses();
   selectedAddressId: number | null = this.savedAddresses.find((entry) => entry.isDefault)?.id ?? this.savedAddresses[0]?.id ?? null;
   address = { street: '', barangay: '', city: 'Marikina City', zip: '' };
@@ -159,6 +158,7 @@ export class CheckoutPage {
 
   get scheduleError(): string | null {
     if (!this.scheduleDate || !this.scheduleTime) return 'Choose a delivery date and time.';
+    if (this.scheduleDate !== this.minScheduleDate) return 'Same-day delivery is only available for today.';
     const scheduled = new Date(`${this.scheduleDate}T${this.scheduleTime}`);
     if (!Number.isFinite(scheduled.getTime())) return 'Choose a valid delivery date and time.';
     if (scheduled.getTime() <= Date.now()) return 'Choose a future delivery time.';
@@ -242,7 +242,16 @@ export class CheckoutPage {
     const orderDetails = {
       items: this.cart.items().map((item) => ({ id: item.id, qty: item.qty })),
       address: `${this.address.street}, ${this.address.barangay}, ${this.address.city} ${this.address.zip}`,
+      street: this.address.street.trim(),
+      barangay: this.address.barangay,
+      city: this.address.city,
+      zipCode: this.address.zip,
       payment: this.payment === 'cod' ? 'Cash on Delivery' : 'Cashless Wallet',
+      deliveryDate: this.scheduleDate,
+      deliveryTime: this.scheduleTime,
+      cashTendered: this.payment === 'cod' && this.cashTendered ? Number(this.cashTendered) : null,
+      totalChange: this.payment === 'cashless' ? 0 : this.totalChange,
+      orderNotes: this.notes.trim(),
       deliveryWindow: this.deliveryWindow,
       deliverySchedule: 'same-day' as const,
       deliveryFee: this.fee,

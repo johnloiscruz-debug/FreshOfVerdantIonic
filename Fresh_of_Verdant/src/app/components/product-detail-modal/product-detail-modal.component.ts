@@ -111,6 +111,8 @@ export class ProductDetailModal implements OnInit {
   }
 
   reviewPhoto(author: string): string | null {
+    const savedPhoto = this.productReviews.find((review) => review.author.trim().toLocaleLowerCase() === author.trim().toLocaleLowerCase())?.authorAvatar;
+    if (savedPhoto) return savedPhoto;
     let profileName = this.auth.currentName() ?? '';
     if (!profileName) {
       try {

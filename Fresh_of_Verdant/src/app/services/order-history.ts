@@ -11,13 +11,22 @@ export interface TrackedOrder {
   items: CartItem[];
   total: number;
   address: string;
+  street?: string;
+  barangay?: string;
+  city?: string;
+  zipCode?: string;
   payment: string;
   deliveryWindow: string;
+  deliveryDate?: string;
+  deliveryTime?: string;
+  cashTendered?: number | null;
+  totalChange?: number | null;
+  orderNotes?: string;
   deliverySchedule?: 'standard' | 'same-day';
   refundRequested?: boolean;
 }
 
-export type OrderStatus = 'Confirmed' | 'Packed at Farm Hub' | 'Out for Delivery' | 'Delivered';
+export type OrderStatus = 'Confirmed' | 'Packed at Farm Hub' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
 
 const ORDER_STAGE_DESCRIPTIONS: Array<{ status: OrderStatus; desc: string }> = [
   { status: 'Confirmed', desc: 'We received your order and reserved the produce.' },
@@ -105,6 +114,7 @@ export class OrderHistoryService {
   timeline(order: TrackedOrder) {
     const stages = this.stagesFor(order);
     const currentStatus = this.statusAt(order, this.clock());
+    if (currentStatus === 'Cancelled') return stages.map((stage) => ({ title: stage.status, desc: stage.desc, state: 'pending' as const, meta: 'Order cancelled' }));
     const currentIndex = stages.findIndex((stage) => stage.status === currentStatus);
     const createdAt = new Date(order.createdAt).getTime();
 
@@ -133,10 +143,8 @@ export class OrderHistoryService {
   }
 
   private statusAt(order: TrackedOrder, now: number): OrderStatus {
-    const createdAt = new Date(order.createdAt).getTime();
-    if (!Number.isFinite(createdAt)) return order.status ?? 'Confirmed';
-    const elapsed = Math.max(0, now - createdAt);
-    return [...this.stagesFor(order)].reverse().find((stage) => elapsed >= stage.afterMs)?.status ?? 'Confirmed';
+    void now;
+    return order.status ?? 'Confirmed';
   }
 
   private stagesFor(order: TrackedOrder) {

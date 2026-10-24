@@ -27,7 +27,7 @@ export class OrdersPage {
     return this.history.all().map((order) => ({
       id: order.id,
       date: new Date(order.createdAt).toLocaleString([], { dateStyle: 'long', timeStyle: 'short' }),
-      status: order.refundRequested ? 'Refund Requested' : order.status === 'Delivered' ? 'Delivered' : 'Pending',
+      status: order.refundRequested ? 'Refund Requested' : order.status === 'Delivered' ? 'Delivered' : order.status === 'Cancelled' ? 'Cancelled' : 'Pending',
       delivered: order.status === 'Delivered',
       refundRequested: !!order.refundRequested,
       items: `${order.items.reduce((count, item) => count + item.qty, 0)} fresh items`,
@@ -38,7 +38,7 @@ export class OrdersPage {
 
   // Active = anything not delivered yet
   get shown() {
-    return this.orders.filter((o) => (this.tab === 'active') === !o.delivered);
+    return this.orders.filter((o) => (this.tab === 'active') === (!o.delivered && o.status !== 'Cancelled'));
   }
 
   previewsFor(order: (typeof this.orders)[number]): CartItem[] {

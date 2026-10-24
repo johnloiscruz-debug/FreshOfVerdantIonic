@@ -10,5 +10,13 @@ export const requireAccount: CanActivateFn = (_route, state) => {
 
 export const guestOnly: CanActivateFn = () => {
   const auth = inject(AuthService);
-  return auth.isAuthenticated ? inject(Router).parseUrl('/home') : true;
+  if (!auth.isAuthenticated) return true;
+  return inject(Router).parseUrl(auth.isAdmin ? '/admin' : '/home');
+};
+
+export const requireAdmin: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  if (!auth.isAuthenticated) return router.createUrlTree(['/login']);
+  return auth.isAdmin ? true : router.createUrlTree(['/home']);
 };

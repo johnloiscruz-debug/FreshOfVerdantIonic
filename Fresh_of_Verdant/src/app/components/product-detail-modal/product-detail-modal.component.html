@@ -15,7 +15,7 @@
     } @else {
     <div class="reviews"><h3>Customer Reviews</h3>@if (productReviews.length) { @for (review of productReviews; track review.id) {
       <article class="product-review">
-        <div class="review-avatar">@if (reviewPhoto(review.author); as photo) { <img [src]="photo" [alt]="review.author + ' profile photo'"> } @else { <span>{{ reviewInitials(review.author) }}</span> }</div>
+        <div class="review-avatar">@if (review.authorAvatar; as photo) { <img [src]="photo" [alt]="review.author + ' profile photo'"> } @else { <span>{{ reviewInitials(review.author) }}</span> }</div>
         <div class="review-copy"><div class="review-heading"><b>{{ review.author }}</b><span class="review-stars" [attr.aria-label]="review.rating + ' out of 5 stars'">@for (starNumber of [1, 2, 3, 4, 5]; track starNumber) { <ion-icon [name]="starNumber <= review.rating ? 'star' : 'star-outline'"></ion-icon> }</span></div><p>{{ review.text }}</p></div>
       </article>
     } } @else { <p>No customer reviews for this product yet.</p> }</div>

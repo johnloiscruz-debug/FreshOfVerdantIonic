@@ -25,11 +25,11 @@
       }
 
       <nav class="menu-list">
-        @for (group of menuGroups; track group.title) {
+        @for (group of activeMenuGroups; track group.title) {
           <section class="menu-section">
             <h3 class="menu-group">{{ group.title }}</h3>
             @for (item of group.items; track item.url + item.title) {
-              <ion-menu-toggle [autoHide]="false"><a class="menu-item" [routerLink]="item.url" [class.active]="isMenuItemActive(item.url)"><ion-icon [name]="item.icon"></ion-icon><span>{{ item.title }}</span>@if (item.badge && auth.isAuthenticated && cart.count() > 0) { <em class="count">{{ cart.count() }}</em> }</a></ion-menu-toggle>
+              <ion-menu-toggle [autoHide]="false"><a class="menu-item" [routerLink]="item.url" [queryParams]="item.queryParams" [class.active]="isMenuItemActive(item)"><ion-icon [name]="item.icon"></ion-icon><span>{{ item.title }}</span>@if (item.badge && auth.isAuthenticated && cart.count() > 0) { <em class="count">{{ cart.count() }}</em> }</a></ion-menu-toggle>
             }
           </section>
         }

@@ -78,7 +78,7 @@ export class LoginPage {
     this.api.login(email.toLowerCase(), this.password).subscribe({
       next: (user) => {
         const fullName = user.user?.fullName ?? user.fullName ?? user.name;
-        this.auth.signIn(this.email, fullName);
+        this.auth.signIn(this.email, fullName, user.user?.role ?? user.role);
         this.products.connectWishlistToAccount();
         if (fullName) {
           localStorage.setItem('fv-profile-details', JSON.stringify({
@@ -86,7 +86,7 @@ export class LoginPage {
             'Email Address': email.toLowerCase(),
           }));
         }
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/home';
+        const returnUrl = this.auth.isAdmin ? '/admin' : (this.route.snapshot.queryParamMap.get('returnUrl') ?? '/home');
         void this.showWelcomeAndContinue(returnUrl);
       },
       error: (err) => {

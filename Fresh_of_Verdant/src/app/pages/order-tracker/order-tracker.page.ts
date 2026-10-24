@@ -23,7 +23,7 @@ export class OrderTrackerPage {
   shippingAddress = '28 Sampaguita St., San Roque, Marikina';
   paymentMethod = 'Cash on Delivery';
   deliveryWindow = 'Tomorrow, 8 AM-12 PM';
-  get pendingOrders() { return this.history.all().filter((order) => this.history.statusFor(order) !== 'Delivered'); }
+  get pendingOrders() { return this.history.all().filter((order) => !['Delivered', 'Cancelled'].includes(this.history.statusFor(order))); }
 
   get steps() {
     return this.order

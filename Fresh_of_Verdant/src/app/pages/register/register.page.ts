@@ -41,7 +41,9 @@ class RegisterWelcomeModalComponent {
   imports: [IonContent, IonIcon, FormsModule, RouterLink],
 })
 export class RegisterPage {
-  form = { fullName: '', email: '', phone: '', password: '', confirmPassword: '' };
+  form: { fullName: string; email: string; phone: string; password: string; confirmPassword: string; role: 'Customer' | 'Admin'; adminCode: string } = {
+    fullName: '', email: '', phone: '', password: '', confirmPassword: '', role: 'Customer', adminCode: '',
+  };
   agree = false;
   showPassword = false;
   showConfirm = false;
@@ -67,10 +69,10 @@ export class RegisterPage {
     }
 
     this.loading = true;
-    this.api.register({ fullName: this.form.fullName.trim(), email: this.form.email.trim().toLowerCase(), password: this.form.password, phoneNumber: this.form.phone.trim() }).subscribe({
-      next: () => {
+    this.api.register({ fullName: this.form.fullName.trim(), email: this.form.email.trim().toLowerCase(), password: this.form.password, phoneNumber: this.form.phone.trim(), role: this.form.role, adminCode: this.form.role === 'Admin' ? this.form.adminCode : undefined }).subscribe({
+      next: ({ user }) => {
         localStorage.setItem('fv-profile-details', JSON.stringify({ 'Full Name': this.form.fullName.trim(), 'Email Address': this.form.email.trim().toLowerCase(), 'Mobile Number': this.form.phone.trim() }));
-        this.auth.signIn(this.form.email, this.form.fullName);
+        this.auth.signIn(this.form.email, this.form.fullName, user?.role ?? this.form.role);
         this.products.connectWishlistToAccount();
         this.loading = false;
         void this.showSuccessAndContinue();
@@ -113,6 +115,8 @@ export class RegisterPage {
 
     if (!this.form.confirmPassword) errors['confirmPassword'] = 'Confirm Password is required.';
     else if (this.form.password !== this.form.confirmPassword) errors['confirmPassword'] = 'Passwords do not match.';
+
+    if (this.form.role === 'Admin' && this.form.adminCode !== 'admin') errors['adminCode'] = 'Enter the admin access code to create an Admin account.';
 
     if (!this.agree) errors['terms'] = 'Please agree to the Terms & Conditions.';
     return errors;

@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { guestOnly, requireAccount } from './services/auth.guard';
+import { guestOnly, requireAccount, requireAdmin } from './services/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
   {
@@ -29,6 +29,11 @@ export const routes: Routes = [
   {
     path: 'forgot-password',
     loadComponent: () => import('./pages/forgot-password/forgot-password.page').then( m => m.ForgotPasswordPage)
+  },
+  {
+    path: 'admin',
+    canActivate: [requireAdmin],
+    loadComponent: () => import('./pages/admin/admin.page').then(({ AdminPage }) => AdminPage),
   },
   {
     path: 'home',

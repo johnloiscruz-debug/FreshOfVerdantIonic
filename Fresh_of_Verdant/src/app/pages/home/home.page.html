@@ -65,13 +65,26 @@
   <div class="section-head"><div><h3>Popular Freshes</h3><small>Loved by our customers</small></div><a routerLink="/products" [queryParams]="{ popular: true }">See all</a></div>
   <div class="grid">@for (p of products.popular(); track p.id) { <div class="card" (click)="open(p)"><div class="img-ph thumb">@if (p.image) { <img [src]="p.image" [alt]="p.name" (error)="products.handleImageError(p)"> } @else { <ion-icon name="image-outline"></ion-icon> }</div><strong>{{ p.name }}</strong><div class="foot"><span class="price">₱{{ p.price }} / {{ p.unit }}</span><button class="add" [disabled]="p.stockQuantity === 0" [attr.aria-label]="p.stockQuantity === 0 ? 'Out of stock' : 'Add to cart'" (click)="addToCart(p, $event)"><ion-icon name="cart-outline"></ion-icon></button></div></div> }</div>
   <button class="feedback" style="display:block;width:calc(100% - 32px);border:0;text-align:left;font:inherit" type="button" (click)="showAppReviews = true"><h3>Customer App Rating</h3>@if (appReviews.length) { <strong>{{ appRating.toFixed(1) }} ★</strong><p>{{ appReviews.length }} recorded {{ appReviews.length === 1 ? 'review' : 'reviews' }} · Tap to read</p> } @else { <strong>No ratings yet</strong><p>Tap to view recorded app reviews.</p> }</button>
-  <ion-modal [isOpen]="showAppReviews" [breakpoints]="[0, 0.72, 1]" [initialBreakpoint]="0.72" [handle]="true" (didDismiss)="showAppReviews = false">
+  <ion-modal class="app-rating-modal" style="--background:#fff" [isOpen]="showAppReviews" [breakpoints]="[0, 0.72, 1]" [initialBreakpoint]="1" [handle]="true" (didDismiss)="showAppReviews = false">
     <ng-template>
-      <div class="app-review-sheet" style="min-height:50vh;padding:22px 18px;background:#fff;color:#111">
-        <div class="app-review-heading" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px"><div><h2 style="margin:0;font-size:19px">Customer App Rating</h2><p style="margin:5px 0 0;color:#68716a;font-size:12px">@if (appReviews.length) { {{ appRating.toFixed(1) }} average · {{ appReviews.length }} recorded {{ appReviews.length === 1 ? 'review' : 'reviews' }} } @else { No recorded app reviews yet. }</p></div><button type="button" style="width:34px;height:34px;border:0;border-radius:50%;background:#edf5ef;color:#111;font-size:20px" aria-label="Close app ratings" (click)="showAppReviews = false"><ion-icon name="close"></ion-icon></button></div>
+      <div class="app-review-sheet">
+        <div class="app-review-heading">
+          <div>
+            <h2>Customer App Rating</h2>
+            <p>@if (appReviews.length) { {{ appRating.toFixed(1) }} average · {{ appReviews.length }} recorded {{ appReviews.length === 1 ? 'review' : 'reviews' }} } @else { No recorded app reviews yet. }</p>
+          </div>
+          <button type="button" class="app-review-close" aria-label="Close app ratings" (click)="showAppReviews = false"><ion-icon name="close"></ion-icon></button>
+        </div>
         @for (review of appReviews; track review.id) {
-          <article class="recorded-review" style="margin-top:12px;padding:14px;border-radius:14px;background:var(--fv-green-dark);color:#fff"><div class="recorded-review-top" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><strong>{{ review.author }}</strong><span aria-label="{{ review.rating }} out of 5 stars">@for (value of [1, 2, 3, 4, 5]; track value) { <ion-icon style="color:#fff" [name]="value <= review.rating ? 'star' : 'star-outline'"></ion-icon> }</span></div><p style="margin:8px 0;color:#fff;font-size:13px;line-height:1.4">{{ review.text }}</p><small style="color:#fff;opacity:.82;font-size:10px">{{ formatAppReviewDate(review.createdAt) }}</small></article>
-        } @empty { <p class="no-app-reviews" style="margin-top:20px;color:#68716a;font-size:13px">Only submitted app reviews will appear here.</p> }
+          <article class="recorded-review">
+            <div class="recorded-review-top">
+              <div class="reviewer-identity"><span class="reviewer-icon">@if (reviewerPhoto(review); as photo) { <img [src]="photo" alt="{{ review.author }} profile photo" /> } @else { <ion-icon name="person-circle-outline"></ion-icon> }</span><strong>{{ review.author }}</strong></div>
+              <span class="reviewer-stars" aria-label="{{ review.rating }} out of 5 stars">@for (value of [1, 2, 3, 4, 5]; track value) { <ion-icon [name]="value <= review.rating ? 'star' : 'star-outline'"></ion-icon> }</span>
+            </div>
+            <p class="recorded-review-text">{{ review.text }}</p>
+            <small class="recorded-review-date">{{ formatAppReviewDate(review.createdAt) }}</small>
+          </article>
+        } @empty { <p class="no-app-reviews">Only submitted app reviews will appear here.</p> }
       </div>
     </ng-template>
   </ion-modal>

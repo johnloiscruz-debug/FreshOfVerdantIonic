@@ -1,22 +1,6 @@
 <app-page-header class="checkout-header" subtitle="DELIVERY DETAILS" title="Checkout Address" align="left" rightIcon="lock-closed-outline" rightLabel="2 of 3"></app-page-header>
 
 <ion-content>
-  <!-- Recipient -->
-  <section class="card">
-    <h3>Delivery Recipient</h3>
-    <p class="hint">Who should receive this farmbox?</p>
-    <div class="two">
-      <label class="fld">
-        <ion-icon name="person-outline"></ion-icon>
-        <span><small>FULL NAME</small><input name="recipientName" type="text" autocomplete="name" placeholder="Recipient's full name" [(ngModel)]="recipient.name" /></span>
-      </label>
-      <label class="fld">
-        <ion-icon name="call-outline"></ion-icon>
-        <span><small>PHONE NUMBER</small><input name="recipientPhone" type="tel" autocomplete="tel" placeholder="+63 9XX XXX XXXX" [(ngModel)]="recipient.phone" /></span>
-      </label>
-    </div>
-  </section>
-
   <!-- Address -->
   <section class="card">
     <h3>Shipping Address</h3>
@@ -64,11 +48,11 @@
   <p class="hint outside">Same Day Schedule · ₱{{ deliveryFee }} delivery fee</p>
   <section class="schedule-picker">
     <label class="schedule-field">
-      <span>Order Date</span>
-      <span class="schedule-input"><input #deliveryDatePicker name="deliveryDate" type="date" [min]="minScheduleDate" [(ngModel)]="scheduleDate" /><button class="picker-trigger" type="button" aria-label="Choose delivery date" (click)="openSchedulePicker(deliveryDatePicker, $event)"><ion-icon name="chevron-down"></ion-icon></button></span>
+      <span>Delivery Date</span>
+      <span class="schedule-input"><input #deliveryDatePicker name="deliveryDate" type="date" [min]="minScheduleDate" [max]="minScheduleDate" [(ngModel)]="scheduleDate" /><button class="picker-trigger" type="button" aria-label="Choose delivery date" (click)="openSchedulePicker(deliveryDatePicker, $event)"><ion-icon name="chevron-down"></ion-icon></button></span>
     </label>
     <label class="schedule-field">
-      <span>Order Time</span>
+      <span>Delivery Time</span>
       <span class="schedule-input"><input #deliveryTimePicker name="deliveryTime" type="time" step="60" [(ngModel)]="scheduleTime" [attr.aria-invalid]="scheduleError ? 'true' : null" /><button class="picker-trigger" type="button" aria-label="Choose delivery time" (click)="openSchedulePicker(deliveryTimePicker, $event)"><ion-icon name="chevron-down"></ion-icon></button></span>
     </label>
     <small class="picker-hint">Choose a future date and time for your delivery.</small>

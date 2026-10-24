@@ -78,3 +78,19 @@ ion-router-outlet ion-content {
 .support-contact-button { min-height:42px; border-radius:12px; background:var(--fv-green); color:#fff; font-size:13px; font-weight:700; }
 .support-phone { margin-top:12px; color:#000; font-size:12px; }
 .support-phone ion-icon { color:var(--fv-green-dark); }
+
+.app-review-sheet { min-height:100%; padding:0 18px 28px; background:#fff; color:#17231b; }
+.app-review-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:0 -18px 18px; padding:24px 18px 20px; background:var(--fv-green-dark); color:#fff; }
+.app-review-heading h2 { margin:0; font-size:20px; font-weight:800; }
+.app-review-heading p { margin:6px 0 0; color:rgba(255,255,255,.88); font-size:12px; }
+.app-review-close { display:flex; flex:0 0 36px; align-items:center; justify-content:center; width:36px; height:36px; border:0; border-radius:50%; background:rgba(255,255,255,.18); color:#fff; font-size:21px; }
+.recorded-review { margin-top:12px; padding:14px; border:1px solid #e6ece7; border-radius:16px; background:#fff; color:#17231b; box-shadow:0 3px 12px rgba(15,50,27,.07); }
+.recorded-review-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.reviewer-identity { display:flex; min-width:0; align-items:center; gap:9px; }
+.reviewer-icon { display:flex; flex:0 0 36px; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#e7f6ec; color:var(--fv-green-dark); font-size:26px; }
+.reviewer-icon img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+.reviewer-identity strong { overflow:hidden; color:#17231b; font-size:14px; text-overflow:ellipsis; white-space:nowrap; }
+.reviewer-stars { display:flex; flex:none; gap:1px; color:#00a84f; font-size:15px; }
+.recorded-review-text { margin:12px 0 10px; color:#34443a; font-size:13px; line-height:1.5; white-space:pre-wrap; }
+.recorded-review-date { color:#758078; font-size:10px; }
+.no-app-reviews { margin-top:20px; color:#68716a; font-size:13px; }

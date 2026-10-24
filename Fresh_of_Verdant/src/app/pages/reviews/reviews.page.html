@@ -50,8 +50,8 @@
       <label class="field-label" for="review-text">Your review</label>
       <textarea class="text-field review-text" id="review-text" name="review" rows="4" [(ngModel)]="text" placeholder="Type your review here"></textarea>
       @if (formError) { <p class="form-error" role="alert">{{ formError }}</p> }
-      <p class="storage-note">Reviews you submit are saved in this browser on this device.</p>
-      <button class="fv-btn submit-review" type="submit">Submit Review</button>
+      <p class="storage-note">App reviews appear in Customer App Rating after submission.</p>
+      <button class="fv-btn submit-review" type="submit" [disabled]="submitting">{{ submitting ? 'Submitting…' : 'Submit Review' }}</button>
     </form>
   }
 
@@ -64,7 +64,7 @@
       <article class="review">
         <div class="who">
           <span class="avatar">
-            @if (isCurrentUserReview(r.author) && profilePhoto; as photo) { <img [src]="photo" alt="{{ r.author }} profile photo" /> }
+            @if (r.authorAvatar; as photo) { <img [src]="photo" alt="{{ r.author }} profile photo" /> }
             @else { {{ initials(r.author) }} }
           </span>
           <div class="reviewer">

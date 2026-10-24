@@ -1,13 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import { environment } from '../../environments/environment';
 import type { TrackedOrder } from './order-history';
+import type { UserReview } from './reviews';
 
 export interface CreateOrderRequest {
   items: Array<{ id: number; qty: number }>;
   address: string;
+  street: string;
+  barangay: string;
+  city: string;
+  zipCode: string;
   payment: string;
+  deliveryDate: string;
+  deliveryTime: string;
+  cashTendered: number | null;
+  totalChange: number | null;
+  orderNotes: string;
   deliveryWindow: string;
   deliverySchedule: 'standard' | 'same-day';
   deliveryFee: number;
@@ -23,7 +33,6 @@ export interface ApiProduct {
   image_url: string | null;
   is_active: boolean;
   category: { category_id: number; category_name: string; description: string | null } | null;
-  created_at?: string;
 }
 
 export interface ApiCartItem {
@@ -50,6 +59,109 @@ export interface ApiAccount {
   user: { userId: number; fullName: string; email: string; role: string };
 }
 
+export interface AdminOverview {
+  orderCount: number;
+  salesTotal: number;
+  pendingOrders: number;
+  processingOrders: number;
+  completedOrders: number;
+  cancelledOrders: number;
+  productCount: number;
+  lowStockCount: number;
+  customerCount: number;
+  reviewCount: number;
+  complaintCount: number;
+}
+
+export interface AdminDashboardData {
+  overview: AdminOverview;
+  orders: AdminOrder[];
+  lowStock: Array<{ product_id: number; product_name: string; stock_quantity: number; unit: string }>;
+}
+
+export interface AdminProduct {
+  product_id: number;
+  product_name: string;
+  description: string | null;
+  price: number;
+  stock_quantity: number;
+  unit: string;
+  image_url: string | null;
+  category_id: number | null;
+  category_name?: string | null;
+  is_active: boolean;
+}
+
+export interface AdminOrder {
+  order_id: number;
+  customer_name: string;
+  order_status: string;
+  total_amount: number;
+  payment_method: string;
+  placed_at: string;
+  shipping_address: string;
+}
+
+export interface AdminCustomer {
+  user_id: number;
+  full_name: string;
+  username: string;
+  email: string;
+  phone_number: string | null;
+  account_status: string;
+}
+
+export interface AdminCategory {
+  category_id: number;
+  category_name: string;
+  description: string | null;
+}
+
+export interface AdminCategoryCount {
+  category_name: 'Fruits' | 'Vegetables' | 'Grains' | 'Others';
+  product_count: number;
+}
+
+export interface AdminOrderDetail extends AdminOrder {
+  user_id: number;
+  full_name: string;
+  email: string;
+  phone_number: string | null;
+  street: string | null;
+  barangay: string | null;
+  city: string | null;
+  zip_code: string | null;
+  delivery_date: string | null;
+  delivery_time: string | null;
+  order_notes: string | null;
+  items: Array<{ product_id: number; product_name: string; quantity: number; unit_price: number; unit: string; image_url: string | null }>;
+}
+
+export interface AdminReport {
+  summary: { order_count: number; sales_total: number };
+  daily: Array<{ sale_date: string; order_count: number; sales_total: number }>;
+  bestSellers: Array<{ product_id: number; product_name: string; units_sold: number; sales_total: number }>;
+  lowStock: Array<{ product_id: number; product_name: string; stock_quantity: number; unit: string }>;
+  reviews: Array<{ review_id: number; rating_stars: number; comment_text: string | null; created_at: string; author: string; product_name: string | null }>;
+}
+
+export interface AdminCustomerOrder {
+  order_id: number;
+  order_status: string;
+  total_amount: number;
+  placed_at: string;
+}
+
+export interface AdminComplaint {
+  complaint_id: number;
+  user_id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: string;
+}
+
 export interface ComplaintSubmission {
   name: string;
   email: string;
@@ -65,7 +177,7 @@ export class ApiService {
 
   assetUrl(path: string | null): string | undefined {
     if (!path) return undefined;
-    if (/^(?:https?:)?\/\//i.test(path)) return path;
+    if (/^(?:https?:)?\/\//i.test(path) || /^data:image\//i.test(path)) return path;
 
     const backendUrl = this.baseUrl.replace(/\/api\/?$/, '');
     return new URL(path, `${backendUrl}/`).toString();
@@ -91,7 +203,7 @@ export class ApiService {
     return this.http.post<{ role: string; fullName?: string; name?: string; user?: ApiAccount['user'] }>(`${this.baseUrl}/login`, { email, password }, { withCredentials: true });
   }
 
-  register(details: { fullName: string; email: string; password: string; phoneNumber?: string }) {
+  register(details: { fullName: string; email: string; password: string; phoneNumber?: string; role?: 'Customer' | 'Admin'; adminCode?: string }) {
     return this.http.post<{ login: string; user?: ApiAccount['user'] }>(`${this.baseUrl}/register`, details, { withCredentials: true });
   }
 
@@ -147,6 +259,22 @@ export class ApiService {
     return this.http.post<TrackedOrder>(`${this.baseUrl}/orders`, order, { withCredentials: true });
   }
 
+  reviews(): Observable<UserReview[]> {
+    return this.http.get<UserReview[]>(`${this.baseUrl}/reviews`);
+  }
+
+  profileAvatar(): Observable<{ avatarUrl: string | null }> {
+    return this.http.get<{ avatarUrl: string | null }>(`${this.baseUrl}/reviews/avatar`, { withCredentials: true });
+  }
+
+  saveProfileAvatar(avatarUrl: string): Observable<{ avatarUrl: string }> {
+    return this.http.put<{ avatarUrl: string }>(`${this.baseUrl}/reviews/avatar`, { avatarUrl }, { withCredentials: true });
+  }
+
+  createReview(review: { author: string; rating: number; text: string; productId: number | null }): Observable<UserReview> {
+    return this.http.post<UserReview>(`${this.baseUrl}/reviews`, review, { withCredentials: true });
+  }
+
   requestOrderRefund(orderId: string): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/orders/${encodeURIComponent(orderId)}/refund`, {}, { withCredentials: true });
   }
@@ -165,5 +293,80 @@ export class ApiService {
 
   submitComplaint(details: ComplaintSubmission) {
     return this.http.post<{ complaintId: number; status: string }>(`${this.baseUrl}/complaint`, details, { withCredentials: true });
+  }
+
+  adminOverview(): Observable<AdminOverview> {
+    return this.http.get<AdminOverview>(`${this.baseUrl}/admin/overview`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  adminDashboard(): Observable<AdminDashboardData> {
+    return this.http.get<AdminDashboardData>(`${this.baseUrl}/admin/dashboard`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  adminProducts(): Observable<AdminProduct[]> {
+    return this.http.get<AdminProduct[]>(`${this.baseUrl}/admin/products`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  createAdminProduct(product: Omit<AdminProduct, 'product_id' | 'is_active' | 'category_name'>): Observable<{ productId: number }> {
+    return this.http.post<{ productId: number }>(`${this.baseUrl}/admin/products`, { name: product.product_name, description: product.description, price: product.price, stockQuantity: product.stock_quantity, unit: product.unit, imageUrl: product.image_url, categoryId: product.category_id }, { withCredentials: true });
+  }
+
+  adminCategories(): Observable<AdminCategory[]> {
+    return this.http.get<AdminCategory[]>(`${this.baseUrl}/admin/categories`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  adminCategoryCounts(): Observable<AdminCategoryCount[]> {
+    return this.http.get<AdminCategoryCount[]>(`${this.baseUrl}/admin/category-counts`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  updateAdminProduct(product: AdminProduct): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/products/${product.product_id}`, { name: product.product_name, description: product.description, price: product.price, stockQuantity: product.stock_quantity, unit: product.unit, imageUrl: product.image_url, categoryId: product.category_id, isActive: product.is_active }, { withCredentials: true });
+  }
+
+  adminOrders(): Observable<AdminOrder[]> {
+    return this.http.get<AdminOrder[]>(`${this.baseUrl}/admin/orders`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  adminOrderDetail(orderId: number): Observable<AdminOrderDetail> {
+    return this.http.get<AdminOrderDetail>(`${this.baseUrl}/admin/orders/${orderId}`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  updateAdminOrder(orderId: number, status: string): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/orders/${orderId}`, { status }, { withCredentials: true });
+  }
+
+  adminCustomers(): Observable<AdminCustomer[]> {
+    return this.http.get<AdminCustomer[]>(`${this.baseUrl}/admin/customers`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  adminComplaints(): Observable<AdminComplaint[]> {
+    return this.http.get<AdminComplaint[]>(`${this.baseUrl}/admin/complaints`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  adminCustomerOrders(userId: number): Observable<AdminCustomerOrder[]> {
+    return this.http.get<AdminCustomerOrder[]>(`${this.baseUrl}/admin/customers/${userId}/orders`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  updateAdminCustomer(userId: number, status: string): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/customers/${userId}`, { status }, { withCredentials: true });
+  }
+
+  createAdminCategory(name: string, description: string): Observable<{ categoryId: number }> {
+    return this.http.post<{ categoryId: number }>(`${this.baseUrl}/admin/categories`, { name, description }, { withCredentials: true });
+  }
+
+  updateAdminCategory(category: AdminCategory): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/categories/${category.category_id}`, { name: category.category_name, description: category.description }, { withCredentials: true });
+  }
+
+  deleteAdminCategory(categoryId: number): Observable<{ deleted: boolean }> {
+    return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/admin/categories/${categoryId}`, { withCredentials: true });
+  }
+
+  adminReports(from?: string, to?: string): Observable<AdminReport> {
+    const params: Record<string, string> = {};
+    if (from) params['from'] = from;
+    if (to) params['to'] = to;
+    return this.http.get<AdminReport>(`${this.baseUrl}/admin/reports`, { params, withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 }
