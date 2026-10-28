@@ -7,6 +7,9 @@ import { AuthService } from './auth';
 import { Router } from '@angular/router';
 import { OrderHistoryService } from './order-history';
 import { ToastController } from '@ionic/angular';
+import { ProductService } from './product';
+import { addIcons } from 'ionicons';
+import { alertCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
@@ -24,7 +27,19 @@ export class CartService {
   tax = computed(() => Math.round(this.subtotal() * 0.04));
   total = computed(() => this.subtotal() + this.deliveryFee + this.tax());
 
-  constructor(private api: ApiService, private auth: AuthService, private router: Router, private orderHistory: OrderHistoryService, private toastController: ToastController) {}
+  constructor(private api: ApiService, private auth: AuthService, private router: Router, private orderHistory: OrderHistoryService, private toastController: ToastController, private productService: ProductService) {
+    addIcons({ alertCircleOutline, checkmarkCircleOutline });
+  }
+
+  imageFor(item: CartItem): string | undefined {
+    return item.image ?? this.productService.products().find((product) => product.id === item.id)?.image;
+  }
+
+  handleImageError(item: CartItem) {
+    item.image = undefined;
+    const product = this.productService.products().find((entry) => entry.id === item.id);
+    if (product?.image) this.productService.handleImageError(product);
+  }
 
   load() {
     this.loading = true;
@@ -144,7 +159,13 @@ export class CartService {
   }
 
   private async notify(message: string, color: 'success' | 'warning') {
-    const toast = await this.toastController.create({ message, duration: 2200, position: 'top', color });
+    const toast = await this.toastController.create({
+      message,
+      duration: 2400,
+      position: 'top',
+      icon: color === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline',
+      cssClass: `cart-action-toast cart-action-toast-${color}`,
+    });
     await toast.present();
   }
 

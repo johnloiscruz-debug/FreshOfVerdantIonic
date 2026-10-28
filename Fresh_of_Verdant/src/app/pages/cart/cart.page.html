@@ -5,13 +5,16 @@
     <div class="titles"><small>FARMBOX MARKET</small><h1>My Cart</h1></div>
   </div>
 
-  <div class="sub">
+  <section class="cart-context" aria-label="Cart account and item count">
     <div class="cart-owner">
       <strong>@if (cart.user) { {{ cart.user.fullName }}'s cart } @else { Your saved cart }</strong>
-      <span>{{ cart.count() }} farm-fresh {{ cart.count() === 1 ? 'pick' : 'picks' }}</span>
+      @if (cart.user) { <span class="account">{{ cart.user.email }}</span> }
     </div>
-  </div>
-  @if (cart.user) { <p class="account">{{ cart.user.email }}</p> }
+    <div class="pick-count" aria-live="polite">
+      <strong>{{ cart.count() }}</strong>
+      <span>farm-fresh {{ cart.count() === 1 ? 'pick' : 'picks' }}</span>
+    </div>
+  </section>
 
   @if (cart.loading && cart.items().length === 0) {
     <p class="api-state" role="status">Loading your cart...</p>
@@ -32,7 +35,7 @@
       @for (item of cart.items(); track item.id) {
         <div class="item">
           <div class="img-ph thumb">
-            @if (item.image) { <img [src]="item.image" [alt]="item.name" (error)="item.image = undefined"> }
+            @if (cart.imageFor(item); as image) { <img [src]="image" [alt]="item.name" (error)="cart.handleImageError(item)"> }
             @else { <ion-icon name="image-outline" [attr.aria-label]="item.name + ' image unavailable'"></ion-icon> }
           </div>
           <div class="info"><strong>{{ item.name }}</strong><small>₱{{ item.price }} / {{ item.unit }}</small><div class="stepper"><button [disabled]="cart.saving" (click)="cart.change(item.id, -1)"><ion-icon name="remove"></ion-icon></button><span>{{ item.qty }}</span><button class="plus" [disabled]="cart.saving" (click)="cart.change(item.id, 1)"><ion-icon name="add"></ion-icon></button></div></div>

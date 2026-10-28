@@ -1,4 +1,4 @@
-ion-content { --background: #fff; }
+ion-content { --background: #fff; --color: #111; }
 
 .hero {
   position: relative;
@@ -131,7 +131,28 @@ h1 { margin: 10px 0 2px; font-size: 24px; font-weight: 800; color: #111; }
 .review-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; b { font-size:14px; } }
 .review-stars { display:inline-flex; flex:0 0 auto; color:#f5a623; ion-icon { font-size:13px; } }
 .review-copy p { margin:4px 0 0; color:#333; font-size:13px; line-height:1.4; }
-.add-cart-button { transition:transform .16s ease,background-color .2s ease,box-shadow .2s ease; }
+.add-cart-button { display:flex; align-items:center; justify-content:center; gap:8px; transition:transform .16s ease,background-color .2s ease,box-shadow .2s ease; }
+.add-cart-button ion-spinner { width:20px; height:20px; color:currentColor; }
+.add-cart-button.loading { cursor:wait; box-shadow:0 0 0 1px rgba(0,168,70,.12),0 0 18px rgba(0,168,70,.25); }
+.add-cart-button.added ion-icon { animation: product-check-pop .38s cubic-bezier(.2,.9,.3,1.3) both; }
 .add-cart-button:active { transform:scale(.97); background:#087a3d; }
 .add-cart-button.added { background:#087a3d; box-shadow:0 0 0 4px #00c85330; }
 .add-cart-button:disabled { opacity:1; }
+:host-context(html.theme-dark) .add-cart-button.loading { box-shadow:0 0 0 1px rgba(32,216,117,.18),0 0 20px rgba(32,216,117,.34); }
+:host-context(html.theme-dark) .add-cart-button.loading ion-spinner { color:#d9ffe4; filter:drop-shadow(0 0 7px rgba(32,216,117,.8)); }
+
+@keyframes product-check-pop {
+  0% { opacity:0; transform:scale(.35) rotate(-25deg); }
+  70% { opacity:1; transform:scale(1.25) rotate(5deg); }
+  100% { opacity:1; transform:scale(1) rotate(0); }
+}
+
+.suggestions { margin-top: 20px; }
+.suggestions h3 { margin: 0; font-size: 17px; color: #17251c; }
+.suggestions > p { margin: 3px 0 10px; color: #68716a; font-size: 11px; }
+.suggestion-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.suggestion-card { display: flex; flex-direction: column; align-items: stretch; min-width: 0; padding: 9px; border: 1px solid #e7eee8; border-radius: 15px; background: #fff; color: #171b18; text-align: left; box-shadow: 0 2px 8px rgba(0, 0, 0, .05); }
+.suggestion-image { display: grid; place-items: center; width: 100%; height: 116px; margin-bottom: 9px; overflow: hidden; border-radius: 11px; background: #eef6f0; }
+.suggestion-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.suggestion-card strong { overflow: hidden; padding: 0 2px; color: #171b18; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.suggestion-card small { overflow: hidden; margin: 6px 2px 1px; color: var(--fv-green-dark); font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }

@@ -220,15 +220,31 @@ ion-content {
     }
 }
 
+ion-footer {
+    --background: var(--fv-green-dark);
+    border: 0;
+    background: var(--fv-green-dark);
+}
 .help {
-    margin: 8px 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    margin: 0;
+    padding: 9px 12px max(9px, env(safe-area-inset-bottom, 0px));
     text-align: center;
+    line-height: 1.25;
     font-size: 12px;
     color: #fff;
     font-weight: 400;
-    background: var(--fv-green-dark);
+    background: transparent !important;
 }
 .help strong { font-weight: 700; }
+:host-context(html.theme-dark) ion-footer { --background: #087a3c; background: #087a3c; }
+:host-context(html.theme-dark) .help { color: #fff; }
 
 .pending-orders { padding: 12px 0 18px; }
 .list-heading { padding: 0 16px 10px; h2 { margin: 0; color: #111; font-size: 20px; } p { margin: 4px 0 0; color: var(--fv-muted); font-size: 12px; } }

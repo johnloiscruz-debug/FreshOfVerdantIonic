@@ -96,3 +96,52 @@ section {
 .refund { border: 1px solid var(--fv-green); background: #fff; color: var(--fv-green-dark); }
 .refund:disabled { border-color: #d5ddd8; color: #69736d; }
 .done { background: var(--fv-green); color: #fff; }
+
+:host-context(html.theme-dark) ion-content {
+  --background: #000;
+  --color: #f2f5f2;
+}
+:host-context(html.theme-dark) .receipt { color: #f2f5f2; }
+:host-context(html.theme-dark) header {
+  small, p { color: #b8c9be !important; }
+  h2 { color: #f2f5f2 !important; }
+  b { color: #62e595 !important; }
+  .close { background: #202923; color: #f2f5f2; }
+}
+:host-context(html.theme-dark) section {
+  border-color: #2d3b32;
+  background: #151a17 !important;
+  color: #f2f5f2 !important;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .22);
+
+  h3 { color: #f2f5f2 !important; }
+}
+:host-context(html.theme-dark) .line {
+  border-color: #344139;
+  color: #d5dfd8;
+  strong { color: #f2f5f2 !important; }
+  small { color: #aebdb3 !important; }
+}
+:host-context(html.theme-dark) .charges .total {
+  border: 1px solid #31533f;
+  background: #14251a !important;
+  color: #f2f5f2;
+  strong { color: #62e595 !important; }
+}
+:host-context(html.theme-dark) .note { color: #b8c9be !important; }
+:host-context(html.theme-dark) .refund {
+  border-color: #32d879;
+  background: #14251a;
+  color: #79e9a0;
+}
+:host-context(html.theme-dark) .refund:disabled {
+  border-color: #35443a;
+  background: #151a17;
+  color: #aebdb3;
+}
+:host-context(html.theme-dark) .done {
+  border: 1px solid #3bea87;
+  background: linear-gradient(105deg, #08ad50, #20d875);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(32, 216, 117, .22);
+}

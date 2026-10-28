@@ -340,3 +340,108 @@ h3 {
         }
     }
 }
+
+:host-context(html.theme-dark) ion-content {
+    --background: #000;
+    --color: #f2f5f2;
+    color: #f2f5f2;
+}
+:host-context(html.theme-dark) h3 { color: #f2f5f2 !important; }
+:host-context(html.theme-dark) .hint { color: #b8c9be !important; }
+:host-context(html.theme-dark) .card,
+:host-context(html.theme-dark) .schedule-picker,
+:host-context(html.theme-dark) .payment-summary,
+:host-context(html.theme-dark) .notes {
+    border-color: #2d3b32;
+    background: #151a17 !important;
+    color: #f2f5f2 !important;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .22);
+}
+:host-context(html.theme-dark) .fld {
+    border-color: #35483b;
+    background: #202923 !important;
+    color: #f2f5f2 !important;
+
+    > ion-icon { color: #62e595; }
+    small { color: #aebdb3 !important; }
+    input, select { background: transparent !important; color: #f2f5f2 !important; color-scheme: dark; caret-color: #62e595; }
+    input::placeholder { color: #aebdb3 !important; }
+    &.sel > ion-icon { color: #94a79a; }
+}
+:host-context(html.theme-dark) .fld select option {
+    background-color: #151a17;
+    color: #f2f5f2;
+}
+:host-context(html.theme-dark) .fld select option:checked,
+:host-context(html.theme-dark) .fld select option:hover {
+    background-color: #17452b;
+    color: #a1f4ba;
+}
+:host-context(html.theme-dark) .schedule-field { color: #e5eee8; }
+:host-context(html.theme-dark) .schedule-field input {
+    border-color: #35483b;
+    background: #202923 !important;
+    color: #f2f5f2 !important;
+    color-scheme: dark;
+    accent-color: #20d875;
+}
+:host-context(html.theme-dark) .schedule-field input:focus-visible,
+:host-context(html.theme-dark) .fld:focus-within,
+:host-context(html.theme-dark) .notes:focus-within {
+    border-color: #20c96b;
+    box-shadow: 0 0 0 3px rgba(32, 201, 107, .15);
+}
+:host-context(html.theme-dark) .picker-trigger { color: #a9baaf; }
+:host-context(html.theme-dark) .picker-hint { color: #aebdb3; }
+:host-context(html.theme-dark) .reserved-time { border-color: #35443a; color: #c5d0c8; }
+:host-context(html.theme-dark) .reserved-time strong { color: #62e595; }
+:host-context(html.theme-dark) .pay-row {
+    border-color: #35443a;
+    background: #151a17;
+    color: #f2f5f2;
+
+    &.on { border-color: #20d875; background: #14291d; }
+    .ico { background: #203c2b; color: #62e595; }
+    .t small { color: #aebdb3 !important; }
+    .radio { border-color: #748078; }
+    .radio.on { border-color: #20d875; background: radial-gradient(circle, #20d875 45%, #14291d 50%); }
+}
+:host-context(html.theme-dark) .payment-line,
+:host-context(html.theme-dark) .cash-entry { color: #cbd5ce; }
+:host-context(html.theme-dark) .payment-line strong { color: #f2f5f2; }
+:host-context(html.theme-dark) .cash-entry { border-color: #35443a; }
+:host-context(html.theme-dark) .cash-entry small,
+:host-context(html.theme-dark) .payment-note { color: #aebdb3; }
+:host-context(html.theme-dark) .cash-entry .peso-input {
+    border-color: #405047;
+    background: #101512;
+    color: #e5eee8;
+}
+:host-context(html.theme-dark) .cash-entry input { color: #f2f5f2; }
+:host-context(html.theme-dark) .cash-entry input::placeholder { color: #9ca9a0; }
+:host-context(html.theme-dark) .wallet-fund-button { border-color: #20d875; background: #172d20; color: #79e9a0; }
+:host-context(html.theme-dark) .payment-validation.error { color: #ff8585; }
+:host-context(html.theme-dark) .payment-validation.success { color: #79e9a0; }
+:host-context(html.theme-dark) .notes ion-icon { color: #62e595; }
+:host-context(html.theme-dark) .notes textarea { color: #f2f5f2; caret-color: #62e595; }
+:host-context(html.theme-dark) .notes textarea::placeholder { color: #aebdb3 !important; }
+:host-context(html.theme-dark) .foot {
+    border-top: 1px solid #254231;
+    background: #101713;
+    box-shadow: 0 -8px 22px rgba(0, 0, 0, .32);
+}
+:host-context(html.theme-dark) .foot .fv-btn {
+    border: 1px solid #3bea87;
+    background: linear-gradient(105deg, #08ad50, #20d875);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(32, 216, 117, .24);
+}
+:host-context(html.theme-dark) .foot .fv-btn:disabled {
+    border-color: #42614d;
+    background: #294334;
+    color: #c0d1c6;
+    box-shadow: none;
+    opacity: 1;
+}
+:host-context(html.theme-dark) .foot small,
+:host-context(html.theme-dark) .foot small ion-icon { color: #b8c9be; }

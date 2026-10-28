@@ -208,3 +208,22 @@ h3.bar {
     h3 { margin: 0 0 6px; font-size: 16px; font-weight: 800; }
     p { margin: 0 0 14px; font-size: 12px; }
 }
+
+:host-context(html.theme-dark) .market,
+:host-context(html.theme-dark) .info,
+:host-context(html.theme-dark) .form,
+:host-context(html.theme-dark) .signin-prompt { border:1px solid #293b30; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+:host-context(html.theme-dark) .market .map-marker { box-shadow:0 0 0 4px rgba(32,216,117,.18),0 0 18px rgba(32,216,117,.55); }
+:host-context(html.theme-dark) .market .map-place-label { border:1px solid #315b42; background:#14251a; color:#a6f4bc; box-shadow:0 0 12px rgba(32,216,117,.24); }
+:host-context(html.theme-dark) .market .open { border:1px solid #315b42; background:#14251a; color:#a6f4bc; }
+:host-context(html.theme-dark) .market .m-text small { color:#c4d0c8; }
+:host-context(html.theme-dark) .info small { color:#aebdb3; }
+:host-context(html.theme-dark) .info .ico { border:1px solid #315b42; background:linear-gradient(145deg,#1b432b,#14291c); color:#62e595; box-shadow:0 0 13px rgba(32,216,117,.2); }
+:host-context(html.theme-dark) .info .ico ion-icon { color:#62e595; filter:drop-shadow(0 0 5px rgba(32,216,117,.75)); }
+:host-context(html.theme-dark) .signin-prompt { background:#151a17; color:#f2f5f2; }
+:host-context(html.theme-dark) .signin-prompt h3 { color:#f2f5f2; }
+:host-context(html.theme-dark) .signin-prompt p { color:#b8c9be; }
+:host-context(html.theme-dark) .signin-prompt .fv-btn,
+:host-context(html.theme-dark) .form .fv-btn { border:1px solid #3bea87; background:linear-gradient(105deg,#08ad50,#20d875); color:#fff; box-shadow:0 0 16px rgba(32,216,117,.25); }
+:host-context(html.theme-dark) .form .note { color:#b8c9be; }
+:host-context(html.theme-dark) .form .note ion-icon { color:#62e595; filter:drop-shadow(0 0 5px rgba(32,216,117,.7)); }

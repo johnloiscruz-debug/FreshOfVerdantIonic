@@ -89,7 +89,7 @@ export class LoginPage {
           }));
         }
         const returnUrl = this.auth.isAdmin ? '/admin' : (this.route.snapshot.queryParamMap.get('returnUrl') ?? '/home');
-        void this.showWelcomeAndContinue(returnUrl);
+        void this.showWelcomeAndContinue(returnUrl, fullName || email.split('@')[0]);
       },
       error: (err) => {
         this.error = err.error?.error ?? 'Unable to sign in. Check your connection and details.';
@@ -115,7 +115,7 @@ export class LoginPage {
     await alert.present();
   }
 
-  private async showWelcomeAndContinue(returnUrl: string) {
+  private async showWelcomeAndContinue(returnUrl: string, fullName: string) {
     const modal = await this.modalController.create({
       component: LoginWelcomeModalComponent,
       cssClass: 'fv-login-welcome-modal',
@@ -124,6 +124,9 @@ export class LoginPage {
     await modal.present();
     await modal.onDidDismiss();
     const destination = returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/home';
-    await this.router.navigateByUrl(destination, { replaceUrl: true });
+    await this.router.navigateByUrl('/splash', {
+      replaceUrl: true,
+      state: { welcomeBackName: fullName, welcomeBackDestination: destination },
+    });
   }
 }

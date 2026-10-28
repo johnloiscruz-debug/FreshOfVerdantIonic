@@ -1,13 +1,13 @@
 <app-page-header title="Profile & Settings" rightIcon="cart-outline" rightLink="/cart"></app-page-header>
 <ion-content>
   <div class="who">
-    <label class="photo img-ph" title="Choose a profile photo">
+    <label id="choose-profile-photo" class="photo img-ph" title="Choose a profile photo">
       <img *ngIf="profilePhoto" [src]="profilePhoto" alt="Profile photo">
       <span *ngIf="!profilePhoto" class="initials">{{ profileInitials }}</span>
-      <input type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" aria-label="Choose profile photo" (change)="selectProfilePhoto($event)">
+      <input type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" aria-label="Choose a profile photo" (change)="selectProfilePhoto($event)">
       <i class="check"><ion-icon name="checkmark"></ion-icon></i>
     </label>
-    <div><h2>{{ profileName }}</h2><p>{{ profileEmail }}</p><span class="member">VERDANT MEMBER</span></div>
+    <div class="identity"><h2>{{ profileName }}</h2><p>{{ profileEmail }}</p><span class="member">VERDANT MEMBER</span></div>
   </div>
   <div class="profile-stats"><a routerLink="/orders"><b>{{ orderHistory.count() }}</b><span>Orders</span></a><a routerLink="/order-tracker"><b>{{ orderHistory.deliveredCount() }}</b><span>Delivered</span></a><a routerLink="/reviews"><b>{{ reviewService.ownReviewCount() }}</b><span>Reviews</span></a></div>
   <h3>Profile Details</h3>

@@ -1,17 +1,17 @@
 <app-page-header title="Inbox" subtitle="Your support messages" rightIcon="refresh-outline" (rightClick)="loadInbox()"></app-page-header>
 
 <ion-content>
-  <section class="intro">
+  <section class="intro inbox-intro">
     <div class="intro-icon"><ion-icon name="mail-open-outline"></ion-icon></div>
     <div><h2>Support inbox</h2><p>See the status of your complaints and read replies from our team.</p></div>
   </section>
 
   @if (error) {
-    <section class="state error-state"><ion-icon name="alert-circle-outline"></ion-icon><p>{{ error }}</p><button type="button" (click)="loadInbox()">Try again</button></section>
+    <section class="state inbox-state error-state"><ion-icon name="alert-circle-outline"></ion-icon><p>{{ error }}</p><button type="button" (click)="loadInbox()">Try again</button></section>
   } @else if (loading) {
-    <section class="state"><ion-spinner name="crescent"></ion-spinner><p>Loading your messages…</p></section>
+    <section class="state inbox-state"><ion-spinner name="crescent"></ion-spinner><p>Loading your messages…</p></section>
   } @else if (!complaints.length) {
-    <section class="state empty-state"><span class="empty-icon"><ion-icon name="mail-open-outline"></ion-icon></span><h2>Your inbox is clear</h2><p>When you contact support, your message and our response will appear here.</p><a routerLink="/contact">Contact support</a></section>
+    <section class="state inbox-state empty-state"><span class="empty-icon"><ion-icon name="mail-open-outline"></ion-icon></span><h2>Your inbox is clear</h2><p>When you contact support, your message and our response will appear here.</p><a routerLink="/contact">Contact support</a></section>
   } @else {
     <div class="list-heading"><h2>Your messages</h2><span>{{ complaints.length }} {{ complaints.length === 1 ? 'message' : 'messages' }}</span></div>
     @for (complaint of complaints; track complaint.complaint_id) {

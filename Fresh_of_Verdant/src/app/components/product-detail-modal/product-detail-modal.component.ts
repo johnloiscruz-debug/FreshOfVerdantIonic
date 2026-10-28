@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { AlertController, IonContent, IonIcon, ModalController } from '@ionic/angular';
+import { AlertController, IonContent, IonIcon, IonSpinner, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, cartOutline, checkmarkCircleOutline, close, heart, heartOutline, imageOutline, leafOutline, removeOutline, star, starOutline } from 'ionicons/icons';
 import { Product } from '../../models/product';
@@ -14,7 +14,7 @@ import { OrderHistoryService } from '../../services/order-history';
   templateUrl: './product-detail-modal.component.html',
   styleUrls: ['./product-detail-modal.component.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon],
+  imports: [IonContent, IonIcon, IonSpinner],
 })
 export class ProductDetailModal implements OnInit {
   @ViewChild(IonContent) private content?: IonContent;
@@ -25,6 +25,7 @@ export class ProductDetailModal implements OnInit {
   cartAdded = false;
   activeTab: 'overview' | 'reviews' = 'overview';
   suggestedProducts: Product[] = [];
+  readonly maxSuggestionCount = 4;
   private touchStartX = 0;
 
   constructor(private modalCtrl: ModalController, private alertCtrl: AlertController, private cart: CartService, public products: ProductService, public reviewService: ReviewService, private auth: AuthService, private orderHistory: OrderHistoryService) {
@@ -39,7 +40,7 @@ export class ProductDetailModal implements OnInit {
       const swapIndex = Math.floor(Math.random() * (index + 1));
       [candidates[index], candidates[swapIndex]] = [candidates[swapIndex], candidates[index]];
     }
-    this.suggestedProducts = candidates.slice(0, 4);
+    this.suggestedProducts = candidates.slice(0, this.maxSuggestionCount);
   }
 
   chooseSuggestion(product: Product) {

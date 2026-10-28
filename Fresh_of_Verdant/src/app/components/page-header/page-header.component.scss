@@ -10,6 +10,7 @@
 .ph.profile-toolbar { --background: var(--fv-green); }
 .ph.orders-toolbar { --background: var(--fv-green); }
 .ph.checkout-toolbar { --background: #fff; --color: #000; }
+:host-context(html.theme-dark) .ph.checkout-toolbar { --background: #101713; --color: #f2f5f2; }
 .ph.tracker-toolbar { --background: var(--fv-green); --color: #fff; }
 .ph.reviews-toolbar { --background: var(--fv-green); --color: #fff; }
 
@@ -67,6 +68,8 @@
 .texts.checkout-text small,
 .texts.checkout-text h1,
 .ph.checkout-toolbar .right span { color: #000; }
+:host-context(html.theme-dark) .texts.checkout-text :is(small, h1),
+:host-context(html.theme-dark) .ph.checkout-toolbar .right span { color: #f2f5f2; }
 .texts.tracker-text small,
 .texts.tracker-text h1,
 .ph.tracker-toolbar .right span { color: #fff; }

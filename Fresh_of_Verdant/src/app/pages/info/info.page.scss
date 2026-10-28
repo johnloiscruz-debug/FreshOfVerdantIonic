@@ -111,3 +111,17 @@ ion-content {
 .text-section { padding: 15px; }
 .text-section h2 { margin: 0; color: #000; font-size: 15px; }
 .caption { margin-bottom: 24px; font-size: 11px; }
+
+:host-context(html.theme-dark) .location-card,
+:host-context(html.theme-dark) .content-card { border:1px solid #293b30; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+:host-context(html.theme-dark) .map-marker { border-color:#eafff0; box-shadow:0 0 0 4px rgba(32,216,117,.18),0 0 18px rgba(32,216,117,.55); }
+:host-context(html.theme-dark) .map-marker ion-icon { color:#fff; filter:drop-shadow(0 0 5px rgba(255,255,255,.7)); }
+:host-context(html.theme-dark) .map-place-label { border:1px solid #315b42; background:#14251a; color:#a6f4bc; box-shadow:0 0 12px rgba(32,216,117,.24); }
+:host-context(html.theme-dark) .map-note { border:1px solid #315b42; background:#101713; color:#c4d0c8; }
+:host-context(html.theme-dark) .directions,
+:host-context(html.theme-dark) .support-link { border:1px solid #3bea87; background:linear-gradient(105deg,#08ad50,#20d875); color:#fff; box-shadow:0 0 16px rgba(32,216,117,.25); }
+:host-context(html.theme-dark) .directions ion-icon,
+:host-context(html.theme-dark) .support-link ion-icon { color:#fff; filter:drop-shadow(0 0 5px rgba(255,255,255,.65)); }
+:host-context(html.theme-dark) .route { border:1px solid #315b42; background:#101713; box-shadow:0 0 14px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .route :is(strong, small, li) { color:#d8e5dc; }
+:host-context(html.theme-dark) .faq-list details { border-color:#344139; }

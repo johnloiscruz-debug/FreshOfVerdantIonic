@@ -58,10 +58,20 @@ h3.bar {
     gap: 12px;
     margin: 0 16px 10px;
     padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
     border-radius: 16px;
     background: #fff;
     color: #000;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+    width: calc(100% - 32px);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+
+    &:hover, &:focus-visible { border-color: var(--fv-green); box-shadow: 0 0 0 3px rgba(0, 196, 85, .12), 0 4px 12px rgba(0, 0, 0, .08); }
+    &:active { transform: scale(.985); }
 
     .photo {
         width: 56px;
@@ -134,4 +144,34 @@ h3.bar {
         color: #000;
         line-height: 1.45;
     }
+}
+
+@keyframes developers-fade-up {
+  from { opacity:0; transform:translateY(16px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.entering .team-intro,
+.entering h3.bar,
+.entering .lead,
+.entering .team-member,
+.entering .care {
+  animation:developers-fade-up .42s cubic-bezier(.2,.7,.25,1) both;
+}
+.entering .team-intro { animation-delay:0ms; }
+.entering h3.bar { animation-delay:55ms; }
+.entering .lead { animation-delay:95ms; }
+.entering .team-member:nth-of-type(1) { animation-delay:135ms; }
+.entering .team-member:nth-of-type(2) { animation-delay:190ms; }
+.entering .team-member:nth-of-type(3) { animation-delay:245ms; }
+.entering .team-member:nth-of-type(4) { animation-delay:300ms; }
+.entering .team-member:nth-of-type(5) { animation-delay:355ms; }
+.entering .care { animation-delay:410ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .entering .team-intro,
+  .entering h3.bar,
+  .entering .lead,
+  .entering .team-member,
+  .entering .care { animation:none; }
 }

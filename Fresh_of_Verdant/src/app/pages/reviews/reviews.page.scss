@@ -172,6 +172,12 @@ ion-content {
     background: var(--fv-green-dark);
     .fv-btn { background:#fff; color:var(--fv-green-dark); }
 }
+:host-context(html.theme-dark) .foot {
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #254231;
+    background: #101713;
+    .fv-btn { border:1px solid #3bea87; background:linear-gradient(105deg,#08ad50,#20d875); color:#fff; box-shadow:0 6px 18px rgba(32,216,117,.22); }
+}
 
 .review-form { margin: 0 16px 16px; padding: 16px; border-radius: 16px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.05); }
 .form-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }

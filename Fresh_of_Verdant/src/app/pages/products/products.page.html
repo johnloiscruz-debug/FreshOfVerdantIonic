@@ -25,7 +25,7 @@
     <ion-icon name="checkmark-circle-outline" class="check"></ion-icon>
   </div>
 
-  <div class="section-head"><h3>Today's harvest</h3><small>{{ filtered.length }} products</small></div>
+  <div class="section-head"><h3>Today's harvest</h3><small class="product-count">{{ filtered.length }} products</small></div>
 
   @if (productService.loading()) {
     <p class="api-state" role="status">Loading products...</p>
@@ -44,14 +44,14 @@
               <ion-icon name="image-outline" [attr.aria-label]="p.name + ' image unavailable'"></ion-icon>
             }
           </div>
-          <span class="tag">{{ p.category }}</span>
+          <span class="tag" [class.fruits]="p.category.toLowerCase().includes('fruit')" [class.vegetables]="p.category.toLowerCase().includes('vegetable')" [class.grains]="p.category.toLowerCase().includes('grain')" [class.others]="!p.category.toLowerCase().includes('fruit') && !p.category.toLowerCase().includes('vegetable') && !p.category.toLowerCase().includes('grain')">{{ p.category }}</span>
           <strong>{{ p.name }}</strong>
           @if (reviewCountFor(p.id)) {
             <span class="product-rating"><ion-icon name="star"></ion-icon>{{ ratingFor(p.id).toFixed(1) }} ({{ reviewCountFor(p.id) }})</span>
           }
           <div class="foot">
             <span class="price">₱{{ p.price }}/{{ p.unit }}</span>
-            <button class="add" [class.in-cart]="isInCart(p.id)" [disabled]="p.stockQuantity === 0" [attr.aria-label]="p.stockQuantity === 0 ? 'Out of stock' : isInCart(p.id) ? 'Added to cart. Add another' : 'Add to cart'" [title]="p.stockQuantity === 0 ? 'Out of stock' : isInCart(p.id) ? 'Added to cart' : 'Add to cart'" (click)="quickAdd(p, $event)"><ion-icon [name]="isInCart(p.id) ? 'checkmark' : 'cart-outline'"></ion-icon></button>
+            <button class="add" [class.in-cart]="isInCart(p.id)" [class.just-added]="recentlyAddedProductId === p.id" [disabled]="p.stockQuantity === 0 || addingProductId === p.id" [attr.aria-label]="p.stockQuantity === 0 ? 'Out of stock' : isInCart(p.id) ? 'Added to cart. Add another' : 'Add to cart'" [title]="p.stockQuantity === 0 ? 'Out of stock' : isInCart(p.id) ? 'Added to cart' : 'Add to cart'" (click)="quickAdd(p, $event)"><ion-icon [name]="addingProductId === p.id || (!recentlyAddedProductId && isInCart(p.id)) ? 'cart-outline' : recentlyAddedProductId === p.id || isInCart(p.id) ? 'checkmark' : 'cart-outline'"></ion-icon></button>
           </div>
         </div>
       }

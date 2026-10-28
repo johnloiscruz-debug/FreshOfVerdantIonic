@@ -65,7 +65,7 @@
   <div class="section-head"><div><h3>Popular Freshes</h3><small>Loved by our customers</small></div><a routerLink="/products" [queryParams]="{ popular: true }">See all</a></div>
   <div class="grid">@for (p of products.popular(); track p.id) { <div class="card" (click)="open(p)"><div class="img-ph thumb">@if (p.image) { <img [src]="p.image" [alt]="p.name" (error)="products.handleImageError(p)"> } @else { <ion-icon name="image-outline"></ion-icon> }</div><strong>{{ p.name }}</strong><div class="foot"><span class="price">₱{{ p.price }} / {{ p.unit }}</span><button class="add" [disabled]="p.stockQuantity === 0" [attr.aria-label]="p.stockQuantity === 0 ? 'Out of stock' : 'Add to cart'" (click)="addToCart(p, $event)"><ion-icon name="cart-outline"></ion-icon></button></div></div> }</div>
   <button class="feedback" style="display:block;width:calc(100% - 32px);border:0;text-align:left;font:inherit" type="button" (click)="showAppReviews = true"><h3>Customer App Rating</h3>@if (appReviews.length) { <strong>{{ appRating.toFixed(1) }} ★</strong><p>{{ appReviews.length }} recorded {{ appReviews.length === 1 ? 'review' : 'reviews' }} · Tap to read</p> } @else { <strong>No ratings yet</strong><p>Tap to view recorded app reviews.</p> }</button>
-  <ion-modal class="app-rating-modal" style="--background:#fff" [isOpen]="showAppReviews" [breakpoints]="[0, 0.72, 1]" [initialBreakpoint]="1" [handle]="true" (didDismiss)="showAppReviews = false">
+  <ion-modal class="app-rating-modal" [isOpen]="showAppReviews" [breakpoints]="[0, 0.72, 1]" [initialBreakpoint]="1" [handle]="true" (didDismiss)="showAppReviews = false">
     <ng-template>
       <div class="app-review-sheet">
         <div class="app-review-heading">

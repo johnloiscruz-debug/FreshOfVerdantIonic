@@ -1,0 +1,47 @@
+<ion-content>
+  @if (member; as active) {
+    <div class="team-profile" [class.switching]="switching">
+      <header class="profile-header">
+        <div class="brand-lockup">
+          <img class="brand-logo" src="https://cdn.phototourl.com/member/2026-10-22-e0d176fe-0763-46fd-be92-ddac142cb10f.png" alt="Fresh of Verdant official logo" />
+          <div><strong>Fresh of <span>Verdant</span></strong><small>TEAM PROFILES</small></div>
+        </div>
+        <button type="button" class="close-button" aria-label="Close team profile" (click)="close()"><ion-icon name="close-outline"></ion-icon></button>
+      </header>
+
+      <section class="profile-hero">
+        <div class="portrait img-ph">
+          @if (!active.photoFailed) { <img [src]="active.photoUrl" [alt]="active.name + ' portrait'" (error)="active.photoFailed = true"> }
+          @else { <ion-icon name="person-outline"></ion-icon> }
+        </div>
+        <span class="role-pill">{{ active.role }}</span>
+        <h1>{{ active.name }}</h1>
+        <p>Team member {{ activeIndex + 1 }} of {{ team.length }}</p>
+      </section>
+
+      <section class="profile-details" aria-label="Team member details">
+        <div class="detail-icon"><ion-icon name="people-outline"></ion-icon></div>
+        <div><small>PROJECT FOCUS</small><strong>{{ active.focus }}</strong></div>
+      </section>
+      <p class="team-note">Designing, building, testing, and shipping Fresh of Verdant together.</p>
+
+      <nav class="member-picker" aria-label="Choose a team member">
+        @for (person of team; track person.name; let i = $index) {
+          <button type="button" [class.selected]="i === activeIndex" [attr.aria-label]="'View ' + person.name" [attr.aria-current]="i === activeIndex ? 'true' : null" (click)="selectMember(i)">
+            <span class="mini-portrait img-ph">
+              @if (!person.photoFailed) { <img [src]="person.photoUrl" [alt]="''" (error)="person.photoFailed = true"> }
+              @else { <ion-icon name="person-outline"></ion-icon> }
+            </span>
+            <span>{{ person.name.split(' ')[0] }}</span>
+          </button>
+        }
+      </nav>
+
+      <div class="profile-navigation">
+        <button type="button" aria-label="Previous team member" (click)="move(-1)"><ion-icon name="chevron-back-outline"></ion-icon> Previous</button>
+        <span>{{ activeIndex + 1 }} / {{ team.length }}</span>
+        <button type="button" aria-label="Next team member" (click)="move(1)">Next <ion-icon name="chevron-forward-outline"></ion-icon></button>
+      </div>
+    </div>
+  }
+</ion-content>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonContent, IonIcon } from '@ionic/angular';
 import { NgIf } from '@angular/common';
@@ -25,9 +25,14 @@ export class ProfilePage {
   isDraggingMapPin = false;
   isLocating = false;
   profilePhoto: string | null = null;
-  constructor(public products: ProductService, public reviewService: ReviewService, public orderHistory: OrderHistoryService, private alerts: AlertController, private router: Router, private auth: AuthService, private api: ApiService) {
+  constructor(public products: ProductService, public reviewService: ReviewService, public orderHistory: OrderHistoryService, private alerts: AlertController, private router: Router, private route: ActivatedRoute, private auth: AuthService, private api: ApiService) {
     addIcons({ callOutline, cardOutline, checkmark, chevronForward, heartOutline, locateOutline, locationOutline, mailOutline, notificationsOutline, pencilOutline, personOutline, settingsOutline, shieldCheckmarkOutline, starOutline });
     this.loadSavedProfile();
+    this.route.queryParamMap.subscribe((params) => {
+      if (params.get('action') === 'choose-photo') {
+        setTimeout(() => document.getElementById('choose-profile-photo')?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+      }
+    });
     if (this.auth.isAuthenticated) {
       this.api.profileAvatar().subscribe({
         next: ({ avatarUrl }) => {

@@ -1,1 +1,15 @@
 ion-content{--background:#f1f4f2;--color:#000;color:#000}.brand-card{display:flex;align-items:center;gap:12px;margin:14px 16px;padding:14px;border-radius:16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.05)}.brand-card .logo-box{flex:0 0 44px}.brand-card strong{display:block;font-size:16px}.brand-card small{display:block;margin-top:4px;color:var(--fv-green-dark);font-size:10px;font-weight:700;text-transform:uppercase}.intro{margin:16px;padding:20px;border-radius:20px;background:linear-gradient(145deg,#087b3c,#02c75a);color:#000}.badge{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:#ffffff28;font-size:23px}.intro h1{margin:14px 0 6px;font-size:23px;line-height:1.15}.intro p{margin:0;color:#000;font-size:13px;line-height:1.5}.service{display:flex;gap:12px;margin:10px 16px;padding:15px;border-radius:16px;background:#fff;box-shadow:0 3px 12px #1224140d}.icon{display:grid;place-items:center;flex:0 0 40px;height:40px;border-radius:12px;background:#e7f8ee;color:#00a84d;font-size:20px}.service h2{margin:1px 0 5px;font-size:15px}.service p{margin:0;color:#000;font-size:12px;line-height:1.45}.footnote{margin:18px 20px 28px;color:#000;font-size:11px}
+
+:host-context(html.theme-dark) .brand-card { border:1px solid #293b30; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+:host-context(html.theme-dark) .brand-card small { color:#79e9a0; }
+:host-context(html.theme-dark) .intro { color:#fff; box-shadow:0 0 22px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .intro h1,
+:host-context(html.theme-dark) .intro p { color:#fff !important; }
+:host-context(html.theme-dark) .badge { border:1px solid #ffffff44; background:#ffffff20; color:#fff; box-shadow:0 0 14px rgba(255,255,255,.12); }
+:host-context(html.theme-dark) .badge ion-icon { color:#d8ffe5; filter:drop-shadow(0 0 6px rgba(255,255,255,.65)); }
+:host-context(html.theme-dark) .service { border:1px solid #293b30; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+:host-context(html.theme-dark) .service .icon { border:1px solid #315b42; background:linear-gradient(145deg,#1b432b,#14291c); color:#62e595; box-shadow:0 0 14px rgba(32,216,117,.2); }
+:host-context(html.theme-dark) .service .icon ion-icon { color:#62e595; filter:drop-shadow(0 0 5px rgba(32,216,117,.75)); }
+:host-context(html.theme-dark) .service h2 { color:#f2f5f2; }
+:host-context(html.theme-dark) .service p,
+:host-context(html.theme-dark) .footnote { color:#c4d0c8; }

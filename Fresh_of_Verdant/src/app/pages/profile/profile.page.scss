@@ -36,9 +36,10 @@ ion-content {
     border: 3px solid #fff;
     overflow: hidden;
     background: #d9eee2;
+    cursor: pointer;
     img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .initials { color: var(--fv-green-dark); font-size: 24px; font-weight: 700; }
-    input { position:absolute; inset:0; opacity:0; width:100%; cursor:pointer; }
+    input { position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer; }
     .check {
         position: absolute;
         right: -2px;
@@ -55,6 +56,7 @@ ion-content {
         font-style: normal;
     }
 }
+.identity { min-width: 0; }
 h3 {
     margin: 12px 16px 8px;
     font-size: 16px;
@@ -186,3 +188,26 @@ h3 {
     width: calc(100% - 32px);
     margin: 0 16px 24px;
 }
+
+:host-context(html.theme-dark) ion-content { --background:#080d09; --color:#f2f5f2; }
+:host-context(html.theme-dark) h3 { color:#f2f5f2; }
+:host-context(html.theme-dark) .who { box-shadow:inset 0 -1px rgba(98,229,149,.35),0 8px 22px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .photo { border-color:#b9ffce; box-shadow:0 0 0 3px rgba(32,216,117,.14),0 0 20px rgba(32,216,117,.3); }
+:host-context(html.theme-dark) .who .member { background:#12351f; color:#8af0aa; }
+:host-context(html.theme-dark) .profile-stats a { border:1px solid #263b2e; background:linear-gradient(145deg,#17221b,#111713); color:#e8f2eb; box-shadow:0 0 0 1px rgba(32,216,117,.05),0 0 14px rgba(32,216,117,.1); }
+:host-context(html.theme-dark) .profile-stats b { color:#62e595; text-shadow:0 0 10px rgba(32,216,117,.45); }
+:host-context(html.theme-dark) .profile-stats span { color:#c4d0c8; }
+:host-context(html.theme-dark) .card { border:1px solid #29382f; background:#151a17; color:#f2f5f2; box-shadow:0 4px 15px rgba(0,0,0,.28),0 0 12px rgba(32,216,117,.07); }
+:host-context(html.theme-dark) .row + .row { border-color:#35443a; }
+:host-context(html.theme-dark) .ico { border:1px solid #285239; background:linear-gradient(145deg,#1c3c29,#14271b); color:#62e595; box-shadow:0 0 12px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .val small { color:#b8c9be; }
+:host-context(html.theme-dark) .val strong,
+:host-context(html.theme-dark) .link { color:#f2f5f2; }
+:host-context(html.theme-dark) .val input,
+:host-context(html.theme-dark) .phone-input,
+:host-context(html.theme-dark) .address-picker > input { border-color:#3b5142; background:#1b2620; color:#f2f5f2; }
+:host-context(html.theme-dark) .address-picker p { color:#b8c9be; }
+:host-context(html.theme-dark) .edit { color:#79e9a0; filter:drop-shadow(0 0 5px rgba(32,216,117,.4)); }
+:host-context(html.theme-dark) .link ion-icon:last-child { color:#8fa397; }
+:host-context(html.theme-dark) .map-select { box-shadow:0 0 14px rgba(32,216,117,.2); }
+:host-context(html.theme-dark) .save { border:1px solid #3bea87; box-shadow:0 0 18px rgba(32,216,117,.28); }

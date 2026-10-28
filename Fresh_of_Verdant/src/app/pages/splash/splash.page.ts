@@ -11,12 +11,25 @@ import { AuthService } from '../../services/auth';
   imports: [IonContent, IonSpinner],
 })
 export class SplashPage implements OnInit {
-  constructor(private router: Router, private auth: AuthService) {}
+  welcomeBackName = '';
+  isAdminWelcome = false;
+  private welcomeBackDestination = '';
+
+  constructor(private router: Router, private auth: AuthService) {
+    const state = this.router.getCurrentNavigation()?.extras.state;
+    this.welcomeBackName = typeof state?.['welcomeBackName'] === 'string' ? state['welcomeBackName'] : '';
+    this.welcomeBackDestination = typeof state?.['welcomeBackDestination'] === 'string' ? state['welcomeBackDestination'] : '';
+    this.isAdminWelcome = this.auth.isAdmin && !!this.welcomeBackName;
+  }
 
   ngOnInit() {
-    // Start guests in the store and take an already signed-in admin to the dashboard.
+    // Show the login greeting briefly, then continue to the signed-in destination.
     setTimeout(() => {
-      void this.router.navigateByUrl(this.auth.isAdmin ? '/admin' : '/home', { replaceUrl: true });
+      const safeDestination = this.welcomeBackDestination.startsWith('/') && !this.welcomeBackDestination.startsWith('//')
+        ? this.welcomeBackDestination
+        : '/home';
+      const destination = this.auth.isAdmin ? '/admin' : (this.welcomeBackName ? safeDestination : '/home');
+      void this.router.navigateByUrl(destination, { replaceUrl: true });
     }, 2500);
   }
 }

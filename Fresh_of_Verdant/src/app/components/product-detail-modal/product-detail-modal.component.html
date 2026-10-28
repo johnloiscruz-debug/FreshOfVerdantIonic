@@ -11,7 +11,10 @@
     <div class="health"><b>How Healthy?</b><strong>Body support</strong>@for (benefit of bodyBenefits; track benefit) { <span>✓ {{ benefit }}</span> }<strong>Product effects</strong>@for (note of healthNotes; track note) { <span>✓ {{ note }}</span> }<small>Nutrition values are per 100 g. Benefits vary with serving size and preparation.</small></div>
     <div class="nutrition"><div class="nutrition-head"><strong>Nutritional facts</strong><small>per 100g</small></div><div class="nutrition-grid"><div><b>{{ product.calories }}</b><span>Calories</span></div><div><b>{{ product.protein }}g</b><span>Protein</span></div><div><b>{{ product.carbs }}g</b><span>Carbs</span></div><div><b>{{ product.vitaminC }}mg</b><span>Vitamin C</span></div></div></div>
     <div class="qty-row"><div><strong>Quantity</strong><small>In stock · sold by {{ product.unit }}</small></div><div class="stepper"><button (click)="change(-1)"><ion-icon name="remove-outline"></ion-icon></button><span>{{ qty }}</span><button (click)="change(1)"><ion-icon name="add-outline"></ion-icon></button></div></div>
-    <button class="fv-btn add-cart-button" [class.added]="cartAdded" [disabled]="addingToCart || cartAdded || product.stockQuantity === 0" (click)="addToCart()"><ion-icon [name]="cartAdded ? 'checkmark-circle-outline' : 'cart-outline'"></ion-icon> {{ product.stockQuantity === 0 ? 'Out of Stock' : addingToCart ? 'Adding…' : cartAdded ? 'Added to My Cart' : 'Add to Cart · ₱' + total }}</button>
+    <button class="fv-btn add-cart-button" [class.added]="cartAdded" [class.loading]="addingToCart" [disabled]="addingToCart || cartAdded || product.stockQuantity === 0" (click)="addToCart()">
+      @if (addingToCart) { <ion-spinner name="crescent" aria-label="Adding to cart"></ion-spinner><span>Adding to My Cart…</span> }
+      @else { <ion-icon [name]="cartAdded ? 'checkmark-circle-outline' : 'cart-outline'"></ion-icon><span>{{ product.stockQuantity === 0 ? 'Out of Stock' : cartAdded ? 'Added to My Cart' : 'Add to Cart · ₱' + total }}</span> }
+    </button>
     } @else {
     <div class="reviews"><h3>Customer Reviews</h3>@if (productReviews.length) { @for (review of productReviews; track review.id) {
       <article class="product-review">
@@ -20,11 +23,12 @@
       </article>
     } } @else { <p>No customer reviews for this product yet.</p> }</div>
     }
-    <section style="margin-top:18px"><h3 style="margin:0;font-size:17px">You Might Also Like</h3><p style="margin:3px 0 10px;color:#68716a;font-size:11px">Picked from today's harvest</p><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+    <section class="suggestions"><h3>You Might Also Like</h3><p>Picked from today's harvest</p><div class="suggestion-grid">
       @for (suggestion of suggestedProducts; track suggestion.id) {
-        <button type="button" style="display:flex;align-items:center;gap:8px;min-width:0;padding:7px;border:1px solid #e7eee8;border-radius:12px;background:#fff;text-align:left" (click)="chooseSuggestion(suggestion)">
-          <span class="img-ph" style="width:42px;height:42px;flex:0 0 42px;border-radius:8px">@if (suggestion.image) { <img style="width:100%;height:100%;object-fit:cover" [src]="suggestion.image" [alt]="suggestion.name" (error)="products.handleImageError(suggestion)"> } @else { <ion-icon name="image-outline"></ion-icon> }</span>
-          <span style="min-width:0"><strong style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#171b18;font-size:11px">{{ suggestion.name }}</strong><small style="display:block;margin-top:3px;color:var(--fv-green-dark);font-size:10px">₱{{ suggestion.price }} / {{ suggestion.unit }}</small></span>
+        <button type="button" class="suggestion-card" (click)="chooseSuggestion(suggestion)">
+          <span class="suggestion-image img-ph">@if (suggestion.image) { <img [src]="suggestion.image" [alt]="suggestion.name" (error)="products.handleImageError(suggestion)"> } @else { <ion-icon name="image-outline"></ion-icon> }</span>
+          <strong>{{ suggestion.name }}</strong>
+          <small>₱{{ suggestion.price }} / {{ suggestion.unit || 'kg' }}</small>
         </button>
       }
     </div></section>

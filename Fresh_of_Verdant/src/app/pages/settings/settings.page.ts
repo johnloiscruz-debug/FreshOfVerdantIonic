@@ -11,7 +11,7 @@ export class SettingsPage {
   theme = localStorage.getItem('fv-theme') ?? 'green';
   language = localStorage.getItem('fv-language') ?? 'English';
   readonly themes = [
-    { id: 'green', label: 'Green' },
+    { id: 'green', label: 'Default' },
     { id: 'light', label: 'Light' },
     { id: 'dark', label: 'Dark' },
   ];

@@ -1,7 +1,7 @@
 <app-hero-header eyebrow="Fresh of Verdant" title="Developers" rightIcon="code-slash-outline"></app-hero-header>
 
-<ion-content>
-  <div class="intro">
+<ion-content [class.entering]="animateEntrance">
+  <div class="intro team-intro">
     <span class="ico"><ion-icon name="people-outline"></ion-icon></span>
     <div><strong>{{ team.length }} people, one harvest</strong><small>Designing, building, testing, and shipping v1.0.0 together.</small></div>
   </div>
@@ -10,7 +10,7 @@
   <p class="lead">Each role keeps the market dependable from tap to table.</p>
 
   @for (m of team; track m.name) {
-    <div class="member">
+    <button type="button" class="member team-member" (click)="openMember($index)" [attr.aria-label]="'View ' + m.name + ', ' + m.role">
       <div class="photo img-ph">
         @if (!m.photoFailed) {
           <img [src]="m.photoUrl" [alt]="m.name + ' portrait'" (error)="m.photoFailed = true">
@@ -24,7 +24,7 @@
         <small>{{ m.focus }}</small>
       </div>
       <span class="go"><ion-icon name="chevron-forward"></ion-icon></span>
-    </div>
+    </button>
   }
 
   <div class="care">

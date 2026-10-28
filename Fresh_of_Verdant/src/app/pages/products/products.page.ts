@@ -25,6 +25,9 @@ export class ProductsPage {
   popularOnly = false;
   page = 1;
   readonly pageSize = 15;
+  addingProductId: number | null = null;
+  recentlyAddedProductId: number | null = null;
+  private addedAnimationTimer?: ReturnType<typeof setTimeout>;
 
   constructor(public productService: ProductService, private cart: CartService, private reviewService: ReviewService, route: ActivatedRoute) {
     addIcons({ cartOutline, checkmark, checkmarkCircleOutline, imageOutline, leafOutline, searchOutline, star });
@@ -85,8 +88,22 @@ export class ProductsPage {
     this.productService.openDetail(p);
   }
 
-  quickAdd(p: Product, event: Event) {
+  async quickAdd(p: Product, event: Event) {
     event.stopPropagation();
-    this.cart.add(p, 1);
+    if (this.addingProductId !== null) return;
+    this.addingProductId = p.id;
+    this.recentlyAddedProductId = null;
+    try {
+      const result = await this.cart.add(p, 1);
+      if (result === 'added' || result === 'saved') {
+        this.recentlyAddedProductId = p.id;
+        if (this.addedAnimationTimer) clearTimeout(this.addedAnimationTimer);
+        this.addedAnimationTimer = setTimeout(() => {
+          if (this.recentlyAddedProductId === p.id) this.recentlyAddedProductId = null;
+        }, 850);
+      }
+    } finally {
+      this.addingProductId = null;
+    }
   }
 }

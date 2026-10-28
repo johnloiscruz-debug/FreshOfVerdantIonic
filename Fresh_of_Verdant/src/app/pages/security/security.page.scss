@@ -12,3 +12,17 @@ ion-content { --background:var(--fv-bg); --color:#111; }
 .notice { margin:12px 0; color:#46574b; font-size:12px; line-height:1.45; }
 .notice.error { color:#b42318; }
 .service-note { display:block; margin-top:10px; color:#687169; font-size:10px; line-height:1.4; text-align:center; }
+:host-context(html.theme-dark) ion-content { --background:#080d09; --color:#f2f5f2; }
+:host-context(html.theme-dark) .security-card { border:1px solid #285239; background:linear-gradient(145deg,#17231b,#111713); color:#f2f5f2; box-shadow:0 0 18px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .security-icon { border:1px solid #3bea87; background:#193d28; color:#79e9a0; box-shadow:0 0 16px rgba(32,216,117,.28); }
+:host-context(html.theme-dark) .security-card p { color:#c1d0c6; }
+:host-context(html.theme-dark) .password-form { border:1px solid #2d4034; background:#141a16; color:#f2f5f2; box-shadow:0 0 18px rgba(32,216,117,.1); }
+:host-context(html.theme-dark) .password-form h2,
+:host-context(html.theme-dark) .password-form label { color:#f2f5f2; }
+:host-context(html.theme-dark) .password-form input { border-color:#3b5142; background:#1b2620; color:#f2f5f2; caret-color:#62e595; }
+:host-context(html.theme-dark) .password-form input::placeholder { color:#aebdb3; }
+:host-context(html.theme-dark) .password-form input:focus { border-color:#20d875; box-shadow:0 0 0 3px rgba(32,216,117,.16),0 0 14px rgba(32,216,117,.15); }
+:host-context(html.theme-dark) .show-password { color:#62e595; }
+:host-context(html.theme-dark) .notice { color:#c4d0c8; }
+:host-context(html.theme-dark) .service-note { color:#aebdb3; }
+:host-context(html.theme-dark) .password-form .fv-btn { border:1px solid #3bea87; box-shadow:0 0 18px rgba(32,216,117,.27); }

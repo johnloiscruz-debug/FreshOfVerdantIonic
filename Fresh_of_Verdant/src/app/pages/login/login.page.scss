@@ -19,7 +19,12 @@
 }
 
 .auth-top { 
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
     padding-top: 56px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .08);
 
 h1 { 
     margin: 22px 0 4px;

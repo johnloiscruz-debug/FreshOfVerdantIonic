@@ -25,6 +25,12 @@ import { ProductService } from '../../services/product';
     h1 { margin:18px 0 6px; color:#173b27; font-size:22px; }
     p { margin:0; color:#66736b; font-size:14px; }
     a { margin-top:20px; color:var(--fv-green-dark); font-weight:700; text-decoration:none; }
+    :host-context(html.theme-dark) ion-content { --background:#080d09; --color:#f2f5f2; }
+    :host-context(html.theme-dark) .callback-page { color:#f2f5f2; background:radial-gradient(ellipse at 50% 42%,#153b26 0%,#0d1d13 42%,#080d09 78%); }
+    :host-context(html.theme-dark) img { border:1px solid #3bea87; box-shadow:0 0 0 4px rgba(32,216,117,.12),0 0 28px rgba(32,216,117,.42); }
+    :host-context(html.theme-dark) h1 { color:#effff4; text-shadow:0 0 14px rgba(32,216,117,.42); }
+    :host-context(html.theme-dark) p { color:#b8c9be; }
+    :host-context(html.theme-dark) a { color:#62e595; }
   `],
 })
 export class GoogleAuthCallbackPage {

@@ -152,3 +152,15 @@ h3.bar {
     font-size: 17px;
     flex-shrink: 0;
 }
+
+:host-context(html.theme-dark) .app-card { border:1px solid #293b30; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+:host-context(html.theme-dark) .app-card small { color:#79e9a0; }
+:host-context(html.theme-dark) .mini .tag { background:#193d28; color:#79e9a0; box-shadow:0 0 10px rgba(32,216,117,.14); }
+:host-context(html.theme-dark) .mini .tag ion-icon { color:#62e595; filter:drop-shadow(0 0 4px rgba(32,216,117,.7)); }
+:host-context(html.theme-dark) .story,
+:host-context(html.theme-dark) .visit { border:1px solid #293b30; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+:host-context(html.theme-dark) .visit > small { color:#79e9a0; }
+:host-context(html.theme-dark) .visit .info { border:1px solid #293b30; background:#101713; }
+:host-context(html.theme-dark) .visit .info small { color:#aebdb3; }
+:host-context(html.theme-dark) .visit .ico { border:1px solid #315b42; background:linear-gradient(145deg,#1b432b,#14291c); color:#62e595; box-shadow:0 0 13px rgba(32,216,117,.2); }
+:host-context(html.theme-dark) .visit .ico ion-icon { color:#62e595; filter:drop-shadow(0 0 5px rgba(32,216,117,.75)); }

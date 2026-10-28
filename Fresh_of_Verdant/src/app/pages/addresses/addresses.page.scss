@@ -21,3 +21,27 @@ ion-content { --background:var(--fv-bg); --color:#111; }
 .pin { position:absolute; display:grid; place-items:center; width:30px; height:30px; border:3px solid white; border-radius:50% 50% 50% 0; background:var(--fv-green-dark); color:white; box-shadow:0 2px 6px #0003; transform:translate(-50%,-50%) rotate(-45deg); pointer-events:none; }
 .pin ion-icon { transform:rotate(45deg); font-size:17px; }
 .location-picker p { margin:6px 0 0; color:#667068; font-size:10px; line-height:1.4; }
+:host-context(html.theme-dark) ion-content { --background:#080d09; --color:#f2f5f2; }
+:host-context(html.theme-dark) .heading { color:#f2f5f2; }
+:host-context(html.theme-dark) .heading p { color:#b8c9be; }
+:host-context(html.theme-dark) .address-card,
+:host-context(html.theme-dark) .form-card { border:1px solid #2d4034; background:#141a16; color:#f2f5f2; box-shadow:0 0 16px rgba(32,216,117,.1); }
+:host-context(html.theme-dark) .default { color:#79e9a0; }
+:host-context(html.theme-dark) .edit,
+:host-context(html.theme-dark) .card-actions button:not(.remove) { color:#62e595; }
+:host-context(html.theme-dark) .address-card p { color:#d2ddd6; }
+:host-context(html.theme-dark) .address-card small { color:#b8c9be; }
+:host-context(html.theme-dark) .card-actions { border-color:#35443a; }
+:host-context(html.theme-dark) .card-actions .remove { color:#ff8585; }
+:host-context(html.theme-dark) .form-card h2 { color:#f2f5f2; }
+:host-context(html.theme-dark) .fields label { color:#c4d0c8; }
+:host-context(html.theme-dark) .fields input,
+:host-context(html.theme-dark) .fields select { border-color:#3b5142; background:#1b2620; color:#f2f5f2; color-scheme:dark; }
+:host-context(html.theme-dark) .fields input::placeholder { color:#aebdb3; }
+:host-context(html.theme-dark) .fields select option { background:#151a17; color:#f2f5f2; }
+:host-context(html.theme-dark) .cancel { border-color:#3b5142; background:#18211b; color:#dce7df; }
+:host-context(html.theme-dark) .address-map { border:1px solid #315b42; box-shadow:0 0 15px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .location-heading,
+:host-context(html.theme-dark) .location-picker p { color:#b8c9be; }
+:host-context(html.theme-dark) .locate { color:#62e595; }
+:host-context(html.theme-dark) .save { box-shadow:0 0 16px rgba(32,216,117,.25); }

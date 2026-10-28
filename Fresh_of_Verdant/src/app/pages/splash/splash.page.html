@@ -5,13 +5,23 @@
         <img class="logo-box official-logo" src="https://cdn.phototourl.com/member/2026-10-22-e0d176fe-0763-46fd-be92-ddac142cb10f.png" alt="Fresh of Verdant logo" />
         <div class="brand">Fresh of<strong>Verdant</strong></div>
       </div>
-      <h1>Freshness Delivered to Your Doorstep</h1>
-      <p>Farm-picked goodness, thoughtfully packed for every day.</p>
+      @if (welcomeBackName) {
+        @if (isAdminWelcome) {
+          <h1>Welcome admin, {{ welcomeBackName }}</h1>
+          <p>Your admin dashboard is ready. Opening your store controls.</p>
+        } @else {
+          <h1>Welcome back, {{ welcomeBackName }}</h1>
+          <p>Your Fresh of Verdant account is ready. Taking you to your market.</p>
+        }
+      } @else {
+        <h1>Freshness Delivered to Your Doorstep</h1>
+        <p>Farm-picked goodness, thoughtfully packed for every day.</p>
+      }
     </div>
 
     <div class="loading">
       <ion-spinner name="circular"></ion-spinner>
-      <span>Preparing your market</span>
+      <span>{{ isAdminWelcome ? 'Opening admin dashboard' : welcomeBackName ? 'Opening your account' : 'Preparing your market' }}</span>
     </div>
   </div>
 </ion-content>

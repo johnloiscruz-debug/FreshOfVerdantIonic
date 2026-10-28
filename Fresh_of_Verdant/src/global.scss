@@ -94,3 +94,17 @@ ion-router-outlet ion-content {
 .recorded-review-text { margin:12px 0 10px; color:#34443a; font-size:13px; line-height:1.5; white-space:pre-wrap; }
 .recorded-review-date { color:#758078; font-size:10px; }
 .no-app-reviews { margin-top:20px; color:#68716a; font-size:13px; }
+
+ion-modal.app-rating-modal { --background:#fff; --border-radius:20px 20px 0 0; }
+html.theme-dark ion-modal.app-rating-modal { --background:#0b100d; --ion-background-color:#0b100d; }
+html.theme-dark .app-review-sheet { background:#0b100d; color:#f2f5f2; }
+html.theme-dark .app-review-heading { background:linear-gradient(110deg,#087a3c,#08a94b); color:#fff; }
+html.theme-dark .app-review-heading p { color:#e1f6e9; }
+html.theme-dark .app-review-close { background:#ffffff24; color:#fff; }
+html.theme-dark .recorded-review { border-color:#2d3b32; background:#151a17; color:#f2f5f2; box-shadow:0 5px 16px rgba(0,0,0,.24); }
+html.theme-dark .reviewer-icon { background:#203c2b; color:#62e595; }
+html.theme-dark .reviewer-identity strong { color:#f2f5f2; }
+html.theme-dark .reviewer-stars { color:#39df78; }
+html.theme-dark .recorded-review-text { color:#d7e1da; }
+html.theme-dark .recorded-review-date { color:#aebdb3; }
+html.theme-dark .no-app-reviews { color:#b8c9be; }

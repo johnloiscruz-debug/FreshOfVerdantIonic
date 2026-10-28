@@ -40,3 +40,41 @@ ion-content { --background: var(--fv-bg); --color: #111; }
 .transaction>b.debit { color:#333; }
 .empty { margin:18px; color:#68736b; text-align:center; font-size:12px; }
 .demo-note { margin:20px 18px; color:#6b756e; text-align:center; font-size:10px; line-height:1.4; }
+:host-context(html.theme-dark) ion-content { --background:#080d09; --color:#f2f5f2; }
+:host-context(html.theme-dark) .balance-card { border:1px solid #31d879; box-shadow:0 0 0 1px rgba(32,216,117,.12),0 0 26px rgba(32,216,117,.25); }
+:host-context(html.theme-dark) .wallet-mark { border:1px solid rgba(145,255,184,.45); color:#b5ffcc; box-shadow:0 0 15px rgba(32,216,117,.25); }
+:host-context(html.theme-dark) .top-ups button { border-color:#50e88c; background:#eefcf3; color:#087b3c; box-shadow:0 0 12px rgba(32,216,117,.16); }
+:host-context(html.theme-dark) .checkout-card { border:1px solid #2d4034; background:#141a16; color:#f2f5f2; box-shadow:0 0 16px rgba(32,216,117,.1); }
+:host-context(html.theme-dark) .checkout-card > span,
+:host-context(html.theme-dark) .section-title span { color:#b8c9be; }
+:host-context(html.theme-dark) .checkout-card > strong,
+:host-context(html.theme-dark) .section-title h2 { color:#f2f5f2; }
+:host-context(html.theme-dark) .checkout-card p { color:#79e9a0; }
+:host-context(html.theme-dark) .checkout-card p.short { color:#ffd27c; }
+:host-context(html.theme-dark) .primary { border:1px solid #3bea87; box-shadow:0 0 17px rgba(32,216,117,.26); }
+:host-context(html.theme-dark) .transaction { border:1px solid #2d4034; background:#141a16; color:#f2f5f2; box-shadow:0 0 12px rgba(32,216,117,.08); }
+:host-context(html.theme-dark) .transaction-icon { border:1px solid #285239; background:#193d28; color:#62e595; }
+:host-context(html.theme-dark) .transaction-copy small { color:#b8c9be; }
+:host-context(html.theme-dark) .transaction > b { color:#62e595; }
+:host-context(html.theme-dark) .transaction > b.debit { color:#e1e9e4; }
+:host-context(html.theme-dark) .empty,
+:host-context(html.theme-dark) .demo-note { color:#b8c9be; }
+:host-context(html.theme-dark) .top-ups button {
+  border:1px solid #35d879 !important;
+  background:linear-gradient(145deg,#14251a,#101713) !important;
+  color:#8af0aa !important;
+  box-shadow:0 0 0 1px rgba(32,216,117,.1),0 0 16px rgba(32,216,117,.2) !important;
+  text-shadow:0 0 8px rgba(32,216,117,.35);
+}
+:host-context(html.theme-dark) .top-ups button ion-icon { color:#62e595; filter:drop-shadow(0 0 5px rgba(32,216,117,.65)); }
+:host-context(html.theme-dark) .top-ups button:active,
+:host-context(html.theme-dark) .top-ups button:focus-visible { background:#1b3a27 !important; box-shadow:0 0 0 3px rgba(32,216,117,.2),0 0 20px rgba(32,216,117,.3) !important; }
+:host-context(html.theme-dark) .primary {
+  border:1px solid #3bea87 !important;
+  background:linear-gradient(110deg,#12351f,#17452b) !important;
+  color:#9af5b5 !important;
+  box-shadow:0 0 0 1px rgba(32,216,117,.1),0 0 20px rgba(32,216,117,.26) !important;
+  text-shadow:0 0 8px rgba(32,216,117,.38);
+}
+:host-context(html.theme-dark) .primary:active,
+:host-context(html.theme-dark) .primary:focus-visible { background:#1b4c2e !important; box-shadow:0 0 0 3px rgba(32,216,117,.2),0 0 24px rgba(32,216,117,.34) !important; }

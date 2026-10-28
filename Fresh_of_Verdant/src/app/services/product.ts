@@ -253,6 +253,7 @@ export class ProductService {
     const modal = await this.modalCtrl.create({
       component: ProductDetailModal,
       componentProps: { product },
+      cssClass: 'product-detail-modal',
       initialBreakpoint: 0.92,
       breakpoints: [0, 0.92],
       handle: true,
