@@ -170,6 +170,17 @@ export interface ComplaintSubmission {
   message: string;
 }
 
+export interface UserComplaint {
+  complaint_id: number;
+  user_id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: string;
+  resolution: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
@@ -299,6 +310,10 @@ export class ApiService {
 
   submitComplaint(details: ComplaintSubmission) {
     return this.http.post<{ complaintId: number; status: string }>(`${this.baseUrl}/complaint`, details, { withCredentials: true });
+  }
+
+  myComplaints(): Observable<UserComplaint[]> {
+    return this.http.get<UserComplaint[]>(`${this.baseUrl}/complaint`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   adminOverview(): Observable<AdminOverview> {

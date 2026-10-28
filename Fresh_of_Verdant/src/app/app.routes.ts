@@ -4,7 +4,7 @@ import { guestOnly, requireAccount, requireAdmin } from './services/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'splash',
     pathMatch: 'full',
   },
   {
@@ -136,6 +136,11 @@ export const routes: Routes = [
   {
     path: 'contact',
     loadComponent: () => import('./pages/contact/contact.page').then( m => m.ContactPage)
+  },
+  {
+    path: 'inbox',
+    canActivate: [requireAccount],
+    loadComponent: () => import('./pages/inbox/inbox.page').then(m => m.InboxPage)
   },
   {
     path: 'help-support',

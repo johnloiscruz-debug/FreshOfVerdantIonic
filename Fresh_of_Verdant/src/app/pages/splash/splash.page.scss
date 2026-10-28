@@ -7,12 +7,13 @@ ion-content.splash { --background: var(--fv-green); }
   justify-content: space-between;
   align-items: center;
   height: 100%;
-  padding: 0 32px 56px;
+  box-sizing: border-box;
+  padding: max(28px, env(safe-area-inset-top)) 32px calc(env(safe-area-inset-bottom) + 24px);
   color: #fff;
   text-align: center;
   overflow: hidden;
 
-  // soft circle in the corner like the Figma
+  // Soft corner shape and outline echo the supplied splash design.
   &::before {
     content: '';
     position: absolute;
@@ -23,9 +24,21 @@ ion-content.splash { --background: var(--fv-green); }
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
   }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -54vw;
+    left: 50%;
+    width: 100vw;
+    height: 100vw;
+    transform: translateX(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+  }
 }
 
-.center { margin: auto 0; }
+.center { position: relative; z-index: 1; width: 100%; margin-top: clamp(104px, 16vh, 145px); }
 
 .logo {
   display: flex;
@@ -39,8 +52,9 @@ ion-content.splash { --background: var(--fv-green); }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
   border-radius: 16px;
   background: #fff;
   color: var(--fv-green);
@@ -53,6 +67,7 @@ p { margin: 0; font-size: 12px; opacity: 0.85; }
 
 .loading {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

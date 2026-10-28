@@ -26,7 +26,7 @@ export class AppComponent {
     { title: 'Home', items: [{ title: 'Home / Dashboard', url: '/home', icon: 'home-outline' }, { title: 'Product List', url: '/products', icon: 'cube-outline' }] },
     { title: 'Market', items: [{ title: 'My Cart', url: '/cart', icon: 'cart-outline', badge: true }, { title: 'Wishlist', url: '/wishlist', icon: 'heart-outline' }, { title: 'My Orders', url: '/orders', icon: 'receipt-outline' }, { title: 'Delivery Track', url: '/order-tracker', icon: 'navigate-outline' }, { title: 'Help & Support', url: '/help-support', icon: 'headset-outline' }] },
     { title: 'Discover our App', items: [{ title: 'About the App', url: '/about', icon: 'information-circle-outline' }, { title: 'History of our App', url: '/app-history', icon: 'time-outline' }, { title: 'About Services', url: '/about-services', icon: 'briefcase-outline' }] },
-    { title: 'Others', items: [{ title: 'Settings', url: '/settings', icon: 'settings-outline' }, { title: 'Location', url: '/location', icon: 'location-outline' }, { title: 'FAQs', url: '/faqs', icon: 'help-circle-outline' }, { title: 'Policies', url: '/policies', icon: 'shield-checkmark-outline' }, { title: 'Terms & Conditions', url: '/terms', icon: 'document-text-outline' }, { title: 'Contact us', url: '/contact', icon: 'mail-outline' }, { title: 'Developers', url: '/developers', icon: 'code-slash-outline' }] },
+    { title: 'Others', items: [{ title: 'Inbox', url: '/inbox', icon: 'mail-outline' }, { title: 'Settings', url: '/settings', icon: 'settings-outline' }, { title: 'Location', url: '/location', icon: 'location-outline' }, { title: 'FAQs', url: '/faqs', icon: 'help-circle-outline' }, { title: 'Policies', url: '/policies', icon: 'shield-checkmark-outline' }, { title: 'Terms & Conditions', url: '/terms', icon: 'document-text-outline' }, { title: 'Contact us', url: '/contact', icon: 'mail-outline' }, { title: 'Developers', url: '/developers', icon: 'code-slash-outline' }] },
   ];
 
   adminMenuGroups: MenuGroup[] = [
@@ -37,7 +37,7 @@ export class AppComponent {
   get activeMenuGroups(): MenuGroup[] {
     if (this.auth.isAdmin) return [...this.adminMenuGroups, ...this.menuGroups];
     if (!this.auth.isAuthenticated) {
-      const guestOnlyItems = new Set(['/cart', '/wishlist', '/orders', '/order-tracker']);
+      const guestOnlyItems = new Set(['/cart', '/wishlist', '/orders', '/order-tracker', '/inbox']);
       return this.menuGroups.map((group) => ({ ...group, items: group.items.filter((item) => !guestOnlyItems.has(item.url)) }));
     }
     return this.menuGroups;
