@@ -38,31 +38,20 @@ const ORDER_STAGE_DESCRIPTIONS: Array<{ status: OrderStatus; desc: string }> = [
 @Injectable({ providedIn: 'root' })
 export class OrderHistoryService {
   private readonly savedOrders = signal<TrackedOrder[]>([]);
-  private readonly clock = signal(Date.now());
   readonly loading = signal(false);
   readonly loadError = signal<string | null>(null);
-  readonly orders = computed(() => {
-    const now = this.clock();
-    return this.savedOrders().map((order) => ({ ...order, status: this.statusAt(order, now) }));
-  });
+  readonly orders = computed(() => this.savedOrders());
   readonly count = computed(() => this.orders().length);
   readonly deliveredCount = computed(() => this.orders().filter((order) => order.status === 'Delivered').length);
 
   constructor(private api: ApiService, private auth: AuthService) {
-    setInterval(() => this.clock.set(Date.now()), 5000);
-    if (typeof document !== 'undefined') {
-      document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) this.clock.set(Date.now());
-      });
-    }
   }
 
-  loadFromServer() {
+  loadFromServer(onLoaded?: () => void) {
     if (!this.auth.isAuthenticated) {
       this.savedOrders.set([]);
       return;
     }
-    this.savedOrders.set([]);
     this.loading.set(true);
     this.loadError.set(null);
     this.api.orders().pipe(
@@ -71,13 +60,15 @@ export class OrderHistoryService {
         this.loadError.set('Could not load your purchases. Please try again.');
         return of(null);
       }),
-    ).subscribe(() => this.loading.set(false));
+    ).subscribe(() => {
+      this.loading.set(false);
+      onLoaded?.();
+    });
   }
 
   addSavedOrder(order: TrackedOrder) {
     const savedOrder = this.normalizeImages(order);
     this.savedOrders.update((orders) => [savedOrder, ...orders.filter((saved) => saved.id !== savedOrder.id)]);
-    this.clock.set(Date.now());
   }
 
   private normalizeImages(order: TrackedOrder): TrackedOrder {
@@ -112,55 +103,30 @@ export class OrderHistoryService {
   }
 
   timeline(order: TrackedOrder) {
-    const stages = this.stagesFor(order);
-    const currentStatus = this.statusAt(order, this.clock());
+    const stages = this.stagesFor();
+    const currentStatus = this.statusFor(order);
     if (currentStatus === 'Cancelled') return stages.map((stage) => ({ title: stage.status, desc: stage.desc, state: 'pending' as const, meta: 'Order cancelled' }));
     const currentIndex = stages.findIndex((stage) => stage.status === currentStatus);
-    const createdAt = new Date(order.createdAt).getTime();
-
     return stages.map((stage, index) => ({
       title: stage.status,
       desc: stage.desc,
       state: currentStatus === 'Delivered' || index < currentIndex ? 'done' : index === currentIndex ? 'active' : 'pending',
       meta: currentStatus === 'Delivered'
-        ? this.formatTime(new Date(createdAt + stage.timelineAfterMs))
+        ? 'Complete'
         : index < currentIndex
-          ? this.formatTime(new Date(createdAt + stage.afterMs))
+          ? 'Complete'
         : index === currentIndex
           ? 'In progress'
           : index === currentIndex + 1 ? 'Next' : 'Pending',
     }));
   }
 
-  timelineTimes(order: TrackedOrder): string[] {
-    const offsets = order.deliverySchedule === 'same-day' ? [0, 2, 4, 6] : [0, 2, 6, 8];
-    const createdAt = new Date(order.createdAt).getTime();
-    return offsets.map((minutes) => this.formatTime(new Date(createdAt + minutes * 60_000)));
-  }
-
   statusFor(order: TrackedOrder): OrderStatus {
-    return this.statusAt(order, this.clock());
-  }
-
-  private statusAt(order: TrackedOrder, now: number): OrderStatus {
-    void now;
     return order.status ?? 'Confirmed';
   }
 
-  private stagesFor(order: TrackedOrder) {
-    const sameDay = order.deliverySchedule === 'same-day';
-    const milestoneMinutes = sameDay ? [0, 2, 4, 6] : [0, 2, 6, 8];
-    const progressionMinutes = sameDay ? [0, 2, 4, 6] : [0, 2, 6, 8];
-    return ORDER_STAGE_DESCRIPTIONS.map((stage, index) => ({
-      ...stage,
-      // The timeline advances through each dot on a compressed delivery simulation.
-      afterMs: progressionMinutes[index] * 60_000,
-      timelineAfterMs: milestoneMinutes[index] * 60_000,
-    }));
-  }
-
-  private formatTime(value: Date) {
-    return value.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  private stagesFor() {
+    return ORDER_STAGE_DESCRIPTIONS;
   }
 
 }

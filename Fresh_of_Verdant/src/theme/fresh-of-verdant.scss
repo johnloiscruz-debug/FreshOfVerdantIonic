@@ -77,6 +77,43 @@ html.theme-dark ion-content .language-card select {
   box-shadow: 0 8px 18px rgba(0, 196, 85, 0.28);
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--fv-muted);
+  font-size: 12px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  flex: 1;
+  height: 1px;
+  background: #e1e8e3;
+  content: '';
+}
+
+.google-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid #d9e0dc;
+  border-radius: 14px;
+  background: #fff;
+  color: #202124;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(20, 35, 25, .07);
+}
+
+.google-auth img { width: 20px; height: 20px; }
+.google-auth:active { background: #f7f9f8; }
+
 /* Auth pages (login / register / reset) */
 .auth-top {
   padding: 20px 20px 24px;

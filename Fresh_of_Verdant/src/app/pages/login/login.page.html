@@ -36,6 +36,9 @@
       @if (error) { <p class="error">{{ error }}</p> }
       <button class="fv-btn" (click)="signIn()" [disabled]="loading">{{ loading ? 'Signing in...' : 'Log In' }} <ion-icon name="arrow-forward"></ion-icon></button>
 
+      <div class="auth-divider"><span>Or</span></div>
+      <a class="google-auth" [href]="googleAuthUrl"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />Continue with Google</a>
+
       <div class="bottom">
         <p class="secure"><i></i> Secure checkout-ready access</p>
         <p>Don't have an account? <button type="button" class="signup-link" (click)="goToRegister()">Sign Up</button></p>

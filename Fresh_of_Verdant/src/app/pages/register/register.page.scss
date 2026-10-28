@@ -144,3 +144,19 @@
         text-decoration: none;
     }
 }
+
+.browse-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin: 8px auto 0;
+  padding: 0 16px;
+  border: 1px solid var(--fv-green-dark);
+  border-radius: 12px;
+  background: var(--fv-green-dark);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}

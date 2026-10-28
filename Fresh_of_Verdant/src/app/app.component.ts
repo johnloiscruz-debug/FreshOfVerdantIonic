@@ -32,7 +32,6 @@ export class AppComponent {
   adminMenuGroups: MenuGroup[] = [
     { title: 'Admin', items: [{ title: 'Admin Dashboard', url: '/admin', icon: 'grid-outline' }] },
     { title: 'Store Management', items: [{ title: 'Products & Inventory', url: '/admin', queryParams: { section: 'products' }, icon: 'cube-outline' }, { title: 'Orders', url: '/admin', queryParams: { section: 'orders' }, icon: 'cart-outline' }, { title: 'Customers', url: '/admin', queryParams: { section: 'customers' }, icon: 'people-outline' }] },
-    { title: 'Business', items: [{ title: 'Reviews', url: '/admin', queryParams: { section: 'reviews' }, icon: 'star-outline' }, { title: 'Complaints', url: '/admin', queryParams: { section: 'complaints' }, icon: 'mail-outline' }, { title: 'Categories', url: '/admin', queryParams: { section: 'categories' }, icon: 'pricetag-outline' }] },
   ];
 
   get activeMenuGroups(): MenuGroup[] {

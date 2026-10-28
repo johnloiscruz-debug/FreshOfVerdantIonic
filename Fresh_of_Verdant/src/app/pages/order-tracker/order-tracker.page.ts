@@ -37,7 +37,10 @@ export class OrderTrackerPage {
   }
 
   get currentStatus() { return this.order ? this.history.statusFor(this.order) : 'Confirmed'; }
-  get liveClock() { return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+
+  ionViewWillEnter() {
+    this.history.loadFromServer(() => this.selectOrder(this.route.snapshot.queryParamMap.get('order')));
+  }
 
   goToMainMenu() {
     void this.router.navigateByUrl('/home');
@@ -50,7 +53,7 @@ export class OrderTrackerPage {
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
     private router: Router,
-    route: ActivatedRoute,
+    private route: ActivatedRoute,
     public history: OrderHistoryService,
   ) {
     addIcons({ callOutline, chatbubbleOutline, checkmark, imageOutline, personOutline, swapHorizontalOutline });
@@ -84,8 +87,16 @@ export class OrderTrackerPage {
   }
 
   trackingSteps(order: TrackedOrder) {
-    const times = this.history.timelineTimes(order);
-    return this.history.timeline(order).map((step, index) => ({ ...step, time: times[index] }));
+    return this.history.timeline(order);
+  }
+
+  isOverdue(order: TrackedOrder) {
+    const status = this.history.statusFor(order);
+    if (status === 'Delivered' || status === 'Cancelled') return false;
+    const deadline = order.deliveryDate && order.deliveryTime
+      ? new Date(`${order.deliveryDate}T${order.deliveryTime}:00`).getTime()
+      : Date.parse(order.deliveryWindow);
+    return Number.isFinite(deadline) && deadline < Date.now();
   }
 
   formatOrderDate(value: string) { return new Date(value).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }); }

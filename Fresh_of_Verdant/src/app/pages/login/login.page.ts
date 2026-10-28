@@ -53,6 +53,8 @@ export class LoginPage {
   emailError = '';
   passwordError = '';
 
+  get googleAuthUrl() { return this.api.googleAuthUrl; }
+
   constructor(private router: Router, private route: ActivatedRoute, private api: ApiService, private auth: AuthService, private products: ProductService, private alertController: AlertController, private modalController: ModalController) {
     addIcons({ arrowForward, eyeOffOutline, eyeOutline, lockClosedOutline, mailOutline, nutritionOutline });
   }

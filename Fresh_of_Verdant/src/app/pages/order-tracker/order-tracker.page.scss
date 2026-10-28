@@ -234,8 +234,9 @@ ion-content {
 .list-heading { padding: 0 16px 10px; h2 { margin: 0; color: #111; font-size: 20px; } p { margin: 4px 0 0; color: var(--fv-muted); font-size: 12px; } }
 .pending-head { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; color:#000; strong { display:block; font-size:14px; color:#000; } small { display:block; margin-top:3px; color:#000; font-size:10px; } }
 .pending-head-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
-.live-clock { color:var(--fv-green-dark); font-size:17px; font-weight:800; line-height:1; white-space:nowrap; }
-.pending-card { color:#000; .pending-meta { color:#000; } .step .t strong, .step .t small, .step .t em { color:#000; } .step.active .t em { color:var(--fv-green-dark); } }
+.pending-card { color:#000; .pending-meta { color:#000; } .step .t strong, .step .t small, .step .t em { color:#000; } .step.active .t em { color:var(--fv-green-dark); } .step .t small { display:none; } }
+.pending-head-right .overdue-pill { background:#fff0ed; color:#b9382d; }
+.overdue-note { margin:8px 0; color:#a3382d; font-size:10px; line-height:1.35; }
 .pending-items { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; padding-bottom:8px; border-bottom:1px dashed #ddd; font-size:11px; b { margin-left:auto; } }
 .pending-meta { display:grid; gap:4px; margin-top:7px; color:#59635c; font-size:10px; }
 .track-button { width:100%; min-height:40px; font-family:inherit; font-weight:700; }

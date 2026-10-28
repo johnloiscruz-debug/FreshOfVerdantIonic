@@ -1,4 +1,4 @@
-<app-page-header subtitle="FARMBOX MARKET" title="Order Tracker" align="left" rightIcon="ellipsis-horizontal" rightLabel="3 of 3" (rightClick)="openOrderActions()"></app-page-header>
+<app-page-header subtitle="FARMBOX MARKET" title="Order Tracker" align="left" rightIcon="ellipsis-horizontal" [rightLabel]="pendingOrders.length + ' pending'" (rightClick)="openOrderActions()"></app-page-header>
 
 <ion-content>
   @if (order) {
@@ -45,7 +45,7 @@
         <article class="card pending-card">
           <div class="pending-head">
             <div><strong>Order #{{ pending.id }}</strong><small>{{ formatOrderDate(pending.createdAt) }}</small></div>
-            <div class="pending-head-right"><time class="live-clock">{{ liveClock }}</time><span class="pill">{{ history.statusFor(pending) }}</span></div>
+            <div class="pending-head-right"><span class="pill" [class.overdue-pill]="isOverdue(pending)">{{ isOverdue(pending) ? 'Overdue' : history.statusFor(pending) }}</span></div>
           </div>
           <div class="pending-items">
             @for (item of pending.items.slice(0, 2); track item.id) { <span>{{ item.qty > 1 ? item.qty + '× ' : '' }}{{ item.name }}</span> }
@@ -53,11 +53,12 @@
             <b>₱{{ pending.total }}</b>
           </div>
           <div class="pending-meta"><span>{{ pending.deliveryWindow }}</span><span>{{ pending.payment }}</span></div>
-          <div class="steps" aria-label="Delivery timeline with estimated times">
+          @if (isOverdue(pending)) { <p class="overdue-note">The delivery window has passed. Your order is still awaiting a status update.</p> }
+          <div class="steps" aria-label="Order delivery progress">
             @for (step of trackingSteps(pending); track step.title) {
               <div class="step" [class.done]="step.state === 'done'" [class.active]="step.state === 'active'" [class.pending]="step.state === 'pending'">
                 <span class="dot">@if (step.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
-                <div class="t"><strong>{{ step.title }}</strong><small>{{ step.desc }}</small><em>{{ step.time }}</em></div>
+                <div class="t"><strong>{{ step.title }}</strong><small>{{ step.desc }}</small><em>{{ step.meta }}</em></div>
               </div>
             }
           </div>

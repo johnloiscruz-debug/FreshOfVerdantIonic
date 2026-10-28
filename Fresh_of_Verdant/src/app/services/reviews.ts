@@ -16,6 +16,7 @@ export interface UserReview {
 @Injectable({ providedIn: 'root' })
 export class ReviewService {
   readonly reviews = signal<UserReview[]>([]);
+  readonly ownReviewCount = signal(0);
   readonly loading = signal(false);
   readonly loadError = signal('');
 
@@ -38,9 +39,16 @@ export class ReviewService {
     });
   }
 
+  refreshOwnCount() {
+    this.api.myReviewCount().subscribe({
+      next: ({ count }) => this.ownReviewCount.set(Number.isSafeInteger(count) && count >= 0 ? count : 0),
+    });
+  }
+
   add(review: Omit<UserReview, 'id' | 'createdAt'>): Observable<UserReview> {
     return this.api.createReview(review).pipe(tap((saved) => {
       this.reviews.update((current) => [saved, ...current]);
+      this.ownReviewCount.update((count) => count + 1);
       this.loadError.set('');
     }));
   }
@@ -50,6 +58,7 @@ export class ReviewService {
   }
 
   clearForSignOut() {
+    this.ownReviewCount.set(0);
     this.refresh();
   }
 }

@@ -160,6 +160,7 @@ export interface AdminComplaint {
   subject: string;
   message: string;
   status: string;
+  resolution: string | null;
 }
 
 export interface ComplaintSubmission {
@@ -172,6 +173,7 @@ export interface ComplaintSubmission {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
+  readonly googleAuthUrl = `${this.baseUrl}/auth/google`;
 
   constructor(private http: HttpClient) {}
 
@@ -263,6 +265,10 @@ export class ApiService {
     return this.http.get<UserReview[]>(`${this.baseUrl}/reviews`);
   }
 
+  myReviewCount(): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(`${this.baseUrl}/reviews/mine/count`, { withCredentials: true });
+  }
+
   profileAvatar(): Observable<{ avatarUrl: string | null }> {
     return this.http.get<{ avatarUrl: string | null }>(`${this.baseUrl}/reviews/avatar`, { withCredentials: true });
   }
@@ -320,7 +326,7 @@ export class ApiService {
   }
 
   updateAdminProduct(product: AdminProduct): Observable<{ saved: boolean }> {
-    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/products/${product.product_id}`, { name: product.product_name, description: product.description, price: product.price, stockQuantity: product.stock_quantity, unit: product.unit, imageUrl: product.image_url, categoryId: product.category_id, isActive: product.is_active }, { withCredentials: true });
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/products/${product.product_id}`, { name: product.product_name, description: product.description, price: product.price, stockQuantity: product.stock_quantity, unit: product.unit, imageUrl: product.image_url, categoryId: product.category_id, isActive: product.is_active }, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   adminOrders(): Observable<AdminOrder[]> {
@@ -332,7 +338,7 @@ export class ApiService {
   }
 
   updateAdminOrder(orderId: number, status: string): Observable<{ saved: boolean }> {
-    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/orders/${orderId}`, { status }, { withCredentials: true });
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/orders/${orderId}`, { status }, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   adminCustomers(): Observable<AdminCustomer[]> {
@@ -343,12 +349,24 @@ export class ApiService {
     return this.http.get<AdminComplaint[]>(`${this.baseUrl}/admin/complaints`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
+  createAdminComplaint(details: Omit<AdminComplaint, 'complaint_id' | 'user_id' | 'status' | 'resolution'>): Observable<{ complaintId: number }> {
+    return this.http.post<{ complaintId: number }>(`${this.baseUrl}/admin/complaints`, details, { withCredentials: true });
+  }
+
+  updateAdminComplaint(complaint: AdminComplaint): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/complaints/${complaint.complaint_id}`, { name: complaint.name, email: complaint.email, subject: complaint.subject, message: complaint.message, status: complaint.status, resolution: complaint.resolution }, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  deleteAdminComplaint(complaintId: number): Observable<{ deleted: boolean }> {
+    return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/admin/complaints/${complaintId}`, { withCredentials: true });
+  }
+
   adminCustomerOrders(userId: number): Observable<AdminCustomerOrder[]> {
     return this.http.get<AdminCustomerOrder[]>(`${this.baseUrl}/admin/customers/${userId}/orders`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   updateAdminCustomer(userId: number, status: string): Observable<{ saved: boolean }> {
-    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/customers/${userId}`, { status }, { withCredentials: true });
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/customers/${userId}`, { status }, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   createAdminCategory(name: string, description: string): Observable<{ categoryId: number }> {
@@ -356,7 +374,7 @@ export class ApiService {
   }
 
   updateAdminCategory(category: AdminCategory): Observable<{ saved: boolean }> {
-    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/categories/${category.category_id}`, { name: category.category_name, description: category.description }, { withCredentials: true });
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/categories/${category.category_id}`, { name: category.category_name, description: category.description }, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   deleteAdminCategory(categoryId: number): Observable<{ deleted: boolean }> {
@@ -368,5 +386,13 @@ export class ApiService {
     if (from) params['from'] = from;
     if (to) params['to'] = to;
     return this.http.get<AdminReport>(`${this.baseUrl}/admin/reports`, { params, withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  updateAdminReview(reviewId: number, rating: number, comment: string): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/admin/reviews/${reviewId}`, { rating, comment }, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  deleteAdminReview(reviewId: number): Observable<{ deleted: boolean }> {
+    return this.http.delete<{ deleted: boolean }>(`${this.baseUrl}/admin/reviews/${reviewId}`, { withCredentials: true });
   }
 }

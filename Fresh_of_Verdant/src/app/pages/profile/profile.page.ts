@@ -51,6 +51,11 @@ export class ProfilePage {
     }
   }
 
+  ionViewWillEnter() {
+    if (this.auth.isAuthenticated) this.reviewService.refreshOwnCount();
+    else this.reviewService.ownReviewCount.set(0);
+  }
+
   fields = [
     { label: 'Full Name', icon: 'person-outline', value: 'John Doe', type: 'text', editing: false },
     { label: 'Email Address', icon: 'mail-outline', value: 'johndoe@email.com', type: 'email', editing: false },

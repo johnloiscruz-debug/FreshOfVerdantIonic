@@ -9,7 +9,7 @@
     </label>
     <div><h2>{{ profileName }}</h2><p>{{ profileEmail }}</p><span class="member">VERDANT MEMBER</span></div>
   </div>
-  <div class="profile-stats"><a routerLink="/orders"><b>{{ orderHistory.count() }}</b><span>Orders</span></a><a routerLink="/order-tracker"><b>{{ orderHistory.deliveredCount() }}</b><span>Delivered</span></a><a routerLink="/reviews"><b>{{ reviewService.reviews().length }}</b><span>Reviews</span></a></div>
+  <div class="profile-stats"><a routerLink="/orders"><b>{{ orderHistory.count() }}</b><span>Orders</span></a><a routerLink="/order-tracker"><b>{{ orderHistory.deliveredCount() }}</b><span>Delivered</span></a><a routerLink="/reviews"><b>{{ reviewService.ownReviewCount() }}</b><span>Reviews</span></a></div>
   <h3>Profile Details</h3>
   <div class="card">
     @for (f of fields; track f.label) {

@@ -54,6 +54,8 @@ export class RegisterPage {
   private readonly maxEmailLength = 254;
   private readonly maxPasswordLength = 64;
 
+  get googleAuthUrl() { return this.api.googleAuthUrl; }
+
   constructor(private router: Router, private api: ApiService, private auth: AuthService, private products: ProductService, private alertController: AlertController, private modalController: ModalController) {
     addIcons({ arrowForward, callOutline, closeOutline, eyeOffOutline, eyeOutline, leafOutline, lockClosedOutline, mailOutline, nutritionOutline, personOutline, shieldCheckmarkOutline });
   }
