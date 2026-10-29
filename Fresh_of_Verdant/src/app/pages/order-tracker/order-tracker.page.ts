@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActionSheetController, AlertController, IonContent, IonFooter, IonIcon, ModalController, ToastController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { callOutline, chatbubbleOutline, checkmark, imageOutline, personOutline, swapHorizontalOutline } from 'ionicons/icons';
+import { callOutline, chatbubbleOutline, checkmark, imageOutline, personOutline, receiptOutline, swapHorizontalOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { OrderReceiptModalComponent } from '../../components/order-receipt-modal/order-receipt-modal.component';
 import { CartService } from '../../services/cart';
@@ -23,7 +23,19 @@ export class OrderTrackerPage {
   shippingAddress = '28 Sampaguita St., San Roque, Marikina';
   paymentMethod = 'Cash on Delivery';
   deliveryWindow = 'Tomorrow, 8 AM-12 PM';
-  get pendingOrders() { return this.history.all().filter((order) => !['Delivered', 'Cancelled'].includes(this.history.statusFor(order))); }
+  trackerView: 'pending' | 'history' = 'pending';
+  private refreshTimer: ReturnType<typeof setInterval> | null = null;
+  private refreshingOrders = false;
+  get pendingOrders() {
+    return this.history.all()
+      .filter((order) => !['Delivered', 'Cancelled'].includes(this.history.statusFor(order)))
+      .sort((a, b) => Number(this.isOverdue(b)) - Number(this.isOverdue(a)) || Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  }
+  get historyOrders() {
+    return this.history.all()
+      .filter((order) => ['Delivered', 'Cancelled'].includes(this.history.statusFor(order)))
+      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  }
 
   get steps() {
     return this.order
@@ -39,7 +51,14 @@ export class OrderTrackerPage {
   get currentStatus() { return this.order ? this.history.statusFor(this.order) : 'Confirmed'; }
 
   ionViewWillEnter() {
-    this.history.loadFromServer(() => this.selectOrder(this.route.snapshot.queryParamMap.get('order')));
+    this.refreshOrders();
+    if (this.refreshTimer) clearInterval(this.refreshTimer);
+    this.refreshTimer = setInterval(() => this.refreshOrders(), 30_000);
+  }
+
+  ionViewWillLeave() {
+    if (this.refreshTimer) clearInterval(this.refreshTimer);
+    this.refreshTimer = null;
   }
 
   goToMainMenu() {
@@ -56,7 +75,7 @@ export class OrderTrackerPage {
     private route: ActivatedRoute,
     public history: OrderHistoryService,
   ) {
-    addIcons({ callOutline, chatbubbleOutline, checkmark, imageOutline, personOutline, swapHorizontalOutline });
+    addIcons({ callOutline, chatbubbleOutline, checkmark, imageOutline, personOutline, receiptOutline, swapHorizontalOutline });
     this.orderItems = this.cart.items();
     this.orderTotal = this.cart.total();
     route.queryParamMap.subscribe((params) => this.selectOrder(params.get('order')));
@@ -90,6 +109,21 @@ export class OrderTrackerPage {
     return this.history.timeline(order);
   }
 
+  private refreshOrders() {
+    if (this.refreshingOrders) return;
+    this.refreshingOrders = true;
+    const previousStatuses = new Map(this.history.all().map((order) => [order.id, this.history.statusFor(order)]));
+    this.history.loadFromServer(() => {
+      this.refreshingOrders = false;
+      this.selectOrder(this.route.snapshot.queryParamMap.get('order'));
+      for (const order of this.history.all()) {
+        if (previousStatuses.get(order.id) === 'Confirmed' && this.history.statusFor(order) === 'Packed at Farm Hub') {
+          void this.showToast(`Order ${order.id} was claimed and is being packed.`);
+        }
+      }
+    });
+  }
+
   isOverdue(order: TrackedOrder) {
     const status = this.history.statusFor(order);
     if (status === 'Delivered' || status === 'Cancelled') return false;
@@ -97,6 +131,12 @@ export class OrderTrackerPage {
       ? new Date(`${order.deliveryDate}T${order.deliveryTime}:00`).getTime()
       : Date.parse(order.deliveryWindow);
     return Number.isFinite(deadline) && deadline < Date.now();
+  }
+
+  paymentLabel(order: TrackedOrder) {
+    if (/cashless|credit card/i.test(order.payment) || this.history.statusFor(order) === 'Delivered') return 'Paid';
+    if (this.history.statusFor(order) === 'Cancelled') return 'Cancelled';
+    return 'Due on delivery';
   }
 
   formatOrderDate(value: string) { return new Date(value).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }); }

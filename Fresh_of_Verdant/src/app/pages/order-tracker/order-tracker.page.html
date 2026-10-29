@@ -1,4 +1,4 @@
-<app-page-header subtitle="FARMBOX MARKET" title="Order Tracker" align="left" rightIcon="ellipsis-horizontal" [rightLabel]="pendingOrders.length + ' pending'" (rightClick)="openOrderActions()"></app-page-header>
+<app-page-header subtitle="FARMBOX MARKET" title="Order Tracker" align="left" rightIcon="ellipsis-horizontal" [rightLabel]="trackerView === 'pending' && !order ? pendingOrders.length + ' pending' : ''" (rightClick)="openOrderActions()"></app-page-header>
 
 <ion-content>
   @if (order) {
@@ -38,36 +38,65 @@
       }
     </div>
   </section>
-  } @else if (pendingOrders.length) {
-    <section class="pending-orders">
-      <div class="list-heading"><h2>Pending deliveries</h2><p>Track each order as it moves from the farm to your doorstep.</p></div>
-      @for (pending of pendingOrders; track pending.id) {
-        <article class="card pending-card">
-          <div class="pending-head">
-            <div><strong>Order #{{ pending.id }}</strong><small>{{ formatOrderDate(pending.createdAt) }}</small></div>
-            <div class="pending-head-right"><span class="pill" [class.overdue-pill]="isOverdue(pending)">{{ isOverdue(pending) ? 'Overdue' : history.statusFor(pending) }}</span></div>
-          </div>
-          <div class="pending-items">
-            @for (item of pending.items.slice(0, 2); track item.id) { <span>{{ item.qty > 1 ? item.qty + '× ' : '' }}{{ item.name }}</span> }
-            @if (pending.items.length > 2) { <span>+{{ pending.items.length - 2 }} more</span> }
-            <b>₱{{ pending.total }}</b>
-          </div>
-          <div class="pending-meta"><span>{{ pending.deliveryWindow }}</span><span>{{ pending.payment }}</span></div>
-          @if (isOverdue(pending)) { <p class="overdue-note">The delivery window has passed. Your order is still awaiting a status update.</p> }
-          <div class="steps" aria-label="Order delivery progress">
-            @for (step of trackingSteps(pending); track step.title; let i = $index) {
-              <div class="step" [class.done]="step.state === 'done'" [class.active]="step.state === 'active'" [class.pending]="step.state === 'pending'">
-                <span class="dot" [style.--dot-delay]="i * 320 + 'ms'">@if (step.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
-                <div class="t"><strong>{{ step.title }}</strong><small>{{ step.desc }}</small><em>{{ step.meta }}</em></div>
-              </div>
-            }
-          </div>
-          <button class="fv-btn track-button" type="button" (click)="trackOrder(pending.id)">Track Order</button>
-        </article>
-      }
-    </section>
   } @else {
-    <div class="empty-tracking"><span><ion-icon name="checkmark"></ion-icon></span><h2>No pending deliveries</h2><p>When an order is placed, it will appear here with its live delivery timeline.</p></div>
+    <div class="tracker-switch" role="tablist" aria-label="Order categories">
+      <button type="button" role="tab" [attr.aria-selected]="trackerView === 'pending'" [class.active]="trackerView === 'pending'" (click)="trackerView = 'pending'">Pending <span>{{ pendingOrders.length }}</span></button>
+      <button type="button" role="tab" [attr.aria-selected]="trackerView === 'history'" [class.active]="trackerView === 'history'" (click)="trackerView = 'history'">History <span>{{ historyOrders.length }}</span></button>
+    </div>
+    @if (trackerView === 'pending') {
+      @if (pendingOrders.length) {
+        <section class="pending-orders">
+          <div class="list-heading"><h2>Pending deliveries</h2><p>Overdue deliveries appear first.</p></div>
+          @for (pending of pendingOrders; track pending.id) {
+            <article class="card pending-card">
+              <div class="pending-head">
+                <div><strong>Order #{{ pending.id }}</strong><small>{{ formatOrderDate(pending.createdAt) }}</small></div>
+                <div class="pending-head-right"><span class="pill" [class.overdue-pill]="isOverdue(pending)">{{ isOverdue(pending) ? 'Overdue' : history.statusFor(pending) }}</span><span class="payment-pill" [class.paid]="paymentLabel(pending) === 'Paid'">{{ paymentLabel(pending) }}</span></div>
+              </div>
+              <div class="pending-items">
+                @for (item of pending.items.slice(0, 2); track item.id) { <span>{{ item.qty > 1 ? item.qty + '× ' : '' }}{{ item.name }}</span> }
+                @if (pending.items.length > 2) { <span>+{{ pending.items.length - 2 }} more</span> }
+                <b>₱{{ pending.total }}</b>
+              </div>
+              <div class="pending-meta"><span>{{ pending.deliveryWindow }}</span><span>{{ pending.payment }}</span></div>
+              @if (isOverdue(pending)) { <p class="overdue-note">The delivery window has passed. Your order is still awaiting a status update.</p> }
+              <div class="steps" aria-label="Order delivery progress">
+                @for (step of trackingSteps(pending); track step.title; let i = $index) {
+                  <div class="step" [class.done]="step.state === 'done'" [class.active]="step.state === 'active'" [class.pending]="step.state === 'pending'">
+                    <span class="dot" [style.--dot-delay]="i * 320 + 'ms'">@if (step.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
+                    <div class="t"><strong>{{ step.title }}</strong><small>{{ step.desc }}</small><em>{{ step.meta }}</em></div>
+                  </div>
+                }
+              </div>
+              <button class="fv-btn track-button" type="button" (click)="trackOrder(pending.id)">Track Order</button>
+            </article>
+          }
+        </section>
+      } @else {
+        <div class="empty-tracking"><span><ion-icon name="checkmark"></ion-icon></span><h2>No pending deliveries</h2><p>When an order is placed, it will appear here with its live delivery timeline.</p></div>
+      }
+    } @else if (historyOrders.length) {
+      <section class="pending-orders order-history-list">
+        <div class="list-heading"><h2>Order history</h2><p>Completed and cancelled orders, newest first.</p></div>
+        @for (past of historyOrders; track past.id) {
+          <article class="card pending-card history-card">
+            <div class="pending-head">
+              <div><strong>Order #{{ past.id }}</strong><small>{{ formatOrderDate(past.createdAt) }}</small></div>
+              <div class="pending-head-right"><span class="pill" [class.cancelled-pill]="history.statusFor(past) === 'Cancelled'">{{ history.statusFor(past) }}</span><span class="payment-pill" [class.paid]="paymentLabel(past) === 'Paid'">{{ paymentLabel(past) }}</span></div>
+            </div>
+            <div class="pending-items">
+              @for (item of past.items.slice(0, 2); track item.id) { <span>{{ item.qty > 1 ? item.qty + '× ' : '' }}{{ item.name }}</span> }
+              @if (past.items.length > 2) { <span>+{{ past.items.length - 2 }} more</span> }
+              <b>₱{{ past.total }}</b>
+            </div>
+            <div class="pending-meta"><span>{{ past.deliveryWindow }}</span><span>{{ past.payment }}</span></div>
+            <button class="fv-btn track-button" type="button" (click)="trackOrder(past.id)">View Order</button>
+          </article>
+        }
+      </section>
+    } @else {
+      <div class="empty-tracking"><span><ion-icon name="receipt-outline"></ion-icon></span><h2>No order history yet</h2><p>Delivered or cancelled orders will appear here.</p></div>
+    }
   }
 </ion-content>
 

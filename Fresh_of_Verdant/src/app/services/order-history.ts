@@ -7,6 +7,7 @@ import { catchError, of, tap } from 'rxjs';
 export interface TrackedOrder {
   id: string;
   createdAt: string;
+  claimedAt?: string | null;
   status: OrderStatus;
   items: CartItem[];
   total: number;
@@ -50,6 +51,7 @@ export class OrderHistoryService {
   loadFromServer(onLoaded?: () => void) {
     if (!this.auth.isAuthenticated) {
       this.savedOrders.set([]);
+      onLoaded?.();
       return;
     }
     this.loading.set(true);

@@ -268,6 +268,14 @@ ion-footer {
 :host-context(html.theme-dark) .help { color: #fff; }
 
 .pending-orders { padding: 12px 0 18px; }
+.tracker-switch { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin:12px 14px 0; padding:4px; border:1px solid #dfe7e2; border-radius:12px; background:#e9efeb; }
+.tracker-switch button { display:flex; min-height:38px; align-items:center; justify-content:center; gap:7px; border:0; border-radius:9px; background:transparent; color:#46534a; font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+.tracker-switch button span { display:grid; min-width:20px; height:20px; place-items:center; border-radius:10px; background:#dce7df; font-size:10px; }
+.tracker-switch button.active { background:#fff; color:var(--fv-green-dark); box-shadow:0 1px 5px rgba(0,0,0,.1); }
+.payment-pill { padding:3px 8px; border-radius:9px; background:#edf1ee; color:#59635c; font-size:9px; font-weight:700; }
+.payment-pill.paid { background:#e3f7ea; color:#087b3c; }
+.cancelled-pill { background:#f4e8e7 !important; color:#a3382d !important; }
+.history-card .track-button { margin-top:12px; }
 .list-heading { padding: 0 16px 10px; h2 { margin: 0; color: #111; font-size: 20px; } p { margin: 4px 0 0; color: var(--fv-muted); font-size: 12px; } }
 .pending-head { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; color:#000; strong { display:block; font-size:14px; color:#000; } small { display:block; margin-top:3px; color:#000; font-size:10px; } }
 .pending-head-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
@@ -278,3 +286,10 @@ ion-footer {
 .pending-meta { display:grid; gap:4px; margin-top:7px; color:#59635c; font-size:10px; }
 .track-button { width:100%; min-height:40px; font-family:inherit; font-weight:700; }
 .empty-tracking { padding:76px 30px; text-align:center; h2 { margin:0 0 6px; color:#202820; font-size:20px; } p { margin:0; color:var(--fv-muted); font-size:13px; line-height:1.5; } }
+:host-context(html.theme-dark) .tracker-switch { border-color:#29382f; background:#101713; }
+:host-context(html.theme-dark) .tracker-switch button { color:#b8c9be; }
+:host-context(html.theme-dark) .tracker-switch button span { background:#203c2b; color:#b8c9be; }
+:host-context(html.theme-dark) .tracker-switch button.active { background:#193d28; color:#a1f4ba; box-shadow:0 0 12px rgba(32,216,117,.12); }
+:host-context(html.theme-dark) .payment-pill { background:#252e29; color:#c0cdc4; }
+:host-context(html.theme-dark) .payment-pill.paid { background:#173b28; color:#79e9a0; }
+:host-context(html.theme-dark) .cancelled-pill { background:#3a1f1d !important; color:#ff9c91 !important; }

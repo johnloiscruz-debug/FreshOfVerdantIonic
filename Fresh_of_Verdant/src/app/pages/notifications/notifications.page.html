@@ -1,6 +1,20 @@
 <app-green-header subtitle="STAY IN THE LOOP" title="Notifications"></app-green-header>
 <ion-content>
   <div class="intro"><h1>Notification preferences</h1><p>Choose which updates you want to receive.</p></div>
+  <section class="order-notifications" aria-labelledby="order-notifications-heading">
+    <div class="notifications-heading"><h2 id="order-notifications-heading">Order updates</h2><button type="button" class="refresh-notifications" aria-label="Refresh order notifications" (click)="loadOrderNotifications()"><ion-icon name="radio-outline"></ion-icon></button></div>
+    @if (notificationsLoading && !orderNotifications.length) { <p class="notification-state">Loading order updates...</p> }
+    @if (notificationError) { <p class="notification-state error" role="alert">{{ notificationError }}</p> }
+    @for (notification of orderNotifications; track notification.id) {
+      <article class="order-notification" [class.unread]="!notification.isRead">
+        <span class="order-notification-icon"><ion-icon name="bag-check-outline"></ion-icon></span>
+        <div class="order-notification-copy"><strong>{{ notification.title }}</strong><p>{{ notification.message }}</p><small>{{ formatNotificationDate(notification.createdAt) }} · {{ notification.orderId }}</small><a [routerLink]="['/order-tracker']" [queryParams]="{ order: notification.orderId }">Track order</a></div>
+        @if (!notification.isRead) { <button type="button" class="mark-notification-read" [disabled]="savingNotificationId === notification.id" aria-label="Mark notification as read" title="Mark as read" (click)="markAsRead(notification)"><ion-icon name="checkmark-circle-outline"></ion-icon></button> }
+      </article>
+    } @empty {
+      @if (!notificationsLoading && !notificationError) { <p class="notification-state">No order updates yet.</p> }
+    }
+  </section>
   <section class="notice-list">
     <label class="notice"><span class="icon"><ion-icon name="bag-check-outline"></ion-icon></span><span class="copy"><strong>Order updates</strong><small>Order confirmations and status changes</small></span><input type="checkbox" [(ngModel)]="prefs.orders" (change)="save()" /></label>
     <label class="notice"><span class="icon"><ion-icon name="radio-outline"></ion-icon></span><span class="copy"><strong>Delivery updates</strong><small>Delivery progress and arrival notices</small></span><input type="checkbox" [(ngModel)]="prefs.delivery" (change)="save()" /></label>

@@ -66,6 +66,16 @@ export interface ApiAccount {
   };
 }
 
+export interface OrderNotification {
+  id: number;
+  orderId: string;
+  kind: string;
+  title: string;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
 export interface AdminOverview {
   orderCount: number;
   salesTotal: number;
@@ -276,7 +286,15 @@ export class ApiService {
   }
 
   orders(): Observable<TrackedOrder[]> {
-    return this.http.get<TrackedOrder[]>(`${this.baseUrl}/orders`, { withCredentials: true });
+    return this.http.get<TrackedOrder[]>(`${this.baseUrl}/orders`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  orderNotifications(): Observable<OrderNotification[]> {
+    return this.http.get<OrderNotification[]>(`${this.baseUrl}/notifications`, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
+  markOrderNotificationRead(id: number): Observable<{ saved: boolean }> {
+    return this.http.patch<{ saved: boolean }>(`${this.baseUrl}/notifications/${id}/read`, {}, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   createOrder(order: CreateOrderRequest): Observable<TrackedOrder> {
