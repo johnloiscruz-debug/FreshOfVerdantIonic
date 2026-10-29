@@ -10,6 +10,8 @@ import { CartService } from '../../services/cart';
 import { AuthService } from '../../services/auth';
 import { ReviewService, UserReview } from '../../services/reviews';
 import { ApiService } from '../../services/api';
+import type { AdminOverview } from '../../services/api';
+import { OrderHistoryService } from '../../services/order-history';
 
 @Component({
   selector: 'app-home',
@@ -23,14 +25,35 @@ export class HomePage {
 
   promoIndex = 0;
   showAppReviews = false;
+  adminOverview: AdminOverview | null = null;
+  adminOverviewLoading = false;
+  adminOverviewError = '';
   promos = [
     { tag: 'WEEKEND HARVEST', title: 'Save 20% on farm-fresh bundles', subtitle: 'Picked this morning. Delivered today.', image: 'assets/images/promos/harvest-bundle.jpg', alt: 'Autumn harvest fruits and vegetables' },
     { tag: 'GROWN NEARBY', title: 'Fresh greens for every table', subtitle: 'Find crisp local vegetables today.', image: 'assets/images/promos/fresh-market.jpg', alt: 'Colorful fresh vegetables at a market' },
     { tag: 'SWEET SEASON', title: 'Make room for something fresh', subtitle: 'Browse this week’s fruit picks.', image: 'assets/images/promos/fruit-and-veg.jpg', alt: 'Fresh fruits and vegetables on a dark surface' },
   ];
 
-  constructor(public products: ProductService, private cart: CartService, private auth: AuthService, private reviewService: ReviewService, private api: ApiService) {
+  constructor(public products: ProductService, public cart: CartService, public auth: AuthService, public orderHistory: OrderHistoryService, private reviewService: ReviewService, private api: ApiService) {
     addIcons({ cartOutline, close, cubeOutline, imageOutline, personCircleOutline, sparklesOutline, star, starOutline });
+  }
+
+  get isAdminLanding() { return this.auth.isAdmin && !this.auth.adminCustomerMode(); }
+  get isGuestLanding() { return !this.auth.isAuthenticated; }
+  get latestOrder() { return this.orderHistory.latest(); }
+
+  ionViewWillEnter() {
+    if (this.isAdminLanding) this.loadAdminOverview();
+  }
+
+  loadAdminOverview() {
+    if (this.adminOverviewLoading) return;
+    this.adminOverviewLoading = true;
+    this.adminOverviewError = '';
+    this.api.adminOverview().subscribe({
+      next: (overview) => { this.adminOverview = overview; this.adminOverviewLoading = false; },
+      error: () => { this.adminOverviewError = 'Could not load store overview.'; this.adminOverviewLoading = false; },
+    });
   }
 
   get appReviews(): UserReview[] { return this.reviewService.reviews().filter((review) => review.productId === null).sort((a, b) => b.createdAt.localeCompare(a.createdAt)); }

@@ -1,7 +1,41 @@
 <app-green-header [brandMode]="true" title="Fresh of Verdant"></app-green-header>
 
 <ion-content>
-  <div class="home-welcome"><strong>{{ greeting }}</strong></div>
+  @if (isAdminLanding) {
+    <section class="admin-landing">
+      <header class="admin-landing-heading">
+        <div><small>ADMINISTRATION</small><h1>Store overview</h1><p>Welcome back, {{ auth.currentName() || 'Admin' }}. Here is today’s store snapshot.</p></div>
+        <button type="button" class="admin-refresh" [disabled]="adminOverviewLoading" (click)="loadAdminOverview()">{{ adminOverviewLoading ? 'Refreshing…' : 'Refresh' }}</button>
+      </header>
+      @if (adminOverviewError) { <p class="admin-overview-error" role="alert">{{ adminOverviewError }}</p> }
+      <div class="admin-stats">
+        <article><span>Orders</span><strong>{{ adminOverview?.orderCount ?? '—' }}</strong><small>{{ adminOverview?.pendingOrders ?? 0 }} pending</small></article>
+        <article><span>Sales</span><strong>{{ adminOverview ? '₱' + adminOverview.salesTotal.toLocaleString() : '—' }}</strong><small>All-time total</small></article>
+        <article><span>Products</span><strong>{{ adminOverview?.productCount ?? products.products().length }}</strong><small>{{ adminOverview?.lowStockCount ?? 0 }} low stock</small></article>
+        <article><span>Customers</span><strong>{{ adminOverview?.customerCount ?? '—' }}</strong><small>Registered accounts</small></article>
+      </div>
+      <div class="admin-work-heading"><div><h2>Manage store</h2><p>Choose an operations workspace.</p></div></div>
+      <nav class="admin-workspaces" aria-label="Admin workspaces">
+        <a routerLink="/admin" [queryParams]="{ section: 'products' }"><ion-icon name="cube-outline"></ion-icon><span><strong>Products &amp; Inventory</strong><small>Catalog, prices, and stock</small></span><b>Open</b></a>
+        <a routerLink="/admin" [queryParams]="{ section: 'orders' }"><ion-icon name="cart-outline"></ion-icon><span><strong>Orders</strong><small>Review and update deliveries</small></span><b>Open</b></a>
+        <a routerLink="/admin" [queryParams]="{ section: 'customers' }"><ion-icon name="person-circle-outline"></ion-icon><span><strong>Customers</strong><small>Accounts and order history</small></span><b>Open</b></a>
+      </nav>
+    </section>
+  } @else {
+  <section class="home-welcome" [class.guest-welcome]="isGuestLanding" [class.customer-welcome]="!isGuestLanding">
+    <div class="welcome-copy">
+      <small>{{ isGuestLanding ? 'FARM-FRESH, CLOSE TO HOME' : 'YOUR FRESH MARKET' }}</small>
+      <h1>{{ greeting }}</h1>
+      <p>{{ isGuestLanding ? 'Discover local produce, seasonal bundles, and easy delivery.' : 'Fresh picks and your next delivery, all in one place.' }}</p>
+    </div>
+    @if (isGuestLanding) {
+      <div class="home-actions"><a routerLink="/login">Sign in</a><a routerLink="/register">Create account</a></div>
+    } @else if (latestOrder; as order) {
+      <a class="home-order" routerLink="/order-tracker" [queryParams]="{ order: order.id }"><span><small>LATEST ORDER · {{ order.id }}</small><strong>{{ orderHistory.statusFor(order) }}</strong></span><b>Track</b></a>
+    } @else {
+      <a class="home-order" routerLink="/products"><span><small>READY WHEN YOU ARE</small><strong>Start your first order</strong></span><b>Shop</b></a>
+    }
+  </section>
   <div class="promo-track" #promoTrack (scroll)="onPromoScroll()" aria-label="Promotions">
     @for (promo of promos; track promo.tag) {
       <article class="banner">
@@ -20,16 +54,17 @@
     }
   </div>
 
-  <div class="stats">
-    <div class="stat">
-      <span class="stat-icon green"><ion-icon name="cube-outline"></ion-icon></span>
-      <div><b>{{ products.products().length }}</b><small>Total Products</small></div>
+  @if (isGuestLanding) {
+    <div class="stats">
+      <div class="stat"><span class="stat-icon green"><ion-icon name="cube-outline"></ion-icon></span><div><b>{{ products.products().length }}</b><small>Fresh products</small></div></div>
+      <div class="stat"><span class="stat-icon red"><ion-icon name="sparkles-outline"></ion-icon></span><div><b>12</b><small>Special offers</small></div></div>
     </div>
-    <div class="stat">
-      <span class="stat-icon red"><ion-icon name="sparkles-outline"></ion-icon></span>
-      <div><b>12</b><small>Special Offers</small></div>
+  } @else {
+    <div class="stats">
+      <div class="stat"><span class="stat-icon green"><ion-icon name="receipt-outline"></ion-icon></span><div><b>{{ orderHistory.count() }}</b><small>Your orders</small></div></div>
+      <div class="stat"><span class="stat-icon red"><ion-icon name="cart-outline"></ion-icon></span><div><b>{{ cart.count() }}</b><small>Items in cart</small></div></div>
     </div>
-  </div>
+  }
 
   <div class="section-head">
     <div><h3>Fresh Picks</h3><small>Harvested near you</small></div>
@@ -65,6 +100,7 @@
   <div class="section-head"><div><h3>Popular Freshes</h3><small>Loved by our customers</small></div><a routerLink="/products" [queryParams]="{ popular: true }">See all</a></div>
   <div class="grid">@for (p of products.popular(); track p.id) { <div class="card" (click)="open(p)"><div class="img-ph thumb">@if (p.image) { <img [src]="p.image" [alt]="p.name" (error)="products.handleImageError(p)"> } @else { <ion-icon name="image-outline"></ion-icon> }</div><strong>{{ p.name }}</strong><div class="foot"><span class="price">₱{{ p.price }} / {{ p.unit }}</span><button class="add" [disabled]="p.stockQuantity === 0" [attr.aria-label]="p.stockQuantity === 0 ? 'Out of stock' : 'Add to cart'" (click)="addToCart(p, $event)"><ion-icon name="cart-outline"></ion-icon></button></div></div> }</div>
   <button class="feedback" style="display:block;width:calc(100% - 32px);border:0;text-align:left;font:inherit" type="button" (click)="showAppReviews = true"><h3>Customer App Rating</h3>@if (appReviews.length) { <strong>{{ appRating.toFixed(1) }} ★</strong><p>{{ appReviews.length }} recorded {{ appReviews.length === 1 ? 'review' : 'reviews' }} · Tap to read</p> } @else { <strong>No ratings yet</strong><p>Tap to view recorded app reviews.</p> }</button>
+  }
   <ion-modal class="app-rating-modal" [isOpen]="showAppReviews" [breakpoints]="[0, 0.72, 1]" [initialBreakpoint]="1" [handle]="true" (didDismiss)="showAppReviews = false">
     <ng-template>
       <div class="app-review-sheet">
