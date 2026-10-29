@@ -10,6 +10,7 @@ import { ProductService } from './services/product';
 import { ReviewService } from './services/reviews';
 import { ApiService } from './services/api';
 import { OrderHistoryService } from './services/order-history';
+import { GoogleAuthService } from './services/google-auth';
 
 interface MenuItem { title: string; url: string; icon: string; badge?: boolean; queryParams?: Record<string, string>; }
 interface MenuGroup { title: string; items: MenuItem[]; }
@@ -72,7 +73,7 @@ export class AppComponent {
     return localStorage.getItem(`fv-profile-photo:${account}`);
   }
 
-  constructor(private router: Router, public cart: CartService, private alerts: AlertController, public auth: AuthService, private products: ProductService, private reviews: ReviewService, private api: ApiService, private orderHistory: OrderHistoryService) {
+  constructor(private router: Router, public cart: CartService, private alerts: AlertController, public auth: AuthService, private products: ProductService, private reviews: ReviewService, private api: ApiService, private orderHistory: OrderHistoryService, private googleAuth: GoogleAuthService) {
     addIcons({ briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline });
 
     const savedTheme = localStorage.getItem('fv-theme');
@@ -89,7 +90,7 @@ export class AppComponent {
       if (e.urlAfterRedirects.startsWith('/admin')) this.auth.setAdminCustomerMode(false);
     });
 
-    if (this.auth.isAuthenticated) {
+    if (this.auth.isAuthenticated || this.auth.hasStoredAccessToken) {
       this.api.account().subscribe({
         next: ({ user }) => {
           const savedProfile = this.savedProfile;
@@ -129,6 +130,7 @@ export class AppComponent {
     await alert.present();
     const { role } = await alert.onDidDismiss();
     if (role === 'confirm') {
+      await this.googleAuth.signOut().catch((error) => console.warn('Google provider sign-out failed:', error));
       this.api.logout().subscribe({
         next: () => this.finishLogout(),
         error: () => this.finishLogout(),

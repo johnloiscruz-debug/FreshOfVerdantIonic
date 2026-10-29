@@ -233,6 +233,13 @@ export class ApiService {
     return this.http.post<{ role: string; fullName?: string; name?: string; user?: ApiAccount['user'] }>(`${this.baseUrl}/login`, { email, password }, { withCredentials: true });
   }
 
+  googleNativeLogin(idToken: string) {
+    return this.http.post<{
+      token: string;
+      user: { userId: number; fullName: string; email: string; role: string };
+    }>(`${this.baseUrl}/auth/google/native`, { idToken });
+  }
+
   register(details: { fullName: string; email: string; password: string; phoneNumber?: string; role?: 'Customer' | 'Admin'; adminCode?: string }) {
     return this.http.post<{ login: string; user?: ApiAccount['user'] }>(`${this.baseUrl}/register`, details, { withCredentials: true });
   }

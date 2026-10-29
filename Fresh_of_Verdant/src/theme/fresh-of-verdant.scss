@@ -660,7 +660,11 @@ html.theme-dark ion-toast.cart-action-toast-warning { --background:#2b2112; --co
   font-weight: 600;
   text-decoration: none;
   box-shadow: 0 2px 6px rgba(20, 35, 25, .07);
+  font-family: inherit;
+  cursor: pointer;
 }
+
+.google-auth:disabled { opacity: .65; cursor: wait; }
 
 .google-auth img { width: 20px; height: 20px; }
 .google-auth:active { background: #f7f9f8; }

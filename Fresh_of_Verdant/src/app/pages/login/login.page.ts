@@ -3,10 +3,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonContent, IonIcon, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
+import { Capacitor } from '@capacitor/core';
 import { arrowForward, closeOutline, eyeOffOutline, eyeOutline, leafOutline, lockClosedOutline, mailOutline, nutritionOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ProductService } from '../../services/product';
+import { GoogleAuthService } from '../../services/google-auth';
 
 @Component({
   selector: 'app-login-welcome-modal',
@@ -50,13 +52,30 @@ export class LoginPage {
   showPassword = false;
   error = '';
   loading = false;
+  readonly useNativeGoogleSignIn = Capacitor.getPlatform() === 'android';
   emailError = '';
   passwordError = '';
 
   get googleAuthUrl() { return this.api.googleAuthUrl; }
 
-  constructor(private router: Router, private route: ActivatedRoute, private api: ApiService, private auth: AuthService, private products: ProductService, private alertController: AlertController, private modalController: ModalController) {
+  constructor(private router: Router, private route: ActivatedRoute, private api: ApiService, private auth: AuthService, private products: ProductService, private googleAuth: GoogleAuthService, private alertController: AlertController, private modalController: ModalController) {
     addIcons({ arrowForward, eyeOffOutline, eyeOutline, lockClosedOutline, mailOutline, nutritionOutline });
+  }
+
+  async signInWithGoogle() {
+    this.error = '';
+    this.loading = true;
+    try {
+      const user = await this.googleAuth.signIn();
+      const returnUrl = this.auth.isAdmin ? '/admin' : (this.route.snapshot.queryParamMap.get('returnUrl') ?? '/home');
+      await this.showWelcomeAndContinue(returnUrl, user.fullName || user.email.split('@')[0]);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : 'Unable to complete Google sign-in.';
+      this.error = detail;
+      await this.showAlert(detail);
+    } finally {
+      this.loading = false;
+    }
   }
 
   signIn() {

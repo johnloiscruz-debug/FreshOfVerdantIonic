@@ -75,7 +75,11 @@
       <button class="fv-btn" (click)="register()" [disabled]="loading">{{ loading ? 'Creating account...' : 'Register' }} <ion-icon name="arrow-forward"></ion-icon></button>
 
       <div class="auth-divider"><span>Or</span></div>
-      <a class="google-auth" [href]="googleAuthUrl"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />Continue with Google</a>
+      @if (useNativeGoogleSignIn) {
+        <button class="google-auth" type="button" (click)="signInWithGoogle()" [disabled]="loading"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />{{ loading ? 'Connecting...' : 'Continue with Google' }}</button>
+      } @else {
+        <a class="google-auth" [href]="googleAuthUrl"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />Continue with Google</a>
+      }
 
       <p class="login-link">Already have an account? <a routerLink="/login">Log In</a></p>
       <p class="login-link">Want to browse first?</p>

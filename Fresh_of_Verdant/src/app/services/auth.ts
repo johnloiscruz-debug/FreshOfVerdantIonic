@@ -5,6 +5,7 @@ export class AuthService {
   private readonly emailKey = 'fv-auth-email';
   private readonly nameKey = 'fv-auth-name';
   private readonly roleKey = 'fv-auth-role';
+  private readonly accessTokenKey = 'fv-auth-access-token';
   readonly currentUser = signal<string | null>(this.readEmail());
   readonly currentName = signal<string | null>(this.readName());
   readonly currentRole = signal<'Customer' | 'Admin'>(this.readRole());
@@ -12,6 +13,18 @@ export class AuthService {
 
   get isAuthenticated(): boolean {
     return !!this.currentUser();
+  }
+
+  get hasStoredAccessToken(): boolean {
+    return typeof localStorage !== 'undefined' && !!localStorage.getItem(this.accessTokenKey);
+  }
+
+  get accessToken(): string | null {
+    return typeof localStorage === 'undefined' ? null : localStorage.getItem(this.accessTokenKey);
+  }
+
+  storeAccessToken(token: string) {
+    if (typeof localStorage !== 'undefined') localStorage.setItem(this.accessTokenKey, token);
   }
 
   private readEmail(): string | null {
@@ -62,6 +75,7 @@ export class AuthService {
     this.currentUser.set(null);
     this.currentName.set(null);
     this.currentRole.set('Customer');
+    if (typeof localStorage !== 'undefined') localStorage.removeItem(this.accessTokenKey);
     this.adminCustomerMode.set(false);
     if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('fv-admin-customer-mode');
     // These are account-specific device copies. Remove them before another account can use this session.

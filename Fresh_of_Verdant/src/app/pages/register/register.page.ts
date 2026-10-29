@@ -3,10 +3,12 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonContent, IonIcon, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
+import { Capacitor } from '@capacitor/core';
 import { arrowForward, callOutline, closeOutline, eyeOffOutline, eyeOutline, leafOutline, lockClosedOutline, mailOutline, nutritionOutline, personOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api';
 import { AuthService } from '../../services/auth';
 import { ProductService } from '../../services/product';
+import { GoogleAuthService } from '../../services/google-auth';
 
 @Component({
   selector: 'app-register-welcome-modal',
@@ -49,6 +51,7 @@ export class RegisterPage {
   showConfirm = false;
   error = '';
   loading = false;
+  readonly useNativeGoogleSignIn = Capacitor.getPlatform() === 'android';
   fieldErrors: Record<string, string> = {};
   private readonly maxNameLength = 80;
   private readonly maxEmailLength = 254;
@@ -56,8 +59,23 @@ export class RegisterPage {
 
   get googleAuthUrl() { return this.api.googleAuthUrl; }
 
-  constructor(private router: Router, private api: ApiService, private auth: AuthService, private products: ProductService, private alertController: AlertController, private modalController: ModalController) {
+  constructor(private router: Router, private api: ApiService, private auth: AuthService, private products: ProductService, private googleAuth: GoogleAuthService, private alertController: AlertController, private modalController: ModalController) {
     addIcons({ arrowForward, callOutline, closeOutline, eyeOffOutline, eyeOutline, leafOutline, lockClosedOutline, mailOutline, nutritionOutline, personOutline, shieldCheckmarkOutline });
+  }
+
+  async signInWithGoogle() {
+    this.error = '';
+    this.loading = true;
+    try {
+      await this.googleAuth.signIn();
+      await this.showSuccessAndContinue();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : 'Unable to complete Google sign-in.';
+      this.error = detail;
+      await this.showAlert(detail);
+    } finally {
+      this.loading = false;
+    }
   }
 
   register() {
