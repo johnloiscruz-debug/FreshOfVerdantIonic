@@ -1,12 +1,12 @@
 <app-page-header title="Profile & Settings" rightIcon="cart-outline" rightLink="/cart"></app-page-header>
 <ion-content>
   <div class="who">
-    <label id="choose-profile-photo" class="photo img-ph" title="Choose a profile photo">
+    <button id="choose-profile-photo" type="button" class="photo img-ph" [attr.aria-label]="profilePhoto ? 'Open profile photo options' : 'Add a profile photo'" (click)="openProfilePhotoActions()">
       <img *ngIf="profilePhoto" [src]="profilePhoto" alt="Profile photo">
       <span *ngIf="!profilePhoto" class="initials">{{ profileInitials }}</span>
-      <input type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" aria-label="Choose a profile photo" (change)="selectProfilePhoto($event)">
       <i class="check"><ion-icon name="checkmark"></ion-icon></i>
-    </label>
+    </button>
+    <input #profilePhotoInput class="photo-input" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" aria-label="Choose a profile photo" (change)="selectProfilePhoto($event)">
     <div class="identity"><h2>{{ profileName }}</h2><p>{{ profileEmail }}</p><span class="member">VERDANT MEMBER</span></div>
   </div>
   <div class="profile-stats"><a routerLink="/orders"><b>{{ orderHistory.count() }}</b><span>Orders</span></a><a routerLink="/order-tracker"><b>{{ orderHistory.deliveredCount() }}</b><span>Delivered</span></a><a routerLink="/reviews"><b>{{ reviewService.ownReviewCount() }}</b><span>Reviews</span></a></div>
@@ -57,5 +57,14 @@
   <a class="card link" routerLink="/reviews"><span class="ico"><ion-icon name="star-outline"></ion-icon></span><div class="val"><strong>Reviews</strong></div><ion-icon name="chevron-forward"></ion-icon></a>
   <h3 id="favorites">My Favorites</h3>
   @for (p of products.products(); track p.id) { @if (products.isFavorite(p)) { <div class="card link"><div class="val"><strong>{{ p.name }}</strong></div><button class="edit" (click)="products.toggleFavorite(p)">Remove</button></div> } }
-  <button class="fv-btn save" (click)="save()"><ion-icon name="checkmark"></ion-icon> Save Changes</button>
+  <button class="fv-btn save" type="button" [disabled]="saving" [attr.aria-busy]="saving" (click)="save()"><ion-icon name="checkmark"></ion-icon> {{ saving ? 'Saving...' : 'Save Changes' }}</button>
 </ion-content>
+
+<ion-modal [isOpen]="isProfilePhotoPreviewOpen" cssClass="profile-photo-preview-modal" (didDismiss)="isProfilePhotoPreviewOpen = false">
+  <ng-template>
+    <div class="profile-photo-preview">
+      <button type="button" class="profile-photo-preview-close" aria-label="Close profile picture" (click)="isProfilePhotoPreviewOpen = false"><ion-icon name="close-outline"></ion-icon></button>
+      <img *ngIf="profilePhoto" [src]="profilePhoto" alt="Profile picture">
+    </div>
+  </ng-template>
+</ion-modal>

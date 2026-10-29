@@ -55,6 +55,7 @@ export class AdminPage {
   loading = false;
   loadFailed = false;
   savingId = '';
+  categoriesLoading = false;
   saveCompleteId = '';
   message = '';
   error = '';
@@ -66,6 +67,7 @@ export class AdminPage {
   showComplaintForm = false;
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
   private loadSequence = 0;
+  private pendingProductFormAction: (() => void) | null = null;
 
   constructor(private api: ApiService, public auth: AuthService, private route: ActivatedRoute, private router: Router, private productService: ProductService, private changeDetector: ChangeDetectorRef, private toastCtrl: ToastController) {
     addIcons({ barChartOutline, cartOutline, cubeOutline, peopleOutline, pricetagOutline, storefrontOutline, warningOutline, closeOutline, imageOutline, starOutline, mailOutline, searchOutline });
@@ -102,13 +104,7 @@ export class AdminPage {
   }
 
   get productCategoryOptions(): AdminCategory[] {
-    if (this.categories.length) return this.categories;
-    return [
-      { category_id: 1, category_name: 'Fruits', description: 'Fresh fruits' },
-      { category_id: 2, category_name: 'Vegetables', description: 'Fresh vegetables' },
-      { category_id: 3, category_name: 'Grains', description: 'Grains and pantry staples' },
-      { category_id: 4, category_name: 'Others', description: 'Other market products' },
-    ];
+    return this.categories;
   }
 
   get visibleReviews() {
@@ -149,7 +145,8 @@ export class AdminPage {
       let requestFailed = false;
       const finish = (failed = false) => { requestFailed ||= failed; if (--pending === 0) this.finishLoading(requestFailed, loadId); };
       this.api.adminProducts().subscribe({ next: (rows) => { this.products = rows; this.loadedSections.add('products'); if (loadId === this.loadSequence) this.changeDetector.detectChanges(); finish(); }, error: (failure) => { if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'products'); finish(true); } });
-      this.api.adminCategories().subscribe({ next: (rows) => { this.categories = rows; this.loadedSections.add('categories'); finish(); }, error: (failure) => { if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'categories'); finish(true); } });
+      this.categoriesLoading = true;
+      this.api.adminCategories().subscribe({ next: (rows) => { this.setLoadedCategories(rows); finish(); }, error: (failure) => { this.failCategoryLoad(failure); if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'categories'); finish(true); } });
     } else if (this.activeSection === 'orders') {
       this.api.adminOrders().subscribe({ next: (rows) => { this.orders = rows; this.loadedSections.add('orders'); this.finishLoading(false, loadId); }, error: (failure) => { if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'orders'); this.finishLoading(true, loadId); } });
     } else if (this.activeSection === 'customers') {
@@ -160,7 +157,8 @@ export class AdminPage {
       let pending = 2;
       let requestFailed = false;
       const finish = (failed = false) => { requestFailed ||= failed; if (--pending === 0) this.finishLoading(requestFailed, loadId); };
-      this.api.adminCategories().subscribe({ next: (rows) => { this.categories = rows; this.loadedSections.add('categories'); if (loadId === this.loadSequence) this.changeDetector.detectChanges(); finish(); }, error: (failure) => { if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'categories'); finish(true); } });
+      this.categoriesLoading = true;
+      this.api.adminCategories().subscribe({ next: (rows) => { this.setLoadedCategories(rows); if (loadId === this.loadSequence) this.changeDetector.detectChanges(); finish(); }, error: (failure) => { this.failCategoryLoad(failure); if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'categories'); finish(true); } });
       this.api.adminCategoryCounts().subscribe({ next: (rows) => { this.categoryCounts = rows; finish(); }, error: (failure) => { if (loadId === this.loadSequence) this.error = this.apiFailure(failure, 'category counts'); finish(true); } });
     } else if (this.activeSection === 'reviews') {
       this.loadReport(loadId);
@@ -173,19 +171,26 @@ export class AdminPage {
   }
 
   startNewProduct() {
-    this.productForm = this.blankProduct();
-    this.saveCompleteId = '';
-    this.showProductForm = true;
     this.message = '';
     this.error = '';
+    this.ensureProductCategories(() => {
+      this.productForm = this.blankProduct();
+      this.saveCompleteId = '';
+      this.showProductForm = true;
+    });
   }
 
   editProduct(product: AdminProduct) {
-    this.productForm = { id: product.product_id, name: product.product_name, description: product.description ?? '', price: product.price, stockQuantity: product.stock_quantity, unit: product.unit, categoryId: product.category_id, imageUrl: product.image_url, isActive: product.is_active };
-    this.saveCompleteId = '';
-    this.showProductForm = true;
     this.message = '';
     this.error = '';
+    this.ensureProductCategories(() => {
+      const categoryId = this.categories.some((category) => Number(category.category_id) === Number(product.category_id))
+        ? Number(product.category_id)
+        : null;
+      this.productForm = { id: product.product_id, name: product.product_name, description: product.description ?? '', price: product.price, stockQuantity: product.stock_quantity, unit: product.unit, categoryId, imageUrl: product.image_url, isActive: product.is_active };
+      this.saveCompleteId = '';
+      this.showProductForm = true;
+    });
   }
 
   async chooseProductImage(event: Event) {
@@ -219,7 +224,8 @@ export class AdminPage {
 
   saveProductForm() {
     const form = this.productForm;
-    if (!form.name.trim() || !form.unit.trim() || form.price < 0 || form.stockQuantity < 0 || !form.categoryId) {
+    const categoryId = Number(form.categoryId);
+    if (!form.name.trim() || !form.unit.trim() || form.price < 0 || form.stockQuantity < 0 || !Number.isSafeInteger(categoryId) || !this.categories.some((category) => Number(category.category_id) === categoryId)) {
       this.error = 'Enter a product name, unit, category, valid price, and stock quantity.';
       return;
     }
@@ -227,7 +233,7 @@ export class AdminPage {
     const saveKey = this.savingId;
     const previousProducts = this.products;
     const temporaryId = -Date.now();
-    const categoryName = this.productCategoryOptions.find((category) => category.category_id === form.categoryId)?.category_name ?? null;
+    const categoryName = this.productCategoryOptions.find((category) => Number(category.category_id) === categoryId)?.category_name ?? null;
     const optimisticProduct: AdminProduct = {
       product_id: form.id ?? temporaryId,
       product_name: form.name.trim(),
@@ -236,7 +242,7 @@ export class AdminPage {
       stock_quantity: Number(form.stockQuantity),
       unit: form.unit.trim(),
       image_url: form.imageUrl,
-      category_id: form.categoryId,
+      category_id: categoryId,
       category_name: categoryName,
       is_active: form.isActive,
     };
@@ -245,19 +251,21 @@ export class AdminPage {
       : [optimisticProduct, ...this.products];
     this.error = '';
     const successMessage = form.id ? 'Update Complete' : 'Product Added';
-    this.message = successMessage;
-    this.saveCompleteId = saveKey;
+    this.message = '';
+    this.saveCompleteId = '';
     this.changeDetector.detectChanges();
-    void this.showSaveToast(successMessage, 'success');
     const onSuccess = (createdProductId?: number) => {
       this.message = successMessage;
       this.saveCompleteId = saveKey;
       this.savingId = '';
       this.clearSaveCompleteAfterDelay(saveKey);
+      this.showProductForm = false;
+      this.productForm = this.blankProduct();
       if (createdProductId) this.products = this.products.map((product) => product.product_id === temporaryId ? { ...product, product_id: createdProductId } : product);
       this.loadProducts();
       this.productService.load();
       this.loadOverview();
+      void this.showSaveToast(successMessage, 'success');
     };
     const onFailure = (failure: HttpErrorResponse) => {
       this.products = previousProducts;
@@ -268,9 +276,9 @@ export class AdminPage {
       void this.showSaveToast(this.error, 'danger');
     };
     if (form.id) {
-      this.api.updateAdminProduct({ product_id: form.id, product_name: form.name.trim(), description: form.description, price: Number(form.price), stock_quantity: Number(form.stockQuantity), unit: form.unit.trim(), image_url: form.imageUrl, category_id: form.categoryId, is_active: form.isActive }).subscribe({ next: () => onSuccess(), error: onFailure });
+      this.api.updateAdminProduct({ product_id: form.id, product_name: form.name.trim(), description: form.description, price: Number(form.price), stock_quantity: Number(form.stockQuantity), unit: form.unit.trim(), image_url: form.imageUrl, category_id: categoryId, is_active: form.isActive }).subscribe({ next: () => onSuccess(), error: onFailure });
     } else {
-      this.api.createAdminProduct({ product_name: form.name.trim(), description: form.description, price: Number(form.price), stock_quantity: Number(form.stockQuantity), unit: form.unit.trim(), image_url: form.imageUrl, category_id: form.categoryId }).subscribe({ next: ({ productId }) => onSuccess(productId), error: onFailure });
+      this.api.createAdminProduct({ product_name: form.name.trim(), description: form.description, price: Number(form.price), stock_quantity: Number(form.stockQuantity), unit: form.unit.trim(), image_url: form.imageUrl, category_id: categoryId }).subscribe({ next: ({ productId }) => onSuccess(productId), error: onFailure });
     }
   }
 
@@ -448,8 +456,41 @@ export class AdminPage {
   private loadImage(source: string) { return new Promise<HTMLImageElement>((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error('Invalid image')); image.src = source; }); }
   private loadOverview() { this.api.adminOverview().subscribe({ next: (overview) => { this.overview = overview; } }); }
   private loadProducts() { this.api.adminProducts().subscribe({ next: (rows) => { this.products = rows; } }); }
+  private ensureProductCategories(onReady: () => void) {
+    if (this.loadedSections.has('categories')) {
+      if (this.categories.length) onReady();
+      else this.error = 'No product categories are available. Add a category before creating or editing a product.';
+      return;
+    }
+
+    this.pendingProductFormAction = onReady;
+    if (this.categoriesLoading) return;
+    this.categoriesLoading = true;
+    this.api.adminCategories().subscribe({
+      next: (rows) => this.setLoadedCategories(rows),
+      error: (failure) => this.failCategoryLoad(failure),
+    });
+  }
   private loadCategories() {
-    this.api.adminCategories().subscribe({ next: (rows) => { this.categories = rows; this.loadedSections.add('categories'); } });
+    this.categoriesLoading = true;
+    this.api.adminCategories().subscribe({ next: (rows) => this.setLoadedCategories(rows), error: (failure) => this.failCategoryLoad(failure) });
     this.api.adminCategoryCounts().subscribe({ next: (rows) => { this.categoryCounts = rows; } });
+  }
+
+  private setLoadedCategories(rows: AdminCategory[]) {
+    this.categories = rows;
+    this.loadedSections.add('categories');
+    this.categoriesLoading = false;
+    const pendingAction = this.pendingProductFormAction;
+    this.pendingProductFormAction = null;
+    if (!pendingAction) return;
+    if (rows.length) pendingAction();
+    else this.error = 'No product categories are available. Add a category before creating or editing a product.';
+  }
+
+  private failCategoryLoad(failure: HttpErrorResponse | TimeoutError) {
+    this.categoriesLoading = false;
+    this.pendingProductFormAction = null;
+    this.error = this.apiFailure(failure, 'categories');
   }
 }

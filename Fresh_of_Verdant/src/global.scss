@@ -23,6 +23,83 @@ ion-modal.fv-login-welcome-modal {
 }
 ion-modal.fv-login-welcome-modal::part(content) { overflow: visible; border-radius: 24px; background: transparent; box-shadow: none; }
 
+ion-action-sheet.profile-photo-actions {
+  --background: #fff;
+  --color: #17211b;
+  --title-color: #17211b;
+  --button-background: #fff;
+  --button-color: #17211b;
+  --button-background-activated: #e7f7ee;
+  --button-color-activated: var(--fv-green-dark);
+  --button-background-selected: #e7f7ee;
+  --button-color-selected: var(--fv-green-dark);
+}
+ion-modal.profile-photo-preview-modal {
+  --background: #f7faf8;
+  --width: min(92vw, 560px);
+  --height: min(82vh, 560px);
+  --border-radius: 20px;
+  --box-shadow: none;
+}
+ion-modal.profile-photo-preview-modal::part(content) {
+  overflow: hidden;
+  border: 1px solid #dfe7e2;
+  border-radius: 20px;
+  background: #f7faf8;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
+}
+.profile-photo-preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+}
+.profile-photo-preview img { max-width: 100%; max-height: 100%; border-radius: 12px; object-fit: contain; }
+.profile-photo-preview-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dfe7e2;
+  border-radius: 50%;
+  background: #fff;
+  color: #17211b;
+  font-size: 21px;
+}
+html.theme-dark ion-action-sheet.profile-photo-actions {
+  --background: #101713;
+  --color: #f2f5f2;
+  --title-color: #f2f5f2;
+  --button-background: #101713;
+  --button-color: #f2f5f2;
+  --button-background-activated: #17452b;
+  --button-color-activated: #a1f4ba;
+  --button-background-selected: #17452b;
+  --button-color-selected: #a1f4ba;
+}
+html.theme-dark ion-modal.profile-photo-preview-modal {
+  --background: #0b100d;
+  --ion-background-color: #0b100d;
+}
+html.theme-dark ion-modal.profile-photo-preview-modal::part(content) {
+  border-color: #315b42;
+  background: #0b100d;
+  box-shadow: 0 0 28px rgba(32, 216, 117, .2), 0 12px 40px rgba(0, 0, 0, .5);
+}
+html.theme-dark .profile-photo-preview-close {
+  border-color: #315b42;
+  background: #203c2b;
+  color: #f2f5f2;
+  box-shadow: 0 0 14px rgba(32, 216, 117, .18);
+}
+
 /* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";

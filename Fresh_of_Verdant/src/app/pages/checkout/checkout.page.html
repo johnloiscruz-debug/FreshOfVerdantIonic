@@ -41,6 +41,7 @@
     <label class="fld half">
       <span><small>ZIP CODE</small><input name="zip" type="text" inputmode="numeric" maxlength="4" placeholder="Auto-filled from location" [value]="address.zip" readonly /></span>
     </label>
+    @if (addressError) { <p class="payment-validation error address-validation" role="alert">{{ addressError }}</p> }
   </section>
 
   <!-- Schedule -->
@@ -78,10 +79,10 @@
     <div class="payment-line"><span>Total Due</span><strong>₱{{ total }}</strong></div>
     @if (payment === 'cod') {
       <label class="cash-entry">
-        <span>Cash tendered <small>Optional, to calculate your change</small></span>
+        <span>Cash tendered <small>Required. Must cover the total due.</small></span>
         <span class="peso-input"><b>₱</b><input name="cashTendered" type="number" inputmode="decimal" min="0.01" step="0.01" [(ngModel)]="cashTendered" placeholder="Enter cash amount" [attr.aria-invalid]="cashTenderError ? 'true' : null" /></span>
       </label>
-      @if (cashTenderError) { <p class="payment-validation error">{{ cashTenderError }}</p> }
+      @if (cashTenderError) { <p class="payment-validation error" role="alert">{{ cashTenderError }}</p> }
       <div class="payment-line"><span>Total Change</span><strong>{{ totalChange === null ? '—' : '₱' + totalChange.toFixed(2) }}</strong></div>
     } @else {
       <div class="payment-line"><span>Wallet balance</span><strong>₱{{ wallet.balance().toFixed(2) }}</strong></div>
@@ -106,7 +107,19 @@
 
 <ion-footer class="ion-no-border">
   <div class="foot">
-    <button class="fv-btn" [disabled]="placingOrder || cart.items().length === 0 || !paymentValid || !!scheduleError" (click)="placeOrder()">{{ placingOrder ? 'Placing Order…' : 'Place Order · ₱' + total }} <ion-icon name="checkmark"></ion-icon></button>
+    <button class="fv-btn" type="button" [disabled]="placingOrder || cart.items().length === 0 || !!addressError || !paymentValid || !!scheduleError" (click)="placeOrder()">Place Order · ₱{{ total }} <ion-icon name="checkmark"></ion-icon></button>
     <small><ion-icon name="shield-checkmark-outline"></ion-icon> Your information is encrypted and securely handled.</small>
   </div>
 </ion-footer>
+
+@if (placingOrder) {
+  <div class="order-processing" role="status" aria-live="polite" aria-busy="true">
+    <div class="processing-content">
+      <span class="processing-mark"><img src="https://cdn.phototourl.com/member/2026-10-22-e0d176fe-0763-46fd-be92-ddac142cb10f.png" alt="Fresh of Verdant official logo" /></span>
+      <small class="processing-brand">FRESH OF VERDANT</small>
+      <h1>Processing your order</h1>
+      <p>Confirming your payment and delivery details.</p>
+      <ion-spinner name="circular"></ion-spinner>
+    </div>
+  </div>
+}

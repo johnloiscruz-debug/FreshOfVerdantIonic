@@ -192,6 +192,34 @@ ion-content {
 .form-error { margin:8px 0 0; color:#c62828; font-size:12px; }
 .storage-note { margin:10px 0 0; color:#687169; font-size:10px; }
 .submit-review { margin-top:12px; }
+:host-context(html.theme-dark) .review-form {
+    border: 1px solid #285239;
+    background: #101713;
+    color: #f2f5f2;
+    box-shadow: 0 0 0 1px rgba(32, 216, 117, .08), 0 0 20px rgba(32, 216, 117, .14);
+}
+:host-context(html.theme-dark) .form-heading p,
+:host-context(html.theme-dark) .close-form,
+:host-context(html.theme-dark) .storage-note { color: #b8c9be; }
+:host-context(html.theme-dark) .field-label { color: #d7e1da; }
+:host-context(html.theme-dark) .text-field {
+    border-color: #34483a;
+    background: #0b100d;
+    color: #f2f5f2;
+}
+:host-context(html.theme-dark) .text-field::placeholder { color: #829388; }
+:host-context(html.theme-dark) .text-field:focus-visible {
+    border-color: #20d875;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(32, 216, 117, .16), 0 0 14px rgba(32, 216, 117, .16);
+}
+:host-context(html.theme-dark) select.text-field option { background: #0b100d; color: #f2f5f2; }
+:host-context(html.theme-dark) .rating-picker button:focus-visible {
+    border-radius: 6px;
+    outline: 2px solid #20d875;
+    outline-offset: 2px;
+}
+:host-context(html.theme-dark) .submit-review { box-shadow: 0 5px 16px rgba(32, 216, 117, .24); }
 .success { display:flex; align-items:center; gap:6px; margin:0 16px 12px; color:var(--fv-green-dark); font-size:12px; font-weight:700; }
 .empty-reviews { display:grid; justify-items:center; gap:6px; margin:0 16px 20px; padding:25px 16px; border-radius:16px; background:#fff; color:#48534c; text-align:center; }
 .empty-reviews ion-icon { color:var(--fv-green-dark); font-size:26px; }

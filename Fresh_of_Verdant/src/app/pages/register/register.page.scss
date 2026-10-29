@@ -68,6 +68,16 @@
     color: #222;
     font: inherit;
 }
+:host-context(html.theme-dark) .role-field select { color-scheme: dark; }
+:host-context(html.theme-dark) .role-field select option {
+    background-color: #151a17;
+    color: #f2f5f2;
+}
+:host-context(html.theme-dark) .role-field select option:checked,
+:host-context(html.theme-dark) .role-field select option:hover {
+    background-color: #17452b;
+    color: #a1f4ba;
+}
 
 .field-error {
     margin: 5px 2px 0;

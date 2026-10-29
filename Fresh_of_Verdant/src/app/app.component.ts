@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { AlertController, IonApp, IonRouterOutlet, IonMenu, IonContent, IonIcon, IonMenuToggle } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, peopleOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline } from 'ionicons/icons';
+import { briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline } from 'ionicons/icons';
 import { filter } from 'rxjs';
 import { CartService } from './services/cart';
 import { AuthService } from './services/auth';
@@ -31,7 +31,6 @@ export class AppComponent {
 
   adminMenuGroups: MenuGroup[] = [
     { title: 'Admin', items: [{ title: 'Admin Dashboard', url: '/admin', icon: 'grid-outline' }] },
-    { title: 'Store Management', items: [{ title: 'Products & Inventory', url: '/admin', queryParams: { section: 'products' }, icon: 'cube-outline' }, { title: 'Orders', url: '/admin', queryParams: { section: 'orders' }, icon: 'cart-outline' }, { title: 'Customers', url: '/admin', queryParams: { section: 'customers' }, icon: 'people-outline' }] },
   ];
 
   get activeMenuGroups(): MenuGroup[] {
@@ -74,7 +73,7 @@ export class AppComponent {
   }
 
   constructor(private router: Router, public cart: CartService, private alerts: AlertController, public auth: AuthService, private products: ProductService, private reviews: ReviewService, private api: ApiService, private orderHistory: OrderHistoryService) {
-    addIcons({ briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, peopleOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline });
+    addIcons({ briefcaseOutline, callOutline, cartOutline, codeSlashOutline, documentTextOutline, gridOutline, helpCircleOutline, headsetOutline, homeOutline, cubeOutline, logOutOutline, mailOutline, personOutline, heartOutline, receiptOutline, navigateOutline, locationOutline, shieldCheckmarkOutline, informationCircleOutline, chevronForward, settingsOutline, timeOutline, barChartOutline, pricetagOutline, storefrontOutline, starOutline });
 
     const savedTheme = localStorage.getItem('fv-theme');
     document.documentElement.classList.remove('theme-green', 'theme-light', 'theme-dark');
@@ -93,12 +92,15 @@ export class AppComponent {
     if (this.auth.isAuthenticated) {
       this.api.account().subscribe({
         next: ({ user }) => {
+          const savedProfile = this.savedProfile;
           this.auth.signIn(user.email, user.fullName, user.role);
           this.orderHistory.loadFromServer();
           this.products.connectWishlistToAccount();
           localStorage.setItem('fv-profile-details', JSON.stringify({
             'Full Name': user.fullName,
             'Email Address': user.email,
+            'Mobile Number': user.phoneNumber ?? savedProfile['Mobile Number'] ?? '',
+            'Location Address': user.shippingAddress ?? savedProfile['Location Address'] ?? '',
           }));
           if (user.role.toLowerCase() === 'admin' && !this.router.url.startsWith('/admin')) {
             void this.router.navigateByUrl('/admin', { replaceUrl: true });

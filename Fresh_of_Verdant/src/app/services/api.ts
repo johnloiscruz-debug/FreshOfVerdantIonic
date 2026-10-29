@@ -56,7 +56,14 @@ export interface ApiCart {
 
 export interface ApiAccount {
   loggedIn: boolean;
-  user: { userId: number; fullName: string; email: string; role: string };
+  user: {
+    userId: number;
+    fullName: string;
+    email: string;
+    phoneNumber?: string | null;
+    shippingAddress?: string | null;
+    role: string;
+  };
 }
 
 export interface AdminOverview {
@@ -224,6 +231,10 @@ export class ApiService {
     return this.http.get<ApiAccount>(`${this.baseUrl}/isLoggedIn`, { withCredentials: true });
   }
 
+  updateProfile(profile: { fullName: string; email: string; phoneNumber: string | null; shippingAddress: string | null }) {
+    return this.http.patch<{ user: ApiAccount['user'] }>(`${this.baseUrl}/profile`, profile, { withCredentials: true }).pipe(timeout({ first: 20000 }));
+  }
+
   logout() {
     return this.http.post<{ logout: string }>(`${this.baseUrl}/logout`, {}, { withCredentials: true });
   }
@@ -269,7 +280,7 @@ export class ApiService {
   }
 
   createOrder(order: CreateOrderRequest): Observable<TrackedOrder> {
-    return this.http.post<TrackedOrder>(`${this.baseUrl}/orders`, order, { withCredentials: true });
+    return this.http.post<TrackedOrder>(`${this.baseUrl}/orders`, order, { withCredentials: true }).pipe(timeout({ first: 20000 }));
   }
 
   reviews(): Observable<UserReview[]> {

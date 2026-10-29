@@ -444,6 +444,15 @@ html.theme-dark ion-content .pending-card .overdue-pill {
   color: #ff9c91 !important;
 }
 
+html.theme-dark ion-content .list-heading h2 { color: #f2f5f2 !important; }
+html.theme-dark ion-content .list-heading p,
+html.theme-dark ion-content .pending-card .step.pending .t strong,
+html.theme-dark ion-content .pending-card .step .t small,
+html.theme-dark ion-content .pending-card .step .t em { color: #b8c9be !important; }
+html.theme-dark ion-content .pending-card :is(.pending-head, .pending-head strong, .pending-head small, .pending-items, .pending-meta, .step .t strong) { color: #f2f5f2 !important; }
+html.theme-dark ion-content .pending-card .pending-items { border-color: #3b4840; }
+html.theme-dark ion-content .pending-card .step.active .t em { color: #62e595 !important; }
+
 html.theme-dark ion-content .profile-header .member,
 html.theme-dark ion-content .who .member {
   background: #173b28;

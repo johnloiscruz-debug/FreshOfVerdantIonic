@@ -30,9 +30,9 @@
     </div>
 
     <div class="steps">
-      @for (s of steps; track s.title) {
+      @for (s of steps; track s.title; let i = $index) {
         <div class="step" [class.done]="s.state === 'done'" [class.active]="s.state === 'active'" [class.pending]="s.state === 'pending'">
-          <span class="dot">@if (s.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
+          <span class="dot" [style.--dot-delay]="i * 320 + 'ms'">@if (s.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
           <div class="t"><strong>{{ s.title }}</strong><small>{{ s.desc }}</small><em>{{ s.meta }}</em></div>
         </div>
       }
@@ -55,9 +55,9 @@
           <div class="pending-meta"><span>{{ pending.deliveryWindow }}</span><span>{{ pending.payment }}</span></div>
           @if (isOverdue(pending)) { <p class="overdue-note">The delivery window has passed. Your order is still awaiting a status update.</p> }
           <div class="steps" aria-label="Order delivery progress">
-            @for (step of trackingSteps(pending); track step.title) {
+            @for (step of trackingSteps(pending); track step.title; let i = $index) {
               <div class="step" [class.done]="step.state === 'done'" [class.active]="step.state === 'active'" [class.pending]="step.state === 'pending'">
-                <span class="dot">@if (step.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
+                <span class="dot" [style.--dot-delay]="i * 320 + 'ms'">@if (step.state === 'done') { <ion-icon name="checkmark"></ion-icon> }</span>
                 <div class="t"><strong>{{ step.title }}</strong><small>{{ step.desc }}</small><em>{{ step.meta }}</em></div>
               </div>
             }

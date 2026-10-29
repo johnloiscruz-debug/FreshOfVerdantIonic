@@ -1,36 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AlertController, IonContent, IonIcon } from '@ionic/angular';
+import { ActionSheetController, AlertController, IonContent, IonIcon, IonModal } from '@ionic/angular';
 import { NgIf } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { callOutline, cardOutline, checkmark, chevronForward, heartOutline, locateOutline, locationOutline, mailOutline, notificationsOutline, pencilOutline, personOutline, settingsOutline, shieldCheckmarkOutline, starOutline } from 'ionicons/icons';
+import { callOutline, cameraOutline, cardOutline, checkmark, chevronForward, closeOutline, heartOutline, imageOutline, locateOutline, locationOutline, mailOutline, notificationsOutline, pencilOutline, personOutline, settingsOutline, shieldCheckmarkOutline, starOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ProductService } from '../../services/product';
 import { ReviewService } from '../../services/reviews';
 import { OrderHistoryService } from '../../services/order-history';
 import { AuthService } from '../../services/auth';
 import { ApiService } from '../../services/api';
+import type { ApiAccount } from '../../services/api';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, NgIf, FormsModule, RouterLink, PageHeaderComponent],
+  imports: [IonContent, IonIcon, IonModal, NgIf, FormsModule, RouterLink, PageHeaderComponent],
 })
 export class ProfilePage {
+  @ViewChild('profilePhotoInput') private profilePhotoInput?: ElementRef<HTMLInputElement>;
   mapPinX = 50;
   mapPinY = 44;
   isDraggingMapPin = false;
   isLocating = false;
+  saving = false;
+  isProfilePhotoPreviewOpen = false;
   profilePhoto: string | null = null;
-  constructor(public products: ProductService, public reviewService: ReviewService, public orderHistory: OrderHistoryService, private alerts: AlertController, private router: Router, private route: ActivatedRoute, private auth: AuthService, private api: ApiService) {
-    addIcons({ callOutline, cardOutline, checkmark, chevronForward, heartOutline, locateOutline, locationOutline, mailOutline, notificationsOutline, pencilOutline, personOutline, settingsOutline, shieldCheckmarkOutline, starOutline });
+  constructor(public products: ProductService, public reviewService: ReviewService, public orderHistory: OrderHistoryService, private actionSheets: ActionSheetController, private alerts: AlertController, private router: Router, private route: ActivatedRoute, private auth: AuthService, private api: ApiService) {
+    addIcons({ callOutline, cameraOutline, cardOutline, checkmark, chevronForward, closeOutline, heartOutline, imageOutline, locateOutline, locationOutline, mailOutline, notificationsOutline, pencilOutline, personOutline, settingsOutline, shieldCheckmarkOutline, starOutline });
     this.loadSavedProfile();
     this.route.queryParamMap.subscribe((params) => {
       if (params.get('action') === 'choose-photo') {
-        setTimeout(() => document.getElementById('choose-profile-photo')?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        setTimeout(() => this.openProfilePhotoPicker());
       }
     });
     if (this.auth.isAuthenticated) {
@@ -59,6 +63,7 @@ export class ProfilePage {
   ionViewWillEnter() {
     if (this.auth.isAuthenticated) this.reviewService.refreshOwnCount();
     else this.reviewService.ownReviewCount.set(0);
+    if (this.auth.isAuthenticated) this.loadAccountProfile();
   }
 
   fields = [
@@ -73,6 +78,33 @@ export class ProfilePage {
   private get profilePhotoKey() {
     const account = this.auth.currentUser()?.trim().toLowerCase() || 'guest';
     return `fv-profile-photo:${account}`;
+  }
+
+  async openProfilePhotoActions() {
+    const sheet = await this.actionSheets.create({
+      header: 'Profile photo',
+      subHeader: this.profilePhoto ? 'View or update your profile picture.' : 'Add a picture to your profile.',
+      cssClass: 'profile-photo-actions',
+      buttons: [
+        {
+          text: 'View a Profile Picture',
+          icon: 'image-outline',
+          disabled: !this.profilePhoto,
+          handler: () => { setTimeout(() => this.isProfilePhotoPreviewOpen = true); },
+        },
+        {
+          text: 'Choose a Profile Photo',
+          icon: 'camera-outline',
+          handler: () => { setTimeout(() => this.openProfilePhotoPicker()); },
+        },
+        { text: 'Cancel', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  private openProfilePhotoPicker() {
+    this.profilePhotoInput?.nativeElement.click();
   }
 
   async selectProfilePhoto(event: Event) {
@@ -137,12 +169,50 @@ export class ProfilePage {
   }
 
   async save() {
+    if (this.saving) return;
+    const fullName = this.profileName.trim();
+    const email = this.profileEmail.trim().toLowerCase();
+    if (!fullName || fullName.length > 200) {
+      await this.showLocationMessage('Enter a full name of 200 characters or fewer.');
+      return;
+    }
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      await this.showLocationMessage('Enter a valid email address.');
+      return;
+    }
+
     const phone = this.fields.find((field) => field.label === 'Mobile Number');
-    if (phone) phone.value = this.formatPhone(phone.value);
-    this.fields.forEach((f) => (f.editing = false));
-    localStorage.setItem('fv-profile-details', JSON.stringify(Object.fromEntries(this.fields.map((field) => [field.label, field.value]))));
-    const alert = await this.alerts.create({ message: 'Changes are Saved', buttons: ['OK'] });
-    await alert.present();
+    if (phone) phone.value = phone.value.trim() ? this.formatPhone(phone.value) : '';
+    const address = this.fields.find((field) => field.label === 'Location Address')?.value.trim() ?? '';
+    const profile = {
+      fullName,
+      email,
+      phoneNumber: phone?.value || null,
+      shippingAddress: address || null,
+    };
+
+    if (this.auth.isAuthenticated) {
+      const previousEmail = this.auth.currentUser() ?? '';
+      this.saving = true;
+      this.api.updateProfile(profile).subscribe({
+        next: ({ user }) => {
+          this.moveProfilePhoto(previousEmail, user.email);
+          this.applyAccountProfile(user);
+          this.fields.forEach((field) => (field.editing = false));
+          this.saving = false;
+          void this.showLocationMessage('Profile details saved.');
+        },
+        error: (error) => {
+          this.saving = false;
+          void this.showLocationMessage(error.error?.error ?? 'Could not save your profile details. Please try again.');
+        },
+      });
+      return;
+    }
+
+    this.persistProfileDetails();
+    this.fields.forEach((field) => (field.editing = false));
+    await this.showLocationMessage('Profile details saved on this device.');
   }
 
   phoneDigits(value: string) {
@@ -240,5 +310,45 @@ export class ProfilePage {
     } catch {
       // Keep the default profile details if saved data is unavailable or invalid.
     }
+  }
+
+  private loadAccountProfile() {
+    this.api.account().subscribe({
+      next: ({ user }) => this.applyAccountProfile(user),
+    });
+  }
+
+  private applyAccountProfile(user: ApiAccount['user']) {
+    let savedProfile: Record<string, unknown> = {};
+    try {
+      savedProfile = JSON.parse(localStorage.getItem('fv-profile-details') ?? '{}') as Record<string, unknown>;
+    } catch {
+      savedProfile = {};
+    }
+    const values: Record<string, string> = {
+      'Full Name': user.fullName,
+      'Email Address': user.email,
+      'Mobile Number': user.phoneNumber ?? (typeof savedProfile['Mobile Number'] === 'string' ? savedProfile['Mobile Number'] : ''),
+      'Location Address': user.shippingAddress ?? (typeof savedProfile['Location Address'] === 'string' ? savedProfile['Location Address'] : ''),
+    };
+    this.fields.forEach((field) => {
+      const value = values[field.label];
+      if (value !== undefined) field.value = value;
+    });
+    this.auth.updateCurrentProfile(user.fullName, user.email);
+    this.persistProfileDetails();
+  }
+
+  private persistProfileDetails() {
+    localStorage.setItem('fv-profile-details', JSON.stringify(Object.fromEntries(this.fields.map((field) => [field.label, field.value]))));
+  }
+
+  private moveProfilePhoto(previousEmail: string, nextEmail: string) {
+    const oldKey = `fv-profile-photo:${previousEmail.trim().toLowerCase()}`;
+    const newKey = `fv-profile-photo:${nextEmail.trim().toLowerCase()}`;
+    if (oldKey === newKey) return;
+    const photo = localStorage.getItem(oldKey);
+    if (photo && !localStorage.getItem(newKey)) localStorage.setItem(newKey, photo);
+    localStorage.removeItem(oldKey);
   }
 }

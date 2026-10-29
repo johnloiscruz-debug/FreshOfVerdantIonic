@@ -234,6 +234,7 @@ h3 {
 .payment-validation { margin: 4px 0 8px; font-size: 11px; line-height: 1.4; }
 .payment-validation.error { color: #bd2626; }
 .payment-validation.success { color: #087b3c; }
+.address-validation { margin: 0 2px 6px; }
 .cash-entry .peso-input:has(input[aria-invalid="true"]) { border-color: #bd2626; }
 .wallet-fund-button { width: 100%; min-height: 38px; margin: 0 0 6px; border: 1px solid var(--fv-green-dark); border-radius: 10px; background: #e8f8ee; color: var(--fv-green-dark); font-size: 12px; font-weight: 700; }
 
@@ -445,3 +446,47 @@ h3 {
 }
 :host-context(html.theme-dark) .foot small,
 :host-context(html.theme-dark) .foot small ion-icon { color: #b8c9be; }
+
+.order-processing {
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    background: linear-gradient(145deg, #087a3c, #064d2a);
+    color: #fff;
+    text-align: center;
+}
+.processing-content { display:flex; width:min(100%, 340px); flex-direction:column; align-items:center; }
+.processing-mark {
+    display:grid;
+    width:76px;
+    height:76px;
+    margin-bottom:22px;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.82);
+    border-radius:20px;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    font-size:38px;
+}
+.processing-mark img { box-sizing:border-box; width:100%; height:100%; padding:7px; border-radius:19px; background:#fff; object-fit:contain; }
+.processing-brand { margin-bottom:10px; font-size:10px; font-weight:800; letter-spacing:1px; }
+.processing-content h1 { margin:0; font-size:22px; font-weight:800; }
+.processing-content p { margin:8px 0 20px; color:rgba(255,255,255,.82); font-size:13px; }
+.processing-content ion-spinner { width:38px; height:38px; color:#fff; }
+:host-context(html.theme-dark) .order-processing {
+    background:radial-gradient(ellipse at 50% 36%,#14552e 0%,#0d2818 34%,#08130c 68%,#050806 100%);
+    color:#f2fff5;
+}
+:host-context(html.theme-dark) .processing-mark {
+    border-color:#7bf5a4;
+    background:#10251a;
+    color:#75f3a0;
+    box-shadow:0 0 0 4px rgba(32,216,117,.12),0 0 28px rgba(32,216,117,.42);
+}
+:host-context(html.theme-dark) .processing-brand { color:#b6f6c9; text-shadow:0 0 10px rgba(32,216,117,.35); }
+:host-context(html.theme-dark) .processing-content h1 { color:#f2fff5; text-shadow:0 0 15px rgba(32,216,117,.22); }
+:host-context(html.theme-dark) .processing-content p { color:#d1e8d8; }
+:host-context(html.theme-dark) .processing-content ion-spinner { color:#75f3a0; filter:drop-shadow(0 0 9px rgba(32,216,117,.65)); }

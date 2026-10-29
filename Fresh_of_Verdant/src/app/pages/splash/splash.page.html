@@ -5,7 +5,10 @@
         <img class="logo-box official-logo" src="https://cdn.phototourl.com/member/2026-10-22-e0d176fe-0763-46fd-be92-ddac142cb10f.png" alt="Fresh of Verdant logo" />
         <div class="brand">Fresh of<strong>Verdant</strong></div>
       </div>
-      @if (welcomeBackName) {
+      @if (splashMode === 'checkout') {
+        <h1>Checkout Address</h1>
+        <p>Preparing your checkout.</p>
+      } @else if (welcomeBackName) {
         @if (isAdminWelcome) {
           <h1>Welcome admin, {{ welcomeBackName }}</h1>
           <p>Your admin dashboard is ready. Opening your store controls.</p>
@@ -21,7 +24,7 @@
 
     <div class="loading">
       <ion-spinner name="circular"></ion-spinner>
-      <span>{{ isAdminWelcome ? 'Opening admin dashboard' : welcomeBackName ? 'Opening your account' : 'Preparing your market' }}</span>
+      <span>{{ splashMode === 'checkout' ? 'Opening Checkout Address' : isAdminWelcome ? 'Opening admin dashboard' : welcomeBackName ? 'Opening your account' : 'Preparing your market' }}</span>
     </div>
   </div>
 </ion-content>

@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertController, IonContent, IonFooter, IonIcon } from '@ionic/angular';
+import { AlertController, IonContent, IonFooter, IonIcon, IonSpinner } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, locationOutline, personOutline, phonePortraitOutline, callOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, leafOutline, locationOutline, personOutline, phonePortraitOutline, callOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { CartService } from '../../services/cart';
 import { ApiService } from '../../services/api';
@@ -28,7 +28,7 @@ interface SavedAddress {
   templateUrl: './checkout.page.html',
   styleUrls: ['./checkout.page.scss'],
   standalone: true,
-  imports: [IonContent, IonFooter, IonIcon, FormsModule, PageHeaderComponent],
+  imports: [IonContent, IonFooter, IonIcon, IonSpinner, FormsModule, PageHeaderComponent],
 })
 export class CheckoutPage {
   savedAddresses: SavedAddress[] = this.loadSavedAddresses();
@@ -43,7 +43,7 @@ export class CheckoutPage {
     'Malabon City': '1470', 'Navotas City': '1485', 'Antipolo City': '1870',
   };
   private readonly marikinaZipByBarangay: Record<string, string> = {
-    'San Roque': '1801', 'Kalumpang': '1801', 'Industrial Valley': '1802',
+    'San Roque': '1801', 'Calumpang': '1801', 'Industrial Valley': '1802',
     'Barangka': '1803', 'Tañong': '1803', 'Jesus de la Peña': '1804', 'Malanday': '1805',
     'Concepcion Uno': '1807', 'Tumana': '1807', 'Nangka': '1808', 'Parang': '1809',
     'Fortune': '1809', 'Marikina Heights': '1810', 'Concepcion Dos': '1811', 'Sto. Niño': '1800',
@@ -134,13 +134,13 @@ export class CheckoutPage {
     { id: 'cashless', title: 'Cashless', desc: 'Pay digitally on delivery', icon: 'phone-portrait-outline' },
   ];
   payment = localStorage.getItem('fv-payment-method') === 'cashless' ? 'cashless' : 'cod';
-  cashTendered = '';
+  cashTendered: string | number | null = '';
 
   notes = '';
   placingOrder = false;
 
   constructor(public cart: CartService, private router: Router, private orderHistory: OrderHistoryService, private alerts: AlertController, public wallet: CashlessWalletService, private api: ApiService) {
-    addIcons({ callOutline, cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, locationOutline, personOutline, phonePortraitOutline, shieldCheckmarkOutline });
+    addIcons({ callOutline, cardOutline, cashOutline, checkmark, chevronDown, chatboxEllipsesOutline, leafOutline, locationOutline, personOutline, phonePortraitOutline, shieldCheckmarkOutline });
     this.selectSavedAddress(this.selectedAddressId);
     const initialSchedule = new Date();
     initialSchedule.setMinutes(Math.ceil((initialSchedule.getMinutes() + 30) / 5) * 5, 0, 0);
@@ -150,6 +150,14 @@ export class CheckoutPage {
 
   get fee() {
     return this.deliveryFee;
+  }
+
+  get addressError(): string | null {
+    if (!this.address.street.trim()) return 'Enter a house number and street.';
+    if (!this.address.barangay || !this.barangays.includes(this.address.barangay)) return 'Choose a valid barangay.';
+    if (!this.cities.includes(this.address.city)) return 'Choose a valid city.';
+    if (!/^\d{4}$/.test(this.address.zip)) return 'Enter a valid four-digit ZIP code.';
+    return null;
   }
 
   get minScheduleDate() {
@@ -197,17 +205,23 @@ export class CheckoutPage {
   }
 
   get totalChange(): number | null {
-    if (!this.cashTendered) return null;
-    const tendered = Number(this.cashTendered);
-    return Number.isFinite(tendered) && tendered >= this.total ? tendered - this.total : null;
+    const tendered = this.cashTenderAmount;
+    return tendered !== null && tendered >= this.total ? tendered - this.total : null;
   }
 
   get cashTenderError(): string | null {
-    if (!this.cashTendered) return null;
-    const tendered = Number(this.cashTendered);
+    const tendered = this.cashTenderAmount;
+    if (tendered === null) return 'Enter the cash amount to enable Place Order.';
     if (!Number.isFinite(tendered) || tendered <= 0) return 'Enter a cash amount greater than zero.';
     if (tendered < this.total) return `Cash tendered must cover the total due of ₱${this.total.toFixed(2)}.`;
     return null;
+  }
+
+  private get cashTenderAmount(): number | null {
+    const value = String(this.cashTendered ?? '').trim();
+    if (!value) return null;
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount : null;
   }
 
   get cashlessShortfall(): number {
@@ -229,6 +243,8 @@ export class CheckoutPage {
   placeOrder() {
     if (this.placingOrder || this.cart.items().length === 0) return;
 
+    if (this.addressError) return;
+
     if (this.scheduleError) {
       void this.showScheduleError();
       return;
@@ -249,7 +265,7 @@ export class CheckoutPage {
       payment: this.payment === 'cod' ? 'Cash on Delivery' : 'Cashless Wallet',
       deliveryDate: this.scheduleDate,
       deliveryTime: this.scheduleTime,
-      cashTendered: this.payment === 'cod' && this.cashTendered ? Number(this.cashTendered) : null,
+      cashTendered: this.payment === 'cod' ? this.cashTenderAmount : null,
       totalChange: this.payment === 'cashless' ? 0 : this.totalChange,
       orderNotes: this.notes.trim(),
       deliveryWindow: this.deliveryWindow,

@@ -46,7 +46,7 @@
     <div class="summary">
       <div class="summary-head"><strong>Order summary</strong><span class="save">You save ₱{{ cart.savings }}</span></div>
       <div class="line"><span>Subtotal</span><span>₱{{ cart.subtotal() }}</span></div><div class="line"><span>Delivery Fee</span><span>₱{{ cart.deliveryFee }}</span></div><div class="line"><span>Tax</span><span>₱{{ cart.tax() }}</span></div><div class="line total"><span>Final Total</span><b>₱{{ cart.total() }}</b></div>
-      <button class="fv-btn" routerLink="/checkout">Checkout</button>
+      <button class="fv-btn" type="button" (click)="checkout()">Checkout</button>
     </div>
   }
 </ion-content>

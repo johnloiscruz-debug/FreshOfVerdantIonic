@@ -11,3 +11,50 @@ ion-content { --background:var(--fv-bg); --color:#111; }.page-title,.section-tit
 .swatch.green { background:#00c455; }.swatch.light { background:#f4f6f4; border:1px solid #d5ddd7; }.swatch.dark { background:#202820; }
 .language-card select { max-width:112px; padding:8px 22px 8px 9px; border:1px solid #e1e8e2; border-radius:10px; background:#fff; color:#111; font:inherit; font-size:11px; }
 @media (max-width:360px) { .theme-options { margin-left:0; } .theme-options button { padding:7px; } }
+
+:host-context(html.theme-dark) ion-content { --background:#080d09; --color:#f2f5f2; }
+:host-context(html.theme-dark) .page-title,
+:host-context(html.theme-dark) .section-title { color:#f2f5f2; }
+:host-context(html.theme-dark) .setting-row,
+:host-context(html.theme-dark) .preference-card {
+	border:1px solid #29382f;
+	background:#151a17;
+	color:#f2f5f2;
+	box-shadow:0 4px 15px rgba(0,0,0,.24),0 0 12px rgba(32,216,117,.07);
+}
+:host-context(html.theme-dark) .copy strong { color:#f2f5f2; }
+:host-context(html.theme-dark) .copy small,
+:host-context(html.theme-dark) .version { color:#b8c9be; }
+:host-context(html.theme-dark) .icon { background:#203c2b; color:#62e595; }
+:host-context(html.theme-dark) .arrow { color:#aebdb3; }
+:host-context(html.theme-dark) .theme-options button {
+	border-color:#34483a;
+	background:#0b100d;
+	color:#d7e1da;
+}
+:host-context(html.theme-dark) .theme-options button.active {
+	border-color:#20d875;
+	background:#17452b;
+	color:#a1f4ba;
+	box-shadow:0 0 0 1px rgba(32,216,117,.12),0 0 12px rgba(32,216,117,.16);
+}
+:host-context(html.theme-dark) .language-card select {
+	border-color:#3b5142;
+	background:#0b100d;
+	color:#f2f5f2;
+	color-scheme:dark;
+}
+:host-context(html.theme-dark) .language-card select option {
+	background:#151a17;
+	color:#f2f5f2;
+}
+:host-context(html.theme-dark) .language-card select option:checked,
+:host-context(html.theme-dark) .language-card select option:hover {
+	background:#17452b;
+	color:#a1f4ba;
+}
+:host-context(html.theme-dark) .theme-options button:focus-visible,
+:host-context(html.theme-dark) .language-card select:focus-visible {
+	outline:2px solid #20d875;
+	outline-offset:2px;
+}

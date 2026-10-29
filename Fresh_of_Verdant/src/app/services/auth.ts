@@ -43,6 +43,18 @@ export class AuthService {
     this.currentRole.set(accountRole);
   }
 
+  updateCurrentProfile(name: string, email: string) {
+    const displayName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!displayName || !normalizedEmail) return;
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(this.nameKey, displayName);
+      sessionStorage.setItem(this.emailKey, normalizedEmail);
+    }
+    this.currentName.set(displayName);
+    this.currentUser.set(normalizedEmail);
+  }
+
   signOut() {
     if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(this.emailKey);
     if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(this.nameKey);

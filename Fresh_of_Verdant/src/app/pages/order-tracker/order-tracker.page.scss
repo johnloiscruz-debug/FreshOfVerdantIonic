@@ -163,6 +163,18 @@ ion-content {
         flex-shrink: 0;
         position: relative;
         z-index: 1;
+
+        &::after {
+            position: absolute;
+            inset: -5px;
+            border: 1px solid rgba(32, 216, 117, .65);
+            border-radius: 50%;
+            content: '';
+            opacity: 0;
+            pointer-events: none;
+            animation: delivery-dot-pulse 2.4s ease-out infinite;
+            animation-delay: var(--dot-delay, 0ms);
+        }
     }
 
     .t {
@@ -218,6 +230,15 @@ ion-content {
     &.pending strong {
         color: #888;
     }
+}
+
+@keyframes delivery-dot-pulse {
+    0% { opacity: .7; transform: scale(.72); }
+    75%, 100% { opacity: 0; transform: scale(1.45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .step .dot::after { display: none; animation: none; }
 }
 
 ion-footer {
